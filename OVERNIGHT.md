@@ -10,6 +10,8 @@ Every odd perfect number N satisfies **Ω(N) ≥ 37** and **N > 10¹⁶⁰**. Br
 
 The earlier pair of results established Ω(N) ≥ 37 and N > 10⁵⁰. The first theorem counts prime factors with multiplicity and reproduces Iannucci and Sorli’s bound. The second reproduces Hagis’s 1973 bound using a fresh exact-exponent proof. Both declarations quantify over every odd perfect natural number. The count certificate uses 101 reusable subtree proofs covering two roots and an analytic bound for the complement. The size proof handles least primes 3, 5 and 7, followed by a separate bound for the complement. [Count declaration and certificate](research/COUNT_CHAIN.md) · [Size declaration](OddPerfect/SizeBound50.lean) · [Size certificate](research/ABSOLUTE_SIZE.md)
 
+When none of 127, 19, 7, 11, 31, 13, 3, or 5 divides N, the stronger conditional bounds are ω(N) ≥ 101, Ω(N) ≥ 259, and N > 10⁵³⁶. The eight cases in which a listed prime divides N are still required for any improvement to the unconditional size bound. [Complement theorem](OddPerfect/BrentSeeds.lean)
+
 ## Structural theorem
 
 The project also proves Dickson's finiteness theorem. For each k, the set of odd perfect natural numbers with at most k distinct prime divisors is finite. The declaration `OddPerfect.dickson_finite` has received independent review. Its proof gives an explicit recursive upper bound depending on k. The bounds vary with k. [Lean proof](OddPerfect/Dickson.lean) · [Mathematical argument](research/DICKSON.md)
@@ -31,6 +33,8 @@ For each prime divisor q, `OddPerfect.prime_cube_lt_three_mul` proves q³ < 3N. 
 For every odd perfect natural number N, there are distinct prime divisors p and q such that p and its exponent are both 1 modulo 4, while the exponent of q is even and at least four. This proves Steuerwald's 1937 theorem. Its Lean declaration is `OddPerfect.steuerwald`. The proof covers both possibilities for 3 dividing N. [Declaration](OddPerfect/Steuerwald.lean) · [Source and independent case review](research/STEUERWALD.md)
 
 It follows that Ω(N) ≥ 2ω(N)+1. Here Ω counts prime factors with multiplicity and ω counts distinct primes. The declaration is `OddPerfect.steuerwald_prime_factor_count`. [Prime counts](OddPerfect/Counts.lean)
+
+For an odd deficient-perfect n, the proper divisor d with σ(n)+d=2n yields an odd multiplier x=2n/d−1. The true prime powers of n together with (x,1) give a positive odd spoof list. Its five-entry minimum proves Tang and Feng’s three-prime exclusion. The cofactor of an odd perfect number at Euler exponent one belongs to this deficient-perfect class, with its Euler index as d. [Exact equivalence, count and source references](research/DEFICIENT_PERFECT.md)
 
 ## Published works and checked examples
 

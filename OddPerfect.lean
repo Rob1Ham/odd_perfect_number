@@ -98,3 +98,7 @@ public import OddPerfect.ThreeModFourGraph
 public import OddPerfect.ExceptionalOrder
 public import OddPerfect.ExceptionalNonresidues
 public import OddPerfect.HarmonicCubic
+public import OddPerfect.DeficientFour
+public import OddPerfect.LengthMatching
+public import OddPerfect.BrentSeeds
+public import OddPerfect.ExponentOneSize50
