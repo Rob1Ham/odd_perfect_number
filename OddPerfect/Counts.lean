@@ -69,4 +69,17 @@ theorem steuerwald_prime_factor_count {N : ℕ} (ho : Odd N) (hN : N.Perfect) :
   exact prime_factor_count_of_fourth_power ho hN hprime
     ((hprime.pow_dvd_iff_le_factorization ho.pos.ne').2 h4)
 
+/-- The total number of prime factors of an odd perfect number is odd because
+only the special prime occurs to odd exponent. -/
+theorem odd_total_prime_factor_count {N : ℕ} (ho : Odd N) (hN : N.Perfect) :
+    Odd N.primeFactorsList.length := by
+  obtain ⟨p, a, m, hp, _, ha, _, heq⟩ := euler_form ho hN
+  have hm : m ≠ 0 := by
+    rintro rfl
+    simp [heq] at ho
+  rw [← ArithmeticFunction.cardFactors_apply, heq,
+    ArithmeticFunction.cardFactors_mul (pow_ne_zero _ hp.ne_zero) (pow_ne_zero _ hm),
+    ArithmeticFunction.cardFactors_apply_prime_pow hp, ArithmeticFunction.cardFactors_pow]
+  exact Nat.odd_iff.mpr (by omega)
+
 end OddPerfect

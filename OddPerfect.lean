@@ -20,3 +20,7 @@ public import OddPerfect.SpoofFactors
 public import OddPerfect.Primitive
 public import OddPerfect.RepeatedPrimes
 public import OddPerfect.CyclotomicOrders
+public import OddPerfect.Cuts
+public import OddPerfect.NearPerfect
+public import OddPerfect.Reciprocal
+public import OddPerfect.EulerIndex
