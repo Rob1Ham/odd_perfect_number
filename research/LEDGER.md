@@ -43,3 +43,11 @@ The integrated project proves `18 * N.primeFactors.card ≤ 7 * N.primeFactorsLi
 Two cases exhaust the sharper local conclusion. If 3 is absent then `18ω ≤ 7Ω + 15`. If 3 is present then `18ω + v₃(N) ≤ 7Ω + 33`. Neither case excludes all candidates. The separate bound `Ω ≥ 2ω + 51` in §4 still needs a computational proof.
 
 For each true component exponent e of an odd perfect number, every divisor d>1 of e+1 occurs as an exact multiplicative order at another prime of the support. This bounds the divisor count of e+1 by ω(N). A second constraint requires every nonempty proper subset of the support to send an edge outside it. Within the finite support, paths may return to primes already visited. [Order theorem](../OddPerfect/CyclotomicOrders.lean) · [Cut theorem and remaining obstruction](CUTS.md)
+
+## Bound on the prime support
+
+The support cannot lie among the primes up to and including 257. A kernel-checked certificate eliminates the initial 54 odd primes in eight rounds. For each genuine exponent e, a prime divisor of e+1 must occur among the indices tested in its row. A surviving sub-sum can retain a base, so a conservative test cannot falsely remove a genuine component. A separate worker checked the preservation argument, both endpoints and the empty terminal state. [Certificate](SUPPORT.md)
+
+Every odd perfect number has at least five distinct prime factors. If 3 is absent it has at least eight. If the seven odd primes through 19 are absent, it has at least 115 distinct prime factors and Ω ≥ 2ω+65. The last two numerical statements apply only to that seven-prime exclusion. [Abundancy and case coverage](SIEVE.md)
+
+For every k, Dickson's theorem gives finiteness of the set of odd perfect numbers with ω ≤ k. The project proves a uniform recursive upper bound by controlling the numerator and denominator of the partial divisor product, including the case where every prime is known but some exact exponents remain unknown. Independent re-elaboration and review found standard axioms and verified termination with tied labels. A single k bounding all candidates remains unknown. [Proof and reproduction](DICKSON.md)

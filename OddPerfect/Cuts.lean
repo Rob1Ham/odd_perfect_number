@@ -10,7 +10,8 @@ namespace OddPerfect
 
 open ArithmeticFunction
 
-private theorem self_lt_sigma_of_one_lt {a : ℕ} (ha : 1 < a) : a < sigma 1 a := by
+/-- A number greater than one has both one and itself among its divisors. -/
+theorem self_lt_sigma_of_one_lt {a : ℕ} (ha : 1 < a) : a < sigma 1 a := by
   have h : 1 ≤ ∑ i ∈ a.properDivisors, i :=
     Finset.single_le_sum (f := fun i : ℕ => i) (fun i _ => Nat.zero_le i)
       (Nat.one_mem_properDivisors_iff_one_lt.mpr ha)
@@ -47,7 +48,7 @@ theorem exists_prime_across_coprime_split {N a b : ℕ} (hn : N.Perfect)
 
 /-- A directed edge records a prime divisor of the exact component sum.
 Both endpoints belong to the true prime support. -/
-def sigmaEdge (N u v : ℕ) : Prop :=
+@[expose] def sigmaEdge (N u v : ℕ) : Prop :=
   u ∈ N.primeFactors ∧ v ∈ N.primeFactors ∧ v ∣ sigma 1 (u ^ N.factorization u)
 
 /-- Every nonempty proper subset of the prime support sends an edge outside

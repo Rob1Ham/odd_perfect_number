@@ -37,11 +37,10 @@ theorem exists_component_index {N p e b : ℕ} (hN : Nat.Perfect N) (hp : Nat.Pr
   rw [← hmul, hbe]
   exact (dvd_mul_left i (p ^ e)).trans (dvd_mul_left _ _)
 
-/-- Dris–Luca Lemma 2.2. If a component feeds only `q`, and the reverse component
-feeds a full `p^l`, then the reverse component length is a multiple of `p^(l-1)`. -/
-theorem reciprocal_component_length {p q l a β : ℕ} (hp : Nat.Prime p) (ho : Odd p)
+/-- The return depth `t` can differ from the outgoing exponent `l`. -/
+theorem reciprocal_return_length {p q l a β t : ℕ} (hp : Nat.Prime p) (ho : Odd p)
     (hq : Nat.Prime q) (hl : 0 < l) (hout : sigma 1 (p ^ l) = q ^ β)
-    (hback : p ^ l ∣ sigma 1 (q ^ a)) : p ^ (l - 1) ∣ a + 1 := by
+    (hback : p ^ t ∣ sigma 1 (q ^ a)) : p ^ (t - 1) ∣ a + 1 := by
   cases l with
   | zero => omega
   | succ k =>
@@ -59,11 +58,11 @@ theorem reciprocal_component_length {p q l a β : ℕ} (hp : Nat.Prime p) (ho : 
     have hval : (q ^ β - 1).factorization p = 1 := by
       rw [hsub, Nat.factorization_mul hspos.ne' hp.ne_zero, Finsupp.add_apply,
         Nat.factorization_eq_zero_of_not_dvd (hnot k), hp.factorization_self, zero_add]
-    have hpow : p ^ (k + 1) ∣ q ^ (a + 1) - 1 := by
+    have hpow : p ^ t ∣ q ^ (a + 1) - 1 := by
       rw [← geom_sum_mul_of_one_le (by have := hq.one_lt; omega : 1 ≤ q) (a + 1),
         ← sigma_one_apply_prime_pow hq]
       exact hback.trans (dvd_mul_right _ _)
-    have hbig : p ^ (k + 1) ∣ (q ^ β) ^ (a + 1) - 1 := by
+    have hbig : p ^ t ∣ (q ^ β) ^ (a + 1) - 1 := by
       rw [← pow_mul]
       exact hpow.trans (Nat.pow_sub_one_dvd_pow_sub_one q (dvd_mul_left _ _))
     have hxy : p ∣ q ^ β - 1 := by rw [hsub]; exact dvd_mul_left _ _
@@ -74,5 +73,11 @@ theorem reciprocal_component_length {p q l a β : ℕ} (hp : Nat.Prime p) (ho : 
     have hle := (hp.pow_dvd_iff_le_factorization (by omega : (q ^ β) ^ (a + 1) - 1 ≠ 0)).mp hbig
     apply (hp.pow_dvd_iff_le_factorization (by omega : a + 1 ≠ 0)).mpr
     omega
+
+/-- Dris–Luca Lemma 2.2. A full return of `p^l` forces `p^(l−1) ∣ a+1`. -/
+theorem reciprocal_component_length {p q l a β : ℕ} (hp : Nat.Prime p) (ho : Odd p)
+    (hq : Nat.Prime q) (hl : 0 < l) (hout : sigma 1 (p ^ l) = q ^ β)
+    (hback : p ^ l ∣ sigma 1 (q ^ a)) : p ^ (l - 1) ∣ a + 1 :=
+  reciprocal_return_length hp ho hq hl hout hback
 
 end OddPerfect

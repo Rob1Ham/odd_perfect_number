@@ -1,0 +1,19 @@
+# Finite prime support exclusion
+
+`OddPerfect.SupportSieve.exists_prime_gt_257` states that every odd `Nat.Perfect` number has a prime factor strictly greater than 257. The hypothesis ranges over all positive natural numbers satisfying perfection, with no bound on their size or their component exponents. The numerical result is far below the published bound of Goto and Ohno, who proved that the largest prime factor exceeds $10^8$. [Goto and Ohno, *Mathematics of Computation* 77 (2008), 1859–1868](https://www.ams.org/mcom/2008-77-263/S0025-5718-08-02050-4/S0025-5718-08-02050-4.pdf)
+
+## Why a finite table suffices
+
+Let $S$ contain the prime factors of an odd perfect number $N$. If $p^e$ exactly divides $N$, the complete primitive-divisor theorem supplies an $r\in S$ distinct from $p$ with $e+1=\operatorname{ord}_r(p)$. Thus `round` can inspect the orders for individual moduli. Euler's theorem requires either an odd length $e+1$, or $p\equiv1\pmod4$ and $e+1\equiv2\pmod4$. Every prime dividing $\sigma(p^e)$ must divide $2N$. Each of these tests must hold for the true component. [Primitive-divisor proof](PRIMITIVE.md) [Lean definitions and proofs](../OddPerfect/SupportSieve.lean)
+
+A shorter certificate selects any prime $\ell\mid e+1$. Applying the primitive-divisor theorem at index $\ell$ gives an $r\in S$ with $\ell\mid r-1$. Also $G(p,\ell)=(p^\ell-1)/(p-1)$ divides $\sigma(p^e)$ by partitioning the geometric sum into blocks. When $\ell=2$, Euler's theorem forces $p\equiv1\pmod4$. These three implications allow `validIndexStep` to discard a base after checking only a list $L$ of possible prime indices. A row certifies that every element of $L$ is prime and that $r-1$ divides $(\prod L)^{16}$ for every $r\in S$. Consequently the row covers every possible prime $\ell$. The exponent 16 bounds what a proposed row can certify, while the theorem accepts any row passing the divisibility test.
+
+For each candidate sum, `smoothCheck` repeatedly divides by the gcd with $2\prod S$. A remaining value greater than one and coprime to this product supplies an outside prime. After twelve divisions the checker conservatively retains the candidate. It also retains bases listed in the proposed successor. This makes a passing certificate valid even when the lists include superfluous primes or more large valuations occur. The one-Euler-prime condition supplies the local parity test. No step requires comparing two hypothetical Euler candidates.
+
+Starting with the 54 odd primes at most 257, the retained support sizes are 38, 30, 23, 14, 11, 10, 8, and 0. Hence no prime could divide $N$ if its largest prime were at most 257, contradicting $N>1$. The proof stores the intermediate supports, and Lean's kernel verifies the rows by `decide`. The analogous full-order calculation through 19 is `exists_prime_gt_nineteen`.
+
+## Reproduction and limits
+
+`lake build OddPerfect.SupportSieve` checks both the general certificate theorems and the numerical bound. `python3 research/support_sieve.py 257` regenerates the rows with the Python standard library. The Python program proposes data and plays no role in the Lean proof. `#print axioms` reports `propext`, `Classical.choice`, and `Quot.sound` for both numerical bounds and all three general certificate theorems. `OddPerfect.SupportSieve.exists_large_prime_of_index_certificate` applies to every positive bound admitting a passing certificate, and `OddPerfect.SupportSieve.exists_large_prime_of_empty_sieve` handles the full-order computation directly. The calculation supplies no universal bound on the number of elimination rounds and no proof of emptiness for arbitrary finite supports.
+
+At bound 997 the discovery program returns support sizes 167, 117, 100, 79, 47, 32, 22, 17, 1 and 0. The separate kernel timing run at 997 was interrupted after several minutes. The named bound in this module remains 257.

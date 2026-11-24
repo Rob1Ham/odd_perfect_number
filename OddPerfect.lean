@@ -24,3 +24,10 @@ public import OddPerfect.Cuts
 public import OddPerfect.NearPerfect
 public import OddPerfect.Reciprocal
 public import OddPerfect.EulerIndex
+public import OddPerfect.IndexTwo
+public import OddPerfect.AbundancyLimit
+public import OddPerfect.SmallestPrime
+public import OddPerfect.SupportSieve
+public import OddPerfect.BoundedSupport
+public import OddPerfect.FewPrimes
+public import OddPerfect.Dickson
