@@ -2,6 +2,8 @@
 
 The existence of an odd perfect number remains open. The research cutoff was 7:00 a.m. Chicago time on November 24, 2026. Final verification and publication resumed after the cutoff.
 
+**How large would an odd perfect number have to be?** Ochem and Rao’s 2012 Theorem 1 proves that every odd perfect number exceeds 10¹⁵⁰⁰. Pascal Ochem’s project page reports that a subsequent computation raised this to **10²²⁰⁰**, so even the smallest possible example would have at least **2,201 decimal digits**. The strongest unconditional size bound independently checked by Lean in this checkout is **10¹⁶⁰**. [Ochem–Rao, §3, Theorem 1](https://www.lirmm.fr/~ochem/opn/opn.pdf) · [Ochem’s computational update](https://www.lirmm.fr/~ochem/opn/) · [Local Lean size theorem](OddPerfect/SizeBound160.lean)
+
 ## Strongest unconditional count theorem at this checkpoint
 
 For **every** odd perfect N, `18 * N.primeFactors.card ≤ 7 * N.primeFactorsList.length + 31`. This is Ochem and Rao's published Theorem 1. Its local proof covers both the presence and absence of 3 and has received independent review against the paper. The exact declaration is `OddPerfect.ochem_rao_prime_factor_count`. [Lean proof](OddPerfect/OchemRao.lean) · [Ochem–Rao, §3](https://www.lirmm.fr/~ochem/opn/opnf.pdf)
