@@ -6,7 +6,7 @@ The existence of an odd perfect number remains open. This report tracks verified
 
 For **every** odd perfect N, `18 * N.primeFactors.card ≤ 7 * N.primeFactorsList.length + 31`. This is Ochem and Rao's published Theorem 1. Its local proof covers both the presence and absence of 3 and has received independent review against the paper. The exact declaration is `OddPerfect.ochem_rao_prime_factor_count`. [Lean proof](OddPerfect/OchemRao.lean) · [Ochem–Rao, §3](https://www.lirmm.fr/~ochem/opn/opnf.pdf)
 
-The absolute lower bound is now **Ω(N) ≥ 25**, where Ω counts prime factors with multiplicity. The declaration `OddPerfect.twenty_five_le_total_prime_factor_count` uses a kernel-checked tree of 5,336 nodes to exclude every case with Ω ≤ 23, together with the fact that Ω is odd. [Lean theorem](OddPerfect/CountBound25.lean) · [Certificate and reproduction](research/COUNT_CHAIN.md)
+The absolute lower bound is now **Ω(N) ≥ 29**, where Ω counts prime factors with multiplicity. The declaration `OddPerfect.twenty_nine_le_total_prime_factor_count` uses kernel-checked trees of 11,507 nodes to exclude every case with Ω ≤ 27, together with the fact that Ω is odd. [Lean theorem](OddPerfect/CountBound29.lean) · [Certificate and reproduction](research/COUNT_CHAIN.md)
 
 ## Structural theorem
 
@@ -18,7 +18,9 @@ For **every** exact prime-power component qᵃ of an odd perfect N, the integral
 
 The same paper's Theorem 1.2 is checked as `OddPerfect.finite_of_bounded_component_index`. For every real K, only finitely many odd perfect numbers have an exact component of index below K. The project gives an explicit bound, using Dickson finiteness and a count of exceptional components with multiplicity. [Lean proof](OddPerfect/BoundedIndex.lean)
 
-Every component index is composite. For the Euler component specifically, the checked lower bound is 21. There are additional restrictions on index primes that are 3 modulo 4 and occur to odd valuation. [Index lower bound](OddPerfect/FermatIndexSupport.lean) · [Square-class bounds](research/EULER_SQUARE_CLASS.md)
+Every component index is composite. Every exact component index also differs from every prime square. The Euler component index has at least three prime factors counted with multiplicity and is at least 63. There are additional restrictions on index primes that are 3 modulo 4 and occur to odd valuation. [Index lower bound](OddPerfect/FermatSmallBound.lean) · [Square-class bounds](research/EULER_SQUARE_CLASS.md)
+
+For an Euler prime q and any positive exponent e, σ(qᵉ) is never square. For an odd perfect number in Euler form with a > 1, the index σ(m²)/qᵃ is also never square. Hirakawa’s stronger prime-times-square claim is checked for the branches q ≢ 1 modulo 16, 3 dividing (a+1)/2, or 5 dividing (a+1)/2. [Exact results and sources](research/HIRAKAWA.md)
 
 For each prime divisor q, `OddPerfect.prime_cube_lt_three_mul` proves q³ < 3N. The separate rank theorem `OddPerfect.prime_rank_bound` gives 2t^(2j) < 3N when j of the prime divisors are at least t > 0. [Sources and proofs](research/PRIME_SIZES.md)
 
@@ -34,6 +36,10 @@ For every perfect N divisible by 13, the 13-component forces 7, 61, or a differe
 
 Dittmer's Lemma 7.1 and Corollaries 7.2–7.3 and the BYU group's positive finiteness Corollary 4.3 are checked. Every hypothetical odd perfect number has a normalized formally balanced factorization with prime lengths and a single linear entry whose base is a prime. The canonical refinement preserves the actual divisor sum. For any fixed number of entries there are only finitely many positive odd spoof-perfect factorizations, even allowing repeated bases and the base one. [Normalization and inclusion](OddPerfect/QuasiFactors.lean) · [Finiteness](research/DICKSON.md)
 
+The normalized candidate set also requires a genuine prime fourth power. This rules out Descartes’s integer in every allowed normalized representation, including alternatives to its historical factorization. The proof uses the uniquely prescribed linear entry and splits on whether its base also occurs as a square entry. [Checked theorem](OddPerfect/FourthPowerSpoof.lean) · [Case analysis](research/SPOOFS.md)
+
+The related quasiperfect equation σ(N)=2N+1 is equivalent to omitting the proper divisor one. The project proves Cattaneo’s odd-square restriction, deficiency of every proper divisor, and the restriction to residues 1 or 3 modulo 8 for every divisor of σ(N). These conditions apply to a different equation and its own candidate set. [Quasiperfect proofs](OddPerfect/Quasiperfect.lean) · [Hagis–Cohen, properties A–C](https://doi.org/10.1017/S1446788700018401)
+
 ## Reproduce
 
 On the research branch with Elan installed, run these commands from the repository root.
@@ -47,4 +53,4 @@ Lean is pinned to v4.36.0 and mathlib to `fc4f59e577feb1a4956671bc04ac18aaaf8cd8
 
 ## Remaining question and next assignment
 
-Candidates with a nonspecial fourth power and Ω ≥ 25 survive. Distinct multiplicative orders force distinct primes for a fixed source, while different sources can reuse the same prime. The next assignment is to close the trees with Ω ≤ 27 by bounding the smallest unassigned prime from its required abundancy whenever factoring a forced divisor sum stalls. This would raise the unconditional bound to 29. [Branch ledger](research/LEDGER.md) · [Certificate method](research/COUNT_CHAIN.md)
+Candidates with a nonspecial fourth power and Ω ≥ 29 survive. Distinct multiplicative orders force distinct primes for a fixed source, while different sources can reuse the same prime. The next assignment is to verify the complete factor trees through Ω ≤ 35, which would reproduce Iannucci and Sorli’s absolute lower bound of 37. [Branch ledger](research/LEDGER.md) · [Certificate method](research/COUNT_CHAIN.md)

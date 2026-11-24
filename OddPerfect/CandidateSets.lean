@@ -36,9 +36,9 @@ when the tests use its genuine prime factorization. -/
 theorem descartes_mem_classicalCandidates : 198585576189 ∈ classicalCandidates :=
   ⟨by decide, ⟨61, 1, 57057, by decide, rfl, rfl, by decide, rfl⟩, Or.inr rfl, by decide⟩
 
-theorem descartes_not_mem_fourthPowerCandidates : 198585576189 ∉ fourthPowerCandidates := by
-  rintro ⟨_, q, hq, hd⟩
-  have hdiv := (dvd_pow_self q (by decide : 4 ≠ 0)).trans hd
+theorem descartes_no_prime_cube (q : ℕ) (hq : q.Prime) : ¬q^3 ∣ 198585576189 := by
+  intro hd
+  have hdiv := (dvd_pow_self q (by decide : 3 ≠ 0)).trans hd
   change q ∣ (3 * 7 * 11 * 13 * 19) ^ 2 * 61 at hdiv
   have hcases : q = 3 ∨ q = 7 ∨ q = 11 ∨ q = 13 ∨ q = 19 ∨ q = 61 := by
     rcases hq.dvd_mul.mp hdiv with h | h
@@ -52,6 +52,10 @@ theorem descartes_not_mem_fourthPowerCandidates : 198585576189 ∉ fourthPowerCa
     · have := (Nat.prime_dvd_prime_iff_eq hq (by decide : Nat.Prime 61)).mp h
       tauto
   rcases hcases with rfl | rfl | rfl | rfl | rfl | rfl <;> norm_num at hd
+
+theorem descartes_not_mem_fourthPowerCandidates : 198585576189 ∉ fourthPowerCandidates := by
+  rintro ⟨_, q, hq, hd⟩
+  exact descartes_no_prime_cube q hq ((pow_dvd_pow q (by decide : 3 ≤ 4)).trans hd)
 
 /-- The fourth-power test strictly shrinks the classical search set. -/
 theorem fourthPowerCandidates_ssubset : fourthPowerCandidates ⊂ classicalCandidates := by

@@ -1,0 +1,13 @@
+# An exponent bound for a Fermat Euler prime
+
+Suppose $N$ is odd and perfect and its Euler prime $q$ has $q-1$ a power of two. Write $a=v_q(N)$, let $S$ consist of the prime divisors $p\equiv1\pmod q$, and write $h=|S|$. Let $t$ count the members of $S$ which are also $3\pmod4$. Then
+$$2a+t(t-1)\le 2h(h-1).$$
+In particular, $a\ge5$ requires at least three such primes. If they are all $3\pmod4$, it requires at least four. The quantities $a,h,t$ are unrestricted natural numbers in the theorem. [Checked proof](../OddPerfect/FermatEuler.lean)
+
+For $p\ne q$ the exponent $e_p=v_p(N)$ is even. If $q\mid\sigma(p^{e_p})$, the order of $p$ modulo $q$ divides the odd number $e_p+1$ and the power of two $q-1$, so $p\equiv1\pmod q$. At these bases lifting the exponent gives exactly $v_q(\sigma(p^{e_p}))=v_q(e_p+1)$. The Euler base contributes zero to its own valuation, giving $a=\sum_{p\in S}v_q(e_p+1)$. Nielsen's Lemma 5 records the local valuation, including an additional case for a Fermat prime different from the Euler prime. Only the case where they coincide enters the displayed identity. [Nielsen, Lemma 5](https://www.ams.org/journals/mcom/2007-76-260/S0025-5718-07-01990-4/S0025-5718-07-01990-4.pdf)
+
+For each $1\le j\le v_q(e_p+1)$ there is a prime $r\mid N$ with multiplicative order $q^j$ for $p\bmod r$. It gives an actual edge $p\to r$ in $S$ since $r\ne p$, $r\equiv1\pmod q$, and $r\mid\sigma(p^{e_p})$. Different $j$ give different targets for the same source. Summing shows $a$ is at most the number of actual directed edges inside $S$, which is at most $h(h-1)$. This is the incidence argument in Nielsen's Lemma 6(i) and the proof of Proposition 7. [Nielsen, Lemma 6 and Proposition 7](https://www.ams.org/journals/mcom/2007-76-260/S0025-5718-07-01990-4/S0025-5718-07-01990-4.pdf)
+
+The further deduction comes from quadratic reciprocity. Among the $t(t-1)$ ordered pairs whose endpoints are both $3\pmod4$, at most half are edges. Reversing each actual edge gives a distinct missing pair. The calculation holds for any chosen subset of prime divisors before specializing it to $S$. For a concrete boundary, $61$ and $131$ are both $1\pmod5$ and each divides the geometric sum for the fourth power of the other. Only $131$ is $3\pmod4$. Both divisibilities were checked locally. They do not specify a perfect number. The bounds leave arbitrarily large possible values of $h$. [Local reciprocity theorem](../OddPerfect/Reciprocity.lean) · [Directed edge count and reciprocal example](../OddPerfect/FermatEuler.lean)
+
+Run `lake build OddPerfect.FermatEuler` to replay the module on the project pin.

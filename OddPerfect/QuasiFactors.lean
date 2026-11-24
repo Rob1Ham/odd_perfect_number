@@ -174,7 +174,7 @@ theorem canonical_balance_iff_perfect {N : ℕ} (hn : 0 < N) :
 
 /-- Numbers represented by an odd formal factorization with prime lengths,
 prime-power bases, and a single linear term whose base is a genuine Euler prime. -/
-def normalizedSpoofCandidates : Set ℕ := {N | Odd N ∧
+@[expose] def normalizedSpoofCandidates : Set ℕ := {N | Odd N ∧
   ∃ X : List (ℕ × ℕ), listValue X = N ∧ listFormalSigma X = 2*N ∧
     (∀ z ∈ X, ∃ p ∈ N.primeFactors, ∃ d : ℕ, 0 < d ∧ z.1 = p^d ∧ (z.2+1).Prime) ∧
     ∃ q ∈ N.primeFactors, q.Prime ∧ q % 4 = 1 ∧ X.filter (fun z => z.2 == 1) = [(q,1)]}

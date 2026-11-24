@@ -35,3 +35,19 @@ Run `lake build OddPerfect.CountBound` to replay both trees and their corollary 
 The same rules exclude Ω ≤ 23. The 3-seed replay checks 3,350 nodes and the 5-seed replay checks 1,986. The proof `OddPerfect.twenty_five_le_total_prime_factor_count` gives Ω ≥ 25. It therefore includes the historical Ω ≥ 23 bound credited to Cohen's 1982 thesis. Iannucci and Sorli credit Sayers's 1986 thesis with Ω ≥ 29. [Iannucci and Sorli, pp. 2077 and 2084](https://opus.lib.uts.edu.au/bitstream/10453/5651/1/2003000441.pdf)
 
 Run `lake build OddPerfect.CountBound25` to verify this certificate. The independent search program `research/count_chain.py` takes a budget and can emit a fresh Lean hint module with `--output`. It uses GNU `factor` or `gfactor` for candidate discovery. Factorization timeouts can change the hints selected on a machine. The checked module stores the numeric divisions, coprimality tests and Lucas witnesses needed for replay, so Lean verification requires no external factoring program.
+
+## Budget 27 and larger seed-free cases
+
+`OddPerfect/CountBound29.lean` reaches the Ω ≥ 29 result credited to Sayers. The 3-seed certificate visits 9,569 nodes, the 5-seed certificate visits 1,938, and the second certificate uses 3 ∤ N. Their checked proof follows the factor-chain method with an additional branch for a presently unknown prime. [Iannucci and Sorli, introduction and §4](https://opus.lib.uts.edu.au/bitstream/10453/5651/1/2003000441.pdf)
+
+Suppose at most k distinct primes divide the remaining cofactor m. An integer g > 1 dividing K and coprime to (L−1)! guarantees that at least one such prime is at least L. If all the remaining primes were at least a, their limiting abundancy product would be at most
+
+```text
+[L/(L−1)] · [a/(a−1)]^(k−1).
+```
+
+The actual abundancy of m is 2D/A and falls strictly below the limiting product. A verified comparison with 2D/A therefore forces a prime below a. The tree checks every eligible prime below a and all its possible positive exponents. It omits primes dividing D and primes known absent from N. A cutoff with no eligible primes closes immediately. When L ≤ a, the same reasoning uses any prime dividing m without supplying g. These statements are proved in `OddPerfect/ChainAbundancy.lean` and `OddPerfect/ChainPlan.lean`.
+
+Run `lake build OddPerfect.CountBound29` for the proof and `python3 research/count_chain.py 27 --cutoffs` for a fresh search. The verified result uses the stored certificate in `OddPerfect/CountChain27.lean`.
+
+The bigger seed-free cases in `OddPerfect/HigherCountSeeds.lean` use the 3-free Ochem–Rao estimate 18ω ≤ 7Ω + 15. Without 3 and 5 it gives Ω ≥ 37. Without 3, 5 and 7, bounding the product on the first 26 allowed primes gives ω ≥ 27 and Ω ≥ 69. Without 3, 5, 7 and 11, the first 40 allowed primes give ω ≥ 41 and Ω ≥ 105. Thus the complementary case outside the four seeds of Ochem and Rao's 2012 Theorem 2 already exceeds its target 101 in this development. [Ochem and Rao, 2012, §4](https://doi.org/10.1090/S0025-5718-2012-02563-4) · [Ochem and Rao, 2014, §3](https://doi.org/10.1090/S0025-5718-2013-02776-7)

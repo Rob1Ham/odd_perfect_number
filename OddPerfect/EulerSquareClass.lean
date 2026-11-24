@@ -218,28 +218,36 @@ private theorem exists_odd_valuation_of_nonsquare {n : ℕ} (hn : ¬ IsSquare n)
   intro p hp
   exact (Nat.even_or_odd _).resolve_right (fun ho => h ⟨p,hp,ho⟩)
 
-private theorem exists_odd_valuation_away_three {n : ℕ} (hn4 : n%4=1) (hn : ¬IsSquare n) :
-    ∃ p : ℕ, p.Prime ∧ p ≠ 3 ∧ Odd (n.factorization p) := by
+/-- A natural number outside the square classes of one and l has an odd
+valuation at a prime other than l. -/
+theorem exists_odd_valuation_away_of_nonsquare {n l : ℕ} (hn : ¬IsSquare n)
+    (hne : ∀ w : ℕ, n ≠ l*w^2) : ∃ p : ℕ, p.Prime ∧ p ≠ l ∧ Odd (n.factorization p) := by
   by_contra h
-  have heven {p : ℕ} (hp : p.Prime) (hp3 : p ≠ 3) : Even (n.factorization p) :=
-    (Nat.even_or_odd _).resolve_right (fun ho => h ⟨p,hp,hp3,ho⟩)
+  have heven {p : ℕ} (hp : p.Prime) (hpL : p ≠ l) : Even (n.factorization p) :=
+    (Nat.even_or_odd _).resolve_right (fun ho => h ⟨p,hp,hpL,ho⟩)
   obtain ⟨p,hp,ho⟩ := exists_odd_valuation_of_nonsquare hn
-  have heq : p=3 := Classical.byContradiction (fun hp3 => h ⟨p,hp,hp3,ho⟩)
+  have heq : p=l := Classical.byContradiction (fun hpL => h ⟨p,hp,hpL,ho⟩)
   subst p
-  have hsq : IsSquare (ordCompl[3] n) := by
+  have hsq : IsSquare (ordCompl[l] n) := by
     apply Nat.isSquare_iff_even_factorization.mpr
     intro r hr
     rw [Nat.factorization_ordCompl]
-    rcases eq_or_ne r 3 with rfl | hne
+    rcases eq_or_ne r l with rfl | hne
     · simp
     · rw [Finsupp.erase_ne hne]
       exact heven hr hne
   obtain ⟨v,hv⟩ := hsq
   obtain ⟨k,hk⟩ := ho
-  let w := 3^k*v
-  have hshape : n=3*w^2 := by
-    calc n = 3^(n.factorization 3) * ordCompl[3] n := (Nat.ordProj_mul_ordCompl_eq_self n 3).symm
-      _ = _ := by rw [hv,show n.factorization 3=k*2+1 by omega,pow_succ,pow_mul]; dsimp [w]; ring
+  let w := l^k*v
+  have hshape : n=l*w^2 := by
+    calc n = l^(n.factorization l) * ordCompl[l] n := (Nat.ordProj_mul_ordCompl_eq_self n l).symm
+      _ = _ := by rw [hv,show n.factorization l=k*2+1 by omega,pow_succ,pow_mul]; dsimp [w]; ring
+  exact hne w hshape
+
+private theorem exists_odd_valuation_away_three {n : ℕ} (hn4 : n%4=1) (hn : ¬IsSquare n) :
+    ∃ p : ℕ, p.Prime ∧ p ≠ 3 ∧ Odd (n.factorization p) := by
+  apply exists_odd_valuation_away_of_nonsquare hn
+  intro w hshape
   have hr : w%4=0 ∨ w%4=1 ∨ w%4=2 ∨ w%4=3 := by omega
   rw [hshape,pow_two,Nat.mul_mod 3 _ 4,Nat.mul_mod w w 4] at hn4
   rcases hr with h | h | h | h <;> simp [h] at hn4
@@ -291,11 +299,26 @@ theorem half_cube_succ_not_square {x : ℕ} (hx : 1<x) (hx4 : x%4=1) : ¬IsSquar
   have := Nat.even_iff.mp he
   omega
 
-/-- If the Euler half-length is divisible by three and has a `3 mod 4` prime of
-odd valuation, the index has at least two distinct primes of odd valuation. -/
-theorem euler_index_ne_prime_mul_square_of_cubic_length {N q a m : ℕ} (hN : N.Perfect) (ho : Odd N)
-    (hq : q.Prime) (hq4 : q%4=1) (ha4 : a%4=1) (hqm : ¬ q ∣ m) (hform : N=q^a*m^2)
-    (h3 : 3 ∣ (a+1)/2) (hodd : (threeOddFactors ((a+1)/2)).Nonempty)
+/-- An odd valuation in the first half-length block survives in the Euler
+index since the two blocks are coprime and their product times the index is square. -/
+theorem euler_index_not_square_of_nonsquare_first_block {N q a m : ℕ} (hN : N.Perfect) (ho : Odd N)
+    (hq : q.Prime) (hq4 : q%4=1) (ha4 : a%4=1) (hqm : ¬q ∣ m) (hform : N=q^a*m^2)
+    (hAn : ¬IsSquare (geometricBlock q ((a+1)/2))) : ¬IsSquare (sigma 1 (m^2)/q^a) := by
+  obtain ⟨i,_,hleft,hright,_⟩ := exists_component_index hN hq hform (fun h => hqm (hq.dvd_of_dvd_pow h))
+  rw [hleft,Nat.mul_div_cancel_left i (pow_pos hq.pos _)]
+  have hm := (ho.of_dvd_nat (hform ▸ dvd_mul_of_dvd_right (dvd_pow_self _ (by decide : 2 ≠ 0)) _)).pos
+  obtain ⟨hbal,hcop,_,_,_⟩ := euler_half_blocks hq hq4 ha4 hright
+  have hab := (hbal ▸ pow_ne_zero 2 hm.ne')
+  obtain ⟨r,hr,hrv⟩ := exists_odd_valuation_of_nonsquare hAn
+  have hAr := (hr.dvd_iff_one_le_factorization (left_ne_zero_of_mul (left_ne_zero_of_mul hab))).mpr hrv.pos
+  have hri := odd_valuation_transfer hm.ne' hbal hrv (prime_not_dvd_other hr hcop hAr)
+  exact fun hsq => (Nat.not_even_iff_odd.mpr hri) (Nat.isSquare_iff_even_factorization.mp hsq r hr)
+
+/-- Two coprime nonsquare factors in the half-length decomposition force
+two different odd valuations in the Euler component index. -/
+theorem euler_index_ne_prime_mul_square_of_nonsquare_blocks {N q a m : ℕ} (hN : N.Perfect) (ho : Odd N)
+    (hq : q.Prime) (hq4 : q%4=1) (ha4 : a%4=1) (hqm : ¬q ∣ m) (hform : N=q^a*m^2)
+    (hAn : ¬IsSquare (geometricBlock q ((a+1)/2))) (hBn : ¬IsSquare ((q^((a+1)/2)+1)/2))
     (l t : ℕ) (hl : l=1 ∨ l.Prime) : sigma 1 (m^2)/q^a ≠ l*t^2 := by
   obtain ⟨i,hip,hleft,hright,_⟩ := exists_component_index hN hq hform (fun h => hqm (hq.dvd_of_dvd_pow h))
   rw [hleft,Nat.mul_div_cancel_left i (pow_pos hq.pos _)]
@@ -303,32 +326,51 @@ theorem euler_index_ne_prime_mul_square_of_cubic_length {N q a m : ℕ} (hN : N.
   let d := (a+1)/2
   let A := geometricBlock q d
   let B := (q^d+1)/2
-  have hdpos : 0<d := by dsimp [d]; omega
   obtain ⟨hbal,hcop,_,_,_⟩ := euler_half_blocks hq hq4 ha4 hright
   have hAB : A*B*i ≠ 0 := hbal ▸ pow_ne_zero _ hm.ne'
   have hA0 := left_ne_zero_of_mul (left_ne_zero_of_mul hAB)
   have hB0 := right_ne_zero_of_mul (left_ne_zero_of_mul hAB)
-  have hAC : (threeOddFactors A).Nonempty := Finset.card_pos.mp ((Finset.card_pos.mpr hodd).trans_le
-    (threeOddFactors_card_geometricBlock hq4 d hdpos))
-  obtain ⟨r,hr⟩ := hAC
-  obtain ⟨hrm,_,hrv⟩ := Finset.mem_filter.mp hr
-  have hrp := Nat.prime_of_mem_primeFactors hrm
-  have hBn : ¬IsSquare B := by
-    obtain ⟨j,hj⟩ := h3
-    have hdj : d=j*3 := hj.trans (mul_comm _ _)
-    have hj0 : j ≠ 0 := by rintro rfl; simp at hdj; omega
-    change ¬IsSquare ((q^d+1)/2)
-    rw [hdj,pow_mul]
-    exact half_cube_succ_not_square (one_lt_pow₀ hq.one_lt hj0)
-      (by simpa [Nat.ModEq] using (show q ≡ 1 [MOD 4] from hq4).pow j)
+  obtain ⟨r,hrp,hrv⟩ := exists_odd_valuation_of_nonsquare hAn
   obtain ⟨s,hsp,hsv⟩ := exists_odd_valuation_of_nonsquare hBn
+  have hrA : r ∣ A := (hrp.dvd_iff_one_le_factorization hA0).mpr hrv.pos
   have hsB : s ∣ B := (hsp.dvd_iff_one_le_factorization hB0).mpr hsv.pos
-  have hrB := prime_not_dvd_other hrp hcop (Nat.dvd_of_mem_primeFactors hrm)
+  have hrB := prime_not_dvd_other hrp hcop hrA
   have hrs : r ≠ s := fun h => hrB (h ▸ hsB)
   have hri := odd_valuation_transfer hm.ne' hbal hrv hrB
   have hsi := odd_valuation_transfer hm.ne' (hbal.trans (by ac_rfl : A*B*i=B*A*i)) hsv
     (prime_not_dvd_other hsp hcop.symm hsB)
   exact ne_prime_mul_square_of_two_odd hip hrp hsp hrs hri hsi l t hl
+
+private theorem geometricBlock_not_square_of_threeOddFactors {q d : ℕ} (hq4 : q%4=1) (hdpos : 0<d)
+    (hodd : (threeOddFactors d).Nonempty) : ¬IsSquare (geometricBlock q d) := by
+  have hAC : (threeOddFactors (geometricBlock q d)).Nonempty := Finset.card_pos.mp ((Finset.card_pos.mpr hodd).trans_le
+    (threeOddFactors_card_geometricBlock hq4 d hdpos))
+  obtain ⟨r,hr⟩ := hAC
+  obtain ⟨hrm,_,hrv⟩ := Finset.mem_filter.mp hr
+  exact fun hs => (Nat.not_even_iff_odd.mpr hrv)
+    (Nat.isSquare_iff_even_factorization.mp hs r (Nat.prime_of_mem_primeFactors hrm))
+
+/-- A nonsquare half-sum at length f remains excluded at positive multiples
+of f because the base can be raised to the quotient exponent. -/
+theorem half_pow_succ_not_square_of_factor {q d f : ℕ} (hq : 1<q) (hq4 : q%4=1) (hdpos : 0<d)
+    (hf : f ∣ d) (hnot : ∀ x : ℕ, 1<x → x%4=1 → ¬IsSquare ((x^f+1)/2)) :
+    ¬IsSquare ((q^d+1)/2) := by
+  obtain ⟨j,hj⟩ := hf
+  have hdj : d=j*f := hj.trans (mul_comm _ _)
+  have hj0 : j ≠ 0 := by rintro rfl; simp at hdj; omega
+  rw [hdj,pow_mul]
+  exact hnot _ (one_lt_pow₀ hq hj0) (by simpa [Nat.ModEq] using (show q ≡ 1 [MOD 4] from hq4).pow j)
+
+/-- If the Euler half-length is divisible by three and has a `3 mod 4` prime of
+odd valuation, the index has at least two distinct primes of odd valuation. -/
+theorem euler_index_ne_prime_mul_square_of_cubic_length {N q a m : ℕ} (hN : N.Perfect) (ho : Odd N)
+    (hq : q.Prime) (hq4 : q%4=1) (ha4 : a%4=1) (hqm : ¬ q ∣ m) (hform : N=q^a*m^2)
+    (h3 : 3 ∣ (a+1)/2) (hodd : (threeOddFactors ((a+1)/2)).Nonempty)
+    (l t : ℕ) (hl : l=1 ∨ l.Prime) : sigma 1 (m^2)/q^a ≠ l*t^2 := by
+  have hdpos : 0 < (a+1)/2 := by omega
+  exact euler_index_ne_prime_mul_square_of_nonsquare_blocks hN ho hq hq4 ha4 hqm hform
+    (geometricBlock_not_square_of_threeOddFactors hq4 hdpos hodd)
+    (half_pow_succ_not_square_of_factor hq.one_lt hq4 hdpos h3 (fun _ => half_cube_succ_not_square)) l t hl
 
 /-- Hirakawa's square/prime-times-square exclusion for the entire Euler
 exponent-five case, using only elementary geometric factors. -/
@@ -342,5 +384,126 @@ theorem euler_five_index_ne_prime_mul_square {N q m : ℕ} (hN : N.Perfect) (ho 
       rw [Nat.Prime.factorization_self (by decide : Nat.Prime 3)]
       exact ⟨0,rfl⟩
   · exact hl
+
+/-- The alternating quartic factor of x^5+1 lies strictly between consecutive
+squares for x one modulo four. A common prime with x+1 divides five, which
+cannot be its squarefree part modulo eight. -/
+theorem half_fifth_succ_not_square {x : ℕ} (hx : 1 < x) (hx4 : x%4=1) :
+    ¬IsSquare ((x^5+1)/2) := by
+  let u := x/4
+  have hxu : x=4*u+1 := by dsimp [u]; omega
+  have hu : 0 < u := by omega
+  let C := 256*u^4+192*u^3+64*u^2+8*u+1
+  let H := 2*u+1
+  let z := 16*u^2+6*u
+  have hC0 : 0 < C := by dsimp [C]; omega
+  have hH0 : 0 < H := by dsimp [H]; omega
+  have hlo : z*z < C := by dsimp [z,C]; nlinarith
+  have hup : C < (z+1)*(z+1) := by dsimp [z,C]; nlinarith
+  have hCn : ¬IsSquare C := by
+    rintro ⟨w,hw⟩
+    rcases le_or_gt w z with h | h
+    · exact hlo.not_ge (hw ▸ Nat.mul_self_le_mul_self h)
+    · exact hup.not_ge (hw ▸ Nat.mul_self_le_mul_self h)
+  have hC8 : C%8=1 := by
+    have he : C=8*(32*u^4+24*u^3+8*u^2+u)+1 := by dsimp [C]; ring
+    rw [he]
+    omega
+  obtain ⟨p,hp,hp5,hv⟩ := exists_odd_valuation_away_of_nonsquare (l:=5) hCn (by
+    intro w hw
+    have hm := Nat.mod_lt w (by decide : 0<8)
+    rw [hw,pow_two,Nat.mul_mod 5 _ 8,Nat.mul_mod w w 8] at hC8
+    interval_cases (w%8) <;> simp_all)
+  have hdC : p ∣ C := (hp.dvd_iff_one_le_factorization hC0.ne').mpr hv.pos
+  have hnot : ¬p ∣ H := by
+    intro hdH
+    let D := 128*u^3+32*u^2+16*u
+    have he : C+4*H = H*D+5 := by dsimp [C,H,D]; ring
+    have hd := Nat.dvd_add hdC (dvd_mul_of_dvd_right hdH 4)
+    rw [he] at hd
+    exact hp5 ((Nat.prime_dvd_prime_iff_eq hp (by decide : Nat.Prime 5)).mp
+      ((Nat.dvd_add_iff_right (dvd_mul_of_dvd_left hdH D)).mpr hd))
+  have hprod : H*C=(x^5+1)/2 := by
+    have he : x^5+1 = 2*(H*C) := by rw [hxu]; dsimp [H,C]; ring
+    rw [he,Nat.mul_div_cancel_left _ (by decide)]
+  intro hsq
+  rw [← hprod] at hsq
+  have hev := Nat.isSquare_iff_even_factorization.mp hsq p hp
+  rw [Nat.factorization_mul hH0.ne' hC0.ne',Finsupp.add_apply,
+    Nat.factorization_eq_zero_of_not_dvd hnot,zero_add] at hev
+  exact (Nat.not_even_iff_odd.mpr hv) hev
+
+private theorem geometricBlock_congr {b c n : ℕ} (hm : b ≡ c [MOD n]) (d : ℕ) :
+    geometricBlock b d ≡ geometricBlock c d [MOD n] :=
+  Nat.ModEq.sum (fun j _ => hm.pow j)
+
+private theorem geometricBlock_one_mod_four_length {q : ℕ} (hq4 : q%4=1) (j : ℕ) :
+    geometricBlock q (4*j+1) ≡ 4*j+1 [MOD 8] := by
+  have hq8 : q ≡ 1 [MOD 8] ∨ q ≡ 5 [MOD 8] := by
+    change q%8=1 ∨ q%8=5
+    omega
+  have hs : q^4 ≡ 1 [MOD 8] := by
+    rcases hq8 with h | h
+    · exact (h.pow 4).trans (by decide)
+    · exact (h.pow 4).trans (by decide)
+  have h4 : geometricBlock q 4 * q ≡ 4 [MOD 8] := by
+    rcases hq8 with h | h
+    · exact ((geometricBlock_congr h 4).mul h).trans (by decide)
+    · exact ((geometricBlock_congr h 4).mul h).trans (by decide)
+  have hj : geometricBlock (q^4) j ≡ j [MOD 8] := by simpa [geometricBlock] using geometricBlock_congr hs j
+  have hsplit : geometricBlock q (4*j+1) = (geometricBlock q 4*q)*geometricBlock (q^4) j + 1 := by
+    rw [geometricBlock,sum_range_succ']
+    have htail : (∑ k ∈ range (4*j), q^(k+1)) = geometricBlock q (4*j)*q := by
+      simp_rw [pow_succ,←sum_mul]
+      rfl
+    rw [htail,pow_zero]
+    change geometricBlock q (4*j)*q+1 = _
+    rw [geometricBlock_mul]
+    ac_rfl
+  rw [hsplit]
+  exact (h4.mul hj).add_right 1
+
+/-- For an odd length, a square geometric sum at a base one modulo four
+requires the length to be one modulo eight. -/
+theorem geometricBlock_not_square_of_length_mod_eight {q d : ℕ} (hq4 : q%4=1) (hd : Odd d) (hd8 : d%8 ≠ 1) :
+    ¬IsSquare (geometricBlock q d) := by
+  rintro ⟨w,hw⟩
+  have h4 : geometricBlock q d ≡ d [MOD 4] := by
+    simpa [geometricBlock] using geometricBlock_congr (show q ≡ 1 [MOD 4] from hq4) d
+  have hsq : w*w%8=0 ∨ w*w%8=1 ∨ w*w%8=4 := by
+    rw [Nat.mul_mod]
+    have h := Nat.mod_lt w (by decide : 0<8)
+    interval_cases (w%8) <;> decide
+  change geometricBlock q d %4=d%4 at h4
+  have hod := Nat.odd_iff.mp hd
+  have hd4 : d%4=1 := by omega
+  have he : 4*(d/4)+1=d := by omega
+  have h8 := geometricBlock_one_mod_four_length hq4 (d/4)
+  rw [he,hw] at h8
+  change w*w%8=d%8 at h8
+  omega
+
+/-- A cubic or quintic divisor of the half-length produces a nonsquare second
+block. An independent residue or prime-factor test handles the first block. -/
+theorem euler_index_ne_prime_mul_square_of_three_or_five_length {N q a m : ℕ} (hN : N.Perfect) (ho : Odd N)
+    (hq : q.Prime) (hq4 : q%4=1) (ha4 : a%4=1) (hqm : ¬q ∣ m) (hform : N=q^a*m^2)
+    (hf : 3 ∣ (a+1)/2 ∨ 5 ∣ (a+1)/2)
+    (hA : ((a+1)/2)%8 ≠ 1 ∨ (threeOddFactors ((a+1)/2)).Nonempty)
+    (l t : ℕ) (hl : l=1 ∨ l.Prime) : sigma 1 (m^2)/q^a ≠ l*t^2 := by
+  have hdpos : 0 < (a+1)/2 := by omega
+  apply euler_index_ne_prime_mul_square_of_nonsquare_blocks hN ho hq hq4 ha4 hqm hform _ _ l t hl
+  · rcases hA with h | h
+    · exact geometricBlock_not_square_of_length_mod_eight hq4 (Nat.odd_iff.mpr (by omega)) h
+    · exact geometricBlock_not_square_of_threeOddFactors hq4 hdpos h
+  · rcases hf with h | h
+    · exact half_pow_succ_not_square_of_factor hq.one_lt hq4 hdpos h (fun _ => half_cube_succ_not_square)
+    · exact half_pow_succ_not_square_of_factor hq.one_lt hq4 hdpos h (fun _ => half_fifth_succ_not_square)
+
+/-- The complete Euler exponent-nine branch of Hirakawa's index theorem. -/
+theorem euler_nine_index_ne_prime_mul_square {N q m : ℕ} (hN : N.Perfect) (ho : Odd N)
+    (hq : q.Prime) (hq4 : q%4=1) (hqm : ¬q ∣ m) (hform : N=q^9*m^2)
+    (l t : ℕ) (hl : l=1 ∨ l.Prime) : sigma 1 (m^2)/q^9 ≠ l*t^2 :=
+  euler_index_ne_prime_mul_square_of_three_or_five_length hN ho hq hq4 (by decide : 9%4=1) hqm hform
+    (Or.inr (by decide)) (Or.inl (by decide)) l t hl
 
 end OddPerfect
