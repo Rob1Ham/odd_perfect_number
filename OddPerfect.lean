@@ -110,3 +110,7 @@ public import OddPerfect.BoundedIndexWeight
 public import OddPerfect.EvenPrimePowerSixteen
 public import OddPerfect.FermatIndexObstruction
 public import OddPerfect.BrentHistorical
+public import OddPerfect.OddIndexExponentScreen
+public import OddPerfect.EvenIndexEffective
+public import OddPerfect.EvenIndexRepunits
+public import OddPerfect.SixthPowerSieve

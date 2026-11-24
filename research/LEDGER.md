@@ -109,3 +109,7 @@ At every exact component, index i = pʲ with p prime implies j ≥ 66. A separat
 The Euler index always has a prime factor p whose predecessor is not a power of two. At Euler exponent greater than one a prime with that property occurs with odd valuation. The result gives an obstruction to all positive powers of Fermat primes at arbitrary exact components. [Proof and antecedents](FERMAT_INDEX_OBSTRUCTION.md)
 
 The nine exceptional branches singled out in Brent, Cohen and te Riele (1991), §4, all close under their specified hypotheses. Case viii uses the preceding exclusion of 11 and the exact 3-adic cases. The unconditional size bound remains 10¹⁶⁰ until the entire 10³⁰⁰ tree passes replay. [Nine branches and full coverage status](BRENT_300.md)
+
+A divisor q between 2 and 52 inclusive forces a prime sixth power in every odd perfect N. Lean covers all possible least primes and all five positive exponents under the sixth-power-free hypothesis. This gives the complete sixth-power-free exclusion of 5 in Fletcher–Nielsen–Ochem. [Cases and source](SIXTH_POWERS.md)
+
+At any exact component a prime-power index pʲ with j odd forces j ≥ 36207. For even j=2u the explicit bound is p ≤ B and N < 2B^(6u), with B=14(u+1)4^(2u−4). The repunit alternatives leave a conditional route through two unsolved Diophantine classifications. [Odd exponents](INDEX_EXPONENT_RESIDUES.md) · [Even bounds](EVEN_INDEX_EFFECTIVE.md) · [Repunit equations](EVEN_INDEX_REPUNITS.md)

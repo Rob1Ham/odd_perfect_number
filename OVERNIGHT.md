@@ -22,11 +22,13 @@ A kernel-checked finite sieve forces a prime divisor greater than 257. It yields
 
 For **every** exact prime-power component qᵃ of an odd perfect N, the integral quotient σ(N/qᵃ)/qᵃ is greater than five. The declaration `OddPerfect.five_lt_divisor_sum_component_index` proves Dris and Luca's Theorem 1.1. An independent worker checked the universal hypotheses, the Euler and nonspecial cases, and each finite endpoint. [Lean proof](OddPerfect/DrisLuca.lean) · [Argument and source](research/RECIPROCAL.md)
 
+If the index of any exact component is p^(2u), put B = 14(u+1)4^(2u−4). Then p ≤ B and N < 2B^(6u). The simultaneous repunit equations in this case require either another Goormaghtigh prime or at least three different odd-base solutions of the Nagell–Ljunggren equation at a common prime. [Effective bound](research/EVEN_INDEX_EFFECTIVE.md) · [Equations and known cases](research/EVEN_INDEX_REPUNITS.md)
+
 The same paper's Theorem 1.2 is checked as `OddPerfect.finite_of_bounded_component_index`. For every real K, only finitely many odd perfect numbers have an exact component of index below K. The project gives an explicit bound, using Dickson finiteness and a count of exceptional components with multiplicity. [Lean proof](OddPerfect/BoundedIndex.lean)
 
 A bound on the number of prime factors of the index suffices for the same finiteness conclusion. For every exact component with index i, ω(N) ≤ 2(ω(i)+Ω(i))+4. A prime-power index pʲ forces j ≥ 66. [Finiteness proof](research/COMPONENT_INDEX_MULTIPLICITY.md) · [Exponent bound](research/PRIME_POWER_EXPONENT.md)
 
-Every component index is composite. Every exact component index also differs from every prime square. The Euler component index has at least three prime factors counted with multiplicity and is at least 343. No exact component has prime-cube index. More generally the index of any component differs from pʲ for odd j < 191. For an Euler index that is an odd power of a prime, the stronger checked restrictions are j ≥ 191, p ≥ 137 and i > 10⁴⁰⁸. [Scope and proof](OddPerfect/OddPrimePowerBound.lean) There are additional restrictions on index primes that are 3 modulo 4 and occur to odd valuation. [Index lower bound](OddPerfect/IndexBound343.lean) · [Square-class bounds](research/EULER_SQUARE_CLASS.md)
+Every component index is composite. Every exact component index also differs from every prime square. The Euler component index has at least three prime factors counted with multiplicity and is at least 343. No exact component has prime-cube index. For any exact component with index pʲ and odd j, the checked lower bound is j ≥ 36207. The residue certificate covers 165 candidate exponent and length pairs. Earlier bounds also give p ≥ 137 and i > 10⁴⁰⁸ for the Euler component. [Residue certificate](research/INDEX_EXPONENT_RESIDUES.md) [Scope and proof](OddPerfect/OddPrimePowerBound.lean) There are additional restrictions on index primes that are 3 modulo 4 and occur to odd valuation. [Index lower bound](OddPerfect/IndexBound343.lean) · [Square-class bounds](research/EULER_SQUARE_CLASS.md)
 
 For an Euler prime q and any positive exponent e, σ(qᵉ) is never square. For an odd perfect number in Euler form with a > 1, the index σ(m²)/qᵃ is also never square. Hirakawa’s stronger prime-times-square claim is checked for the branches q ≢ 1 modulo 16, or any of 3, 5, 7, 11 and 13 dividing (a+1)/2. [Exact results and sources](research/HIRAKAWA.md)
 
@@ -35,6 +37,8 @@ When the Euler exponent is one, N < 2i³ for its index i. In conjunction with N 
 For each prime divisor q, `OddPerfect.prime_cube_lt_three_mul` proves q³ < 3N. The separate rank theorem `OddPerfect.prime_rank_bound` gives 2t^(2j) < 3N when j of the prime divisors are at least t > 0. [Sources and proofs](research/PRIME_SIZES.md)
 
 For every odd perfect natural number N, there are distinct prime divisors p and q such that p and its exponent are both 1 modulo 4, while the exponent of q is even and at least four. This proves Steuerwald's 1937 theorem. Its Lean declaration is `OddPerfect.steuerwald`. The proof covers both possibilities for 3 dividing N. [Declaration](OddPerfect/Steuerwald.lean) · [Source and independent case review](research/STEUERWALD.md)
+
+If an odd perfect N has any divisor q with 2 ≤ q < 53, some prime sixth power divides N. This includes Fletcher, Nielsen and Ochem’s theorem excluding multiples of 5 under the sixth-power-free hypothesis. [Least-prime certificates and review](research/SIXTH_POWERS.md)
 
 It follows that Ω(N) ≥ 2ω(N)+1. Here Ω counts prime factors with multiplicity and ω counts distinct primes. The declaration is `OddPerfect.steuerwald_prime_factor_count`. [Prime counts](OddPerfect/Counts.lean)
 

@@ -37,6 +37,33 @@ def prime_candidates(bound):
 TRIAL_PRIMES = prime_candidates(10001)
 
 
+@cache
+def probable_prime(n):
+    """Propose a prime for the later certificate, independently of the factor subprocess timeout."""
+    if n < 2:
+        return False
+    d = n - 1
+    twos = 0
+    while d % 2 == 0:
+        d //= 2
+        twos += 1
+    for a in (2, 3, 5, 7, 11, 13, 17):
+        if n == a:
+            return True
+        if n % a == 0:
+            return False
+        x = pow(a, d, n)
+        if x in (1, n - 1):
+            continue
+        for _ in range(twos - 1):
+            x = x*x % n
+            if x == n - 1:
+                break
+        else:
+            return False
+    return True
+
+
 class Factorer:
     def __init__(self, timeout):
         self.command = which('gfactor') or which('factor')
@@ -57,6 +84,8 @@ class Factorer:
                 n //= p
         if n == 1:
             return factors, 1
+        if probable_prime(n):
+            return factors + [n], 1
         try:
             return factors + self.full(n, self.timeout), 1
         except TimeoutExpired:
@@ -68,6 +97,8 @@ class Factorer:
                 while n % p == 0:
                     factors.append(p)
                     n //= p
+            if probable_prime(n):
+                return factors + [n], 1
             return factors, n
 
     def residual_groups(self, n, path):
