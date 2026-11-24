@@ -1,0 +1,25 @@
+import OddPerfect
+
+open OddPerfect
+
+#print existsOddPerfect
+#check sum_divisors_dvd_two_mul
+#print axioms sum_divisors_dvd_two_mul
+#check odd_dvd_perfect_of_dvd_sum_divisors
+#print axioms odd_dvd_perfect_of_dvd_sum_divisors
+#check exists_coprime_cofactor_of_exact_prime_pow
+#print axioms exists_coprime_cofactor_of_exact_prime_pow
+#check dvd_perfect_of_exact_prime_pow
+#print axioms dvd_perfect_of_exact_prime_pow
+#check thirteen_dvd_of_exact_nine
+#print axioms thirteen_dvd_of_exact_nine
+#check sixtyOne_dvd_sigma_thirteen_pow_iff
+#print axioms sixtyOne_dvd_sigma_thirteen_pow_iff
+#check seven_dvd_sigma_thirteen_pow_iff
+#print axioms seven_dvd_sigma_thirteen_pow_iff
+#check sixtyOne_dvd_of_exact_thirteen_pow
+#print axioms sixtyOne_dvd_of_exact_thirteen_pow
+#check seven_dvd_of_exact_thirteen_pow
+#print axioms seven_dvd_of_exact_thirteen_pow
+#check sixtyOne_dvd_of_exact_thirteen_sq
+#print axioms sixtyOne_dvd_of_exact_thirteen_sq
