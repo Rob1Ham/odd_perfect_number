@@ -22,7 +22,7 @@ Every component index is composite. Every exact component index also differs fro
 
 For an Euler prime q and any positive exponent e, σ(qᵉ) is never square. For an odd perfect number in Euler form with a > 1, the index σ(m²)/qᵃ is also never square. Hirakawa’s stronger prime-times-square claim is checked for the branches q ≢ 1 modulo 16, or any of 3, 5, 7, 11 and 13 dividing (a+1)/2. [Exact results and sources](research/HIRAKAWA.md)
 
-When the Euler exponent is one, the index is at least 22,971. For a > 1, a prime-times-square index forces (a+1)/2 to be a prime s with s ≡ 1 modulo 8, q ≡ 1 modulo 16 and (q+1)/2=s·w². The argument uses a checked Pell descent proving that (xⁿ+1)/(x+1) is nonsquare for every x>1 and odd n>1. [Exponent-one proof](OddPerfect/ExponentOneIndex.lean) · [Pell descent and remaining equation](research/ALTERNATING_PELL.md)
+When the Euler exponent is one, N < 2i³ for its index i. In conjunction with N > 10⁵⁰ this gives i > 10¹⁶. [Size-to-index implication](OddPerfect/ExponentOneSize.lean) For a > 1, a prime-times-square index forces (a+1)/2 to be a prime s with s ≡ 1 modulo 8, q ≡ 1 modulo 16 and (q+1)/2=s·w². The argument uses a checked Pell descent proving that (xⁿ+1)/(x+1) is nonsquare for every x>1 and odd n>1. [Exponent-one proof](OddPerfect/ExponentOneIndex.lean) · [Pell descent and remaining equation](research/ALTERNATING_PELL.md)
 
 For each prime divisor q, `OddPerfect.prime_cube_lt_three_mul` proves q³ < 3N. The separate rank theorem `OddPerfect.prime_rank_bound` gives 2t^(2j) < 3N when j of the prime divisors are at least t > 0. [Sources and proofs](research/PRIME_SIZES.md)
 
@@ -43,6 +43,10 @@ The normalized candidate set also requires a genuine prime fourth power. This ru
 The related quasiperfect equation σ(N)=2N+1 is equivalent to omitting the proper divisor one. The project proves Cattaneo’s odd-square restriction, deficiency of every proper divisor, and the restriction to residues 1 or 3 modulo 8 for every divisor of σ(N). These conditions apply to a different equation and its own candidate set. [Quasiperfect proofs](OddPerfect/Quasiperfect.lean) · [Hagis–Cohen, properties A–C](https://doi.org/10.1017/S1446788700018401)
 
 Every perfect integer is harmonic in Ore’s sense. For an odd harmonic integer greater than one, every exact component is 1 modulo 4 and an odd prime divides its divisor count. This reproduces Garcia’s two restrictions under the broader harmonic hypothesis. Descartes’s integer fails the harmonic test with 486 actual divisors. [Harmonic inclusion and example](OddPerfect/Harmonic.lean) · [Component and divisor-count proofs](OddPerfect/HarmonicComponents.lean)
+
+For positive odd formally balanced lists with bases exceeding one, the least possible number of entries is exactly five. Descartes attains it. The true prime-power factorization of any odd perfect N has the additional property that every odd prime divisor of a local sum occurs as a base. [Sharp minimum](OddPerfect/SpoofBelowFive.lean) · [Prime closure](OddPerfect/PrimeSlots.lean)
+
+The positive-base square classification at odd lengths has the sole solution (3,5), giving σ(3⁴) = 11². Cohen and Sorli’s three unconditional divisor-count estimates for odd integers are also checked, including their two sharp upper endpoints for exceptions. [Geometric-square proof](research/ODD_GEOMETRIC_SQUARES.md) · [Divisor-count proofs](research/DIVISOR_COUNTS.md)
 
 ## Reproduce
 

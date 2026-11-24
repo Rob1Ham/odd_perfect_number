@@ -76,3 +76,15 @@ public import OddPerfect.HarmonicComponents
 public import OddPerfect.IndexBound343
 public import OddPerfect.ChenChenIndex
 public import OddPerfect.ExceptionalLength
+public import OddPerfect.WeightedLength
+public import OddPerfect.OddGeometricSquares
+public import OddPerfect.IndexEulerSource
+public import OddPerfect.IndexPowerLength
+public import OddPerfect.SpoofBelowFive
+public import OddPerfect.PrimeNarrowing
+public import OddPerfect.CohenSorli
+public import OddPerfect.PomeranceAbundancy
+public import OddPerfect.OddValuationGraph
+public import OddPerfect.OddSourceWeight
+public import OddPerfect.ExponentOneSize
+public import OddPerfect.ExceptionalIndexResidue
