@@ -14,7 +14,7 @@ The earlier pair of results established Ω(N) ≥ 37 and N > 10⁵⁰. The first
 
 When none of 127, 19, 7, 11, 31, 13, 3, or 5 divides N, the stronger conditional bounds are ω(N) ≥ 101, Ω(N) ≥ 259, and N > 10⁵³⁶. The eight cases in which a listed prime divides N are still required for any improvement to the unconditional size bound. [Complement theorem](OddPerfect/BrentSeeds.lean)
 
-The count bounds also give Ω(N)≥2ω(N)+5 for every odd perfect N and Ω(N)≥2ω(N)+7 when 3 is absent. [Additive bounds](research/COUNT_CHAIN.md)
+A separate certificate proves **Ω(N) ≥ 2ω(N)+7 for every odd perfect N**. Here Ω includes multiplicity and ω counts distinct primes. The declaration is `OddPerfect.seven_le_prime_factor_count_excess`. [Additive count proof](OddPerfect/CountExcessSeven.lean) · [Derivation and published comparison](research/COUNT_CHAIN.md)
 
 ## Structural theorem
 
@@ -74,6 +74,8 @@ For positive odd formally balanced lists with bases exceeding one, the least pos
 
 The positive-base square classification at odd lengths has the sole solution (3,5), giving σ(3⁴) = 11². Cohen and Sorli’s three divisor-count estimates for odd integers are checked, including both sharp upper endpoints for exceptions. Their Lemmas 1–2 and Theorems 4–5 are checked across the full odd harmonic class. The strongest estimates give τ(N)⁴ ≤ N and P⁸ < N⁵ for every positive prime power P dividing N. Consequently P ≥ 10¹⁵ implies N > 10²⁴. [Geometric-square proof](research/ODD_GEOMETRIC_SQUARES.md) · [Divisor-count proofs](research/DIVISOR_COUNTS.md)
 
+The odd deficient-perfect cofactors with at most k distinct prime factors form a finite set, including their associated proper divisors. For a cofactor n with multiplier x, radical R and K=k+1, Lean proves 4K x³ R² n ≤ (4K)^(4^(ω(n)+1)). Adajar previously stated the finiteness result. The proof here transfers an explicit bound from positive spoof factorizations. [Exact finite sets, hypotheses, and sources](research/DEFICIENT_FINITENESS.md)
+
 ## Open cases at handoff
 
 The eight seeds for the 10³⁰⁰ size bound are 127, 19, 7, 11, 31, 13, 3 and 5. Each seed assumes the earlier primes are absent. All 6,977 prime witnesses have passed Lean checks, including the eleven elliptic-certificate steps. The aggregate 10³⁰⁰ declaration awaits the remaining tree evaluations. Its claim is a published theorem of Brent, Cohen and te Riele. [Case split and prime certificates](research/BRENT_300.md)
@@ -89,8 +91,8 @@ lake build
 lake lean research/Audit.lean
 ```
 
-Lean is pinned to v4.36.0 and mathlib to `fc4f59e577feb1a4956671bc04ac18aaaf8cd842`. The audit checks the imported project declarations and prints the types and axiom dependencies of the named theorems. Each proof uses only standard foundations. [Audit](research/Audit.lean)
+Lean is pinned to v4.36.0 and mathlib to `fc4f59e577feb1a4956671bc04ac18aaaf8cd842`. The final combined build completed 6,924 jobs. The audit checked the axiom dependencies of 31,966 project declarations and printed the types and dependencies of 3,499 named theorems. The only permitted foundational axioms were `propext`, `Classical.choice` and `Quot.sound`. Each proof uses only standard foundations. [Audit](research/Audit.lean)
 
 ## Remaining question and next assignment
 
-The general existence question remains open. A nonspecial fourth power, Ω ≥ 37, and N > 10¹⁶⁰ are now necessary. The single best next assignment is to replay `lake build OddPerfect.SizeBound300` and independently audit `OddPerfect.ten_pow_three_hundred_lt_of_odd_perfect`. The prime bank passed. Arithmetic closure of the eight seed cases is pending. The final aggregate excludes that conjectured local improvement until it passes. [Branch ledger](research/LEDGER.md) · [Size results and reproduction](research/ABSOLUTE_SIZE.md)
+The general existence question remains open. A nonspecial fourth power, Ω ≥ 37, and N > 10¹⁶⁰ are now necessary. The single best next assignment is to replay `lake build OddPerfect.SizeBound300` and independently audit `OddPerfect.ten_pow_three_hundred_lt_of_odd_perfect`. The prime bank passed. Arithmetic closure of the eight seed cases is pending. The complete 10³⁰⁰ wrapper and certificates are in the repository for that replay. [Branch ledger](research/LEDGER.md) · [Size results and reproduction](research/ABSOLUTE_SIZE.md)

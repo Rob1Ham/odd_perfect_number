@@ -72,3 +72,9 @@ The absolute and linear Ochem–Rao count bounds together give Ω≥2ω+5 for ev
 For four-prime deficient-perfect cofactors without 5 or 7 the complementary divisor equals three. A Fermat prime dividing the divisor sum of a square requires a source and a distinct primitive target, both one modulo that prime. Their membership in the cofactor follows from the exact equation 3σ(n)=5n. This supplies an exclusion covering an omitted prime in the enumeration of Yang and Togbé’s §5.3. [Sources, statements and coverage](DEFICIENT_PERFECT.md) · [Order and valuation proofs](DEFICIENT_FERMAT.md)
 
 At a component whose index is an even power of a prime, two congruences for the radical give a quadratic bound for the base in terms of its exponent. [Exact hypotheses and congruences](EVEN_INDEX_RADICAL_LIFTS.md)
+
+Dutta and Saikia’s Conjecture 3.2 asks for finiteness of odd deficient-perfect n at fixed distinct-prime count. Adajar stated both odd finiteness results in his 2019 conference abstract. The deficient-perfect statement now has a local Lean proof for every k, with an explicit uniform bound and finiteness of (n,d) pairs. The analogous near-perfect proof remains unfinished locally. [Statements, publication history, and Lean declarations](DEFICIENT_FINITENESS.md)
+
+The final count certificate improves the unconditional local additive bound to Ω≥2ω+7. All 6,977 prime witnesses required for the proposed local 10³⁰⁰ proof are available in Lean. Its eight-seed arithmetic replay is pending. [Count certificate](COUNT_CHAIN.md) · [Size proof progress](BRENT_300.md)
+
+Further citation trails include the references and later improvements to Goto–Ohno’s large-prime sieve, Nielsen’s distinct-prime bounds, the signed primitive spoof classification beyond positive bases, and the even branches of the near-perfect and deficient-perfect finiteness questions. The per-theorem entries above identify stronger published results still awaiting a local proof.

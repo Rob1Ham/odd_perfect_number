@@ -2,6 +2,7 @@
 """Generate prime-index size certificates using a local copy of Brent's factor-tree supplement."""
 
 import argparse
+from bisect import bisect_left, bisect_right
 from collections import Counter, defaultdict
 from functools import cache
 import gzip
@@ -9,7 +10,7 @@ from math import gcd, lcm, prod
 from pathlib import Path
 import re
 
-from count_chain import Factorer, TRIAL_PRIMES
+from count_chain import Factorer, TRIAL_PRIMES, probable_prime
 
 
 SEEDS = (127, 19, 7, 11, 31, 13, 3, 5)
@@ -82,7 +83,7 @@ class FactorTable:
                 factors, leftover = self.factorer.partial(rem)
                 primes.update(factors)
                 # This only proposes a prime for the later Lucas proof.
-                if leftover > 1 and all(pow(a, leftover-1, leftover) == 1 for a in (2,3,5,7,11) if a < leftover):
+                if probable_prime(leftover):
                     primes.add(leftover)
         primes.discard(2)
         return primes
@@ -218,17 +219,71 @@ def primes_used(tree):
     return {tree[1]}.union(*(primes_used(child) for _, child in tree[2]))
 
 
+def load_prime_leaves(directory):
+    """Read exactly the leaf groups named by this bank, including named leaves from an earlier bank."""
+    bank = (directory/'Bank.lean').read_text()
+    namespace = re.search(r'^namespace ([\w.]+)$', bank, re.M).group(1)
+    definition = bank.split('def bank : PrimeBank :=', 1)[1].split('theorem bank_valid', 1)[0]
+    names = re.findall(r'\b(?:[\w.]+\.)?bankLeaf\d+\b', definition)
+    leaves, imports = {}, set()
+    leaf_block = re.compile(r'def (bankLeaf\d+) : PrimeBank := \.leaf \[([0-9, ]+)\].*?'
+                            r'  exact ⟨(.*?), by simp⟩$', re.S | re.M)
+    for file in sorted(directory.glob('Primes*.lean')):
+        source = file.read_text()
+        imports.update(re.findall(r'^public import OddPerfect\.(\w+)\.Bank$', source, re.M))
+        for name, values, witnesses in leaf_block.findall(source):
+            leaves[namespace+'.'+name] = dict(zip(map(int, values.split(',')),
+                                                  witnesses.split(',\n    '), strict=True))
+    imports.update(re.findall(r'^public import OddPerfect\.(\w+)\.Bank$', bank, re.M))
+    if any('.' in name for name in names):
+        for imported in imports:
+            leaves.update(load_prime_leaves(directory.parent/imported))
+    if not names:
+        raise ValueError(f'no prime witness blocks in {directory}')
+    qualified = [name if '.' in name else namespace+'.'+name for name in names]
+    return {name: leaves[name] for name in qualified}
+
+
 def load_prime_witnesses(directory):
     """Read the separate prime witnesses already shipped with a Lean certificate."""
-    proofs = {}
-    leaf_block = re.compile(r'PrimeBank := \.leaf \[([0-9, ]+)\].*?  exact ⟨(.*?), by simp⟩', re.S)
-    for file in sorted(directory.glob('Primes*.lean')):
-        for values, witnesses in leaf_block.findall(file.read_text()):
-            primes = map(int, values.split(','))
-            proofs.update(zip(primes, witnesses.split(',\n    '), strict=True))
-    if not proofs:
-        raise ValueError(f'no prime witness blocks in {directory}')
+    proofs = {p: proof for group in load_prime_leaves(directory).values() for p, proof in group.items()}
+    references = {p for p, proof in proofs.items() if re.match(r'^[\w.]+\.bank\.prime_of_contains ', proof)}
+    if references:
+        imports = set()
+        for source in [directory/'Bank.lean', *directory.glob('Primes*.lean')]:
+            imports.update(re.findall(r'^public import OddPerfect\.(\w+)\.Bank$', source.read_text(), re.M))
+        for package in imports:
+            previous = load_prime_witnesses(directory.parent/package)
+            recovered = references.intersection(previous)
+            proofs.update((p, previous[p]) for p in recovered)
+            references.difference_update(recovered)
+        if references:
+            raise ValueError(f'missing source for {len(references)} imported prime witnesses in {directory}')
     return proofs
+
+
+def bank_groups(primes, reference_leaves):
+    """Use a whole verified leaf whenever no required new number falls within its numeric interval."""
+    groups, pending, cursor = [], [], 0
+
+    def flush():
+        groups.extend((pending[i:i+16], None) for i in range(0, len(pending), 16))
+        pending.clear()
+
+    for name, entries in reference_leaves.items():
+        values = sorted(entries)
+        left, right = bisect_left(primes, values[0]), bisect_right(primes, values[-1])
+        pending.extend(primes[cursor:left])
+        inside = primes[left:right]
+        if inside and all(p in entries for p in inside):
+            flush()
+            groups.append((values, name))
+        else:
+            pending.extend(inside)
+        cursor = right
+    pending.extend(primes[cursor:])
+    flush()
+    return groups
 
 
 def repair_witnesses(tree, avoid, bound, available, small_primes=()):
@@ -370,22 +425,25 @@ def partition_blocks(tree, seed, avoid, exponent, node_limit, abundance=False):
 
 
 def write_certificate(data, exponent, prime_proof, output, chunk_nodes=None, abundance=False,
-                      reference_bank=None):
+                      reference_bank=None, bank_only=False, reuse_leaves=False, prime_imports=()):
     package = output.stem
     directory = output.parent/package
     directory.mkdir(exist_ok=True)
-    ns = f'OddPerfect.IndexComponent.Size{exponent}'
-    previous = 'OddPerfect.IndexAbundantReplay' if abundance else 'OddPerfect.IndexReplay'
+    ns = f'OddPerfect.IndexComponent.{package}' if bank_only else f'OddPerfect.IndexComponent.Size{exponent}'
+    previous = 'OddPerfect.PrimeBank' if bank_only else (
+        'OddPerfect.IndexAbundantReplay' if abundance else 'OddPerfect.IndexReplay')
     replay = 'replayAbundance' if abundance else 'replay'
     tree_type = 'AbundanceTree' if abundance else 'ProofTree'
     reference_primes = set()
     reference_import = ''
     reference_name = ''
+    reference_leaves = {}
     if reference_bank:
         source = (reference_bank/'Bank.lean').read_text()
         reference_name = re.search(r'^namespace ([\w.]+)$', source, re.M).group(1)
         reference_import = f'public import OddPerfect.{reference_bank.name}.Bank\n'
-        reference_primes = load_prime_witnesses(reference_bank).keys()
+        reference_leaves = load_prime_leaves(reference_bank)
+        reference_primes = {p for group in reference_leaves.values() for p in group}
 
     def write(name, blocks, imports=''):
         nonlocal previous
@@ -397,9 +455,20 @@ def write_certificate(data, exponent, prime_proof, output, chunk_nodes=None, abu
 
     primes = sorted(set.union(*(ds[1] for ds in data.values())))
     leaves, blocks, bank_files = [], [], 0
-    for i in range(0, len(primes), 16):
-        group = primes[i:i+16]
-        name = f'bankLeaf{i//16+1}'
+    order_modules = {
+        'OddPerfect.LargeOrderPrime': ('prime_of_largeOrderCheck',),
+        'OddPerfect.LargeOrderCube': ('prime_of_largeOrderCubeCheck',),
+        'OddPerfect.LargeOrderQuadratic': ('prime_of_largeOrderPlusCheck', 'prime_of_mixedOrderCheck'),
+        'OddPerfect.EllipticPrime': ('prime_of_ellipticCheck', 'prime_of_ellipticTraceCheck'),
+    }
+    pending_prime_imports = list(prime_imports)
+    groups = bank_groups(primes, reference_leaves if reuse_leaves else {})
+    last_explicit = max((i for i, (_, named) in enumerate(groups) if named is None), default=-1)
+    for i, (group, named) in enumerate(groups):
+        if named:
+            leaves.append((group[0], named))
+            continue
+        name = f'bankLeaf{i+1}'
         leaves.append((group[0], name))
         witnesses = ',\n    '.join(
             f'{reference_name}.bank.prime_of_contains {reference_name}.bank_valid (by decide +kernel)'
@@ -408,10 +477,18 @@ def write_certificate(data, exponent, prime_proof, output, chunk_nodes=None, abu
                       f'theorem {name}_valid : {name}.Certified := by\n'
                       f'  simp only [{name}, PrimeBank.Certified, List.forall_mem_cons]\n'
                       f'  exact ⟨{witnesses}, by simp⟩')
-        if sum(map(len, blocks)) > 45000 or i+16 >= len(primes):
+        if sum(map(len, blocks)) > 45000 or i == last_explicit:
             bank_files += 1
-            write(f'Primes{bank_files:02d}', blocks,
-                  (reference_import if bank_files == 1 else '') + 'import Mathlib.Tactic.Primality\n')
+            imports = (reference_import if bank_files == 1 else '') + 'import Mathlib.Tactic.Primality\n'
+            for module in list(pending_prime_imports):
+                if any(module+'.' in block for block in blocks):
+                    imports += f'public import {module}\n'
+                    pending_prime_imports.remove(module)
+            for mod, checkers in list(order_modules.items()):
+                if any(checker in block for block in blocks for checker in checkers):
+                    imports += f'public import {mod}\n'
+                    del order_modules[mod]
+            write(f'Primes{bank_files:02d}', blocks, imports)
             blocks = []
 
     def balanced(groups):
@@ -425,7 +502,11 @@ def write_certificate(data, exponent, prime_proof, output, chunk_nodes=None, abu
     bank, valid = balanced(leaves)
     write('Bank', [f'@[expose] noncomputable def bank : PrimeBank :=\n  {bank}',
                    f'theorem bank_valid : bank.Certified :=\n  {valid}'],
-          'public import OddPerfect.IndexCheckpoint\n' if chunk_nodes and not abundance else '')
+          (reference_import if not bank_files else '') +
+          ('public import OddPerfect.IndexCheckpoint\n' if chunk_nodes and not abundance else ''))
+    if bank_only:
+        output.write_text(f'module\n\npublic import {previous}\n')
+        return
     avoid = 1
     for seed in SEEDS:
         tree = data[seed][0]
@@ -459,14 +540,18 @@ def main():
     parser.add_argument('--extra-table', type=Path, action='append', default=[], help='additional factor tables, plain or gzipped')
     parser.add_argument('--power-table', type=Path, help='Brent’s tabulated factors of powers plus or minus one')
     parser.add_argument('--factor-seconds', type=float, default=0.05)
-    parser.add_argument('--reuse-primes', type=Path, help='reuse the Lucas witnesses in this certificate directory')
+    parser.add_argument('--reuse-primes', type=Path, help='reuse the primality witnesses in this certificate directory')
+    parser.add_argument('--prime-import', action='append', default=[], help='import a separate Lean module supplying named prime proofs')
     parser.add_argument('--reference-bank', type=Path, help='refer directly to prime proofs in this earlier certificate')
+    parser.add_argument('--reuse-leaves', action='store_true', help='share entire ordered leaf groups from the reference bank')
     parser.add_argument('--small-abundance', type=int, default=0, help='use forced primes up to this bound for abundant-divisor leaves')
     parser.add_argument('--chunk-nodes', type=int, help='maximum explicit nodes per serial subtree proof')
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()
     if args.chunk_nodes is not None and args.chunk_nodes < 1:
         parser.error('--chunk-nodes must be positive')
+    if args.reuse_leaves and not args.reference_bank:
+        parser.error('--reuse-leaves needs --reference-bank')
     if args.exponent < 1 or args.factor_seconds <= 0:
         parser.error('use a positive decimal exponent and a positive factoring timeout')
     bank = FactorTable(args.table, args.factor_seconds, args.extra_table, args.power_table)
@@ -487,7 +572,8 @@ def main():
     if args.output:
         prime_proof = witnesses.__getitem__ if witnesses else bank.factorer.prime_proof
         write_certificate(data, args.exponent, prime_proof, args.output, args.chunk_nodes,
-                          bool(small_primes), args.reference_bank)
+                          bool(small_primes), args.reference_bank, reuse_leaves=args.reuse_leaves,
+                          prime_imports=args.prime_import)
 
 
 if __name__ == '__main__':

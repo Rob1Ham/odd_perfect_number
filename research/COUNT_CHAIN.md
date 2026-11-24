@@ -65,3 +65,5 @@ The stored witness modules, including their entry file and prime table, total 1,
 ## Excess over twice the distinct count
 
 The verified lower bound Ω ≥ 37 and the unconditional inequality 18ω ≤ 7Ω + 31 imply Ω ≥ 2ω + 5. Indeed, 9(Ω−2ω) ≥ 2Ω−31 ≥ 43. If 3 is absent, replacing 31 with 15 gives Ω ≥ 2ω + 7. Ochem and Rao proved the stronger unconditional bound Ω ≥ 2ω + 51 in their 2014 paper using an additional factor-chain argument. [Lean corollaries](../OddPerfect/CountExcess.lean) · [Published paper, Theorem 2](https://doi.org/10.1090/S0025-5718-2013-02776-7)
+
+The final count certificate gives Ω≥2ω+7 unconditionally. If 3 is absent, the linear inequalities suffice. If 3 divides N, oddness of Ω, the absolute lower bound 37, and 18ω≤7Ω+31 reduce a possible counterexample to Ω=37 and ω=16. A 354-hint certificate excludes that case. Its Lean source embeds the numerical witness. The absolute bound Ω≥47 and stronger additive bounds remain pending. [Unconditional +7 certificate](../OddPerfect/CountExcessSeven.lean)

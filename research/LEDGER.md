@@ -123,3 +123,5 @@ With 5 and 7 absent, every odd deficient-perfect n with at most four true prime 
 Every odd perfect N satisfies Ω(N)≥2ω(N)+5. When 3∤N the constant increases to seven. Both follow from the verified absolute and linear prime-factor counts. [Additive bounds and stronger published results](COUNT_CHAIN.md)
 
 If the index of an exact component equals p^(2u), with p prime and u positive, then either p≤2u or p²≤2((u+1)4^(2u−4)−1)+p. The lift uses the radical of the cofactor and the source multiplicities equal to one. [Proof and index equations](EVEN_INDEX_RADICAL_LIFTS.md)
+
+At handoff the separate seed-3 certificate gives Ω≥2ω+7 unconditionally. All 6,977 prime witnesses for the 10³⁰⁰ size search passed. The eight seed closures remain to be kernel-checked as a family. For any fixed k the odd deficient-perfect pairs with at most k distinct primes form a finite set, and each n is at most (4(k+1))^(4^(k+1)). [Count proof](../OddPerfect/CountExcessSeven.lean) · [Size handoff](BRENT_300.md) · [Finiteness](DEFICIENT_FINITENESS.md)
