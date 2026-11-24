@@ -1,41 +1,29 @@
 import OddPerfect
+import Lean.Util.CollectAxioms
 
-open OddPerfect
+open Lean Elab Command
 
-#print existsOddPerfect
-#check sum_divisors_dvd_two_mul
-#print axioms sum_divisors_dvd_two_mul
-#check odd_dvd_perfect_of_dvd_sum_divisors
-#print axioms odd_dvd_perfect_of_dvd_sum_divisors
-#check exists_coprime_cofactor_of_exact_prime_pow
-#print axioms exists_coprime_cofactor_of_exact_prime_pow
-#check dvd_perfect_of_exact_prime_pow
-#print axioms dvd_perfect_of_exact_prime_pow
-#check thirteen_dvd_of_exact_nine
-#print axioms thirteen_dvd_of_exact_nine
-#check sixtyOne_dvd_sigma_thirteen_pow_iff
-#print axioms sixtyOne_dvd_sigma_thirteen_pow_iff
-#check seven_dvd_sigma_thirteen_pow_iff
-#print axioms seven_dvd_sigma_thirteen_pow_iff
-#check sixtyOne_dvd_of_exact_thirteen_pow
-#print axioms sixtyOne_dvd_of_exact_thirteen_pow
-#check seven_dvd_of_exact_thirteen_pow
-#print axioms seven_dvd_of_exact_thirteen_pow
-#check sixtyOne_dvd_of_exact_thirteen_sq
-#print axioms sixtyOne_dvd_of_exact_thirteen_sq
-#check euler_exponents
-#print axioms euler_exponents
-#check euler_form
-#print axioms euler_form
-#check dvd_geom_sum_iff_remainder
-#print axioms dvd_geom_sum_iff_remainder
-#check prime_dvd_sigma_thirteen_pow_ge_twentyThree
-#print axioms prime_dvd_sigma_thirteen_pow_ge_twentyThree
-#check twentyThree_dvd_sigma_thirteen_pow_ten
-#print axioms twentyThree_dvd_sigma_thirteen_pow_ten
-#check thirteen_factor_alternatives
-#print axioms thirteen_factor_alternatives
-#check sq_dvd_of_prime_mod_four_three
-#print axioms sq_dvd_of_prime_mod_four_three
-#check not_dvd_105_of_odd_perfect
-#print axioms not_dvd_105_of_odd_perfect
+#print OddPerfect.existsOddPerfect
+
+/- Inspect the declarations imported by the project's public entry point.
+An unexpected axiom fails this command, including when it occurs in a helper. -/
+run_cmd
+  let env ← getEnv
+  let projectConstants := env.constants.fold (init := #[]) fun acc n info =>
+    match env.getModuleIdxFor? n with
+    | some i =>
+      if `OddPerfect |>.isPrefixOf env.header.moduleNames[i]! then acc.push (n, info) else acc
+    | none => acc
+  let mut checked : Nat := 0
+  for (n, info) in projectConstants.qsort (fun a b => Name.quickLt a.1 b.1) do
+    if info.isAxiom then throwError "Project axiom: {n}"
+    let allowed := #[`propext, `Classical.choice, `Quot.sound]
+    let axioms ← collectAxioms n
+    for a in axioms do
+      unless allowed.contains a do throwError "{n} depends on unexpected axiom {a}"
+    if info.isTheorem && !n.isInternalDetail then
+      elabCommand (← `(#check $(mkIdent n)))
+      elabCommand (← `(#print axioms $(mkIdent n)))
+      checked := checked + 1
+  if checked == 0 then throwError "No project theorems found"
+  logInfo m!"Audited {checked} named theorems and checked axioms of {projectConstants.size} project declarations."
