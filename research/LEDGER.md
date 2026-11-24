@@ -67,3 +67,9 @@ The factor-budget branches through Ω ≤ 27 have closed, verifying Ω ≥ 29. T
 The square of any prime is excluded as the index of every exact component. The Euler index additionally excludes a product of two distinct primes, so its Ω is at least three and its value at least 27. For an Euler prime q with q−1 a power of two, the exact incoming q-adic valuation bounds its exponent by the number of edges among supported primes equal to one modulo q. Quadratic reciprocity strengthens that count. The local pair 61 and 131 sends edges both ways when the common length is five. [Index proof](RECIPROCAL.md) · [Fermat Euler-prime counting theorem](FERMAT_EULER.md)
 
 Every normalized spoof candidate requires a genuine prime fourth power. Even permitting every normalized representation cannot rescue Descartes’s cube-free integer. Candidates having a fourth power and a normalized representation remain open. [Definitions and case review](SPOOFS.md)
+
+## Count and size milestones
+
+The project reaches the unconditional bounds Ω ≥ 37 and N > 10⁵⁰. The count proof uses the disjoint cases 3 divides N, 3 is absent with 5 present, and both absent. The size proof additionally splits the last case on 7. When 3, 5 and 7 are absent, the verified lower bound is 10¹⁰⁶. When 11 is also absent it is 10¹⁸⁰. [Count tree and replay](COUNT_CHAIN.md) · [Size trees and analytical complements](ABSOLUTE_SIZE.md)
+
+When the Euler exponent is one, the Euler index is at least 22,971. For exponent a>1, a prime-times-square index forces the odd half-length (a+1)/2 to have at most two prime factors with multiplicity and at most one distinct prime. In the repeated-prime case its prime divides q−1. The two remaining shapes are the input to the next geometric-block investigation. [Index cases](EULER_INDEX_SIEVE.md) · [Half-length proof](HALF_LENGTH_SUPPORT.md)

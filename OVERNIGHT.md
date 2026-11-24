@@ -6,7 +6,7 @@ The existence of an odd perfect number remains open. This report tracks verified
 
 For **every** odd perfect N, `18 * N.primeFactors.card ≤ 7 * N.primeFactorsList.length + 31`. This is Ochem and Rao's published Theorem 1. Its local proof covers both the presence and absence of 3 and has received independent review against the paper. The exact declaration is `OddPerfect.ochem_rao_prime_factor_count`. [Lean proof](OddPerfect/OchemRao.lean) · [Ochem–Rao, §3](https://www.lirmm.fr/~ochem/opn/opnf.pdf)
 
-The absolute lower bound is now **Ω(N) ≥ 29**, where Ω counts prime factors with multiplicity. The declaration `OddPerfect.twenty_nine_le_total_prime_factor_count` uses kernel-checked trees of 11,507 nodes to exclude every case with Ω ≤ 27, together with the fact that Ω is odd. [Lean theorem](OddPerfect/CountBound29.lean) · [Certificate and reproduction](research/COUNT_CHAIN.md)
+Every odd perfect number N satisfies **Ω(N) ≥ 37** and **N > 10⁵⁰**. The first theorem counts prime factors with multiplicity and reproduces Iannucci and Sorli’s bound. The second reproduces Hagis’s 1973 bound using a fresh exact-exponent proof. Both declarations quantify over every odd perfect natural number. The count certificate uses 101 reusable subtree proofs covering two roots and an analytic bound for the complement. The size proof handles least primes 3, 5 and 7, followed by a separate bound for the complement. [Count declaration and certificate](research/COUNT_CHAIN.md) · [Size declaration](OddPerfect/SizeBound50.lean) · [Size certificate](research/ABSOLUTE_SIZE.md)
 
 ## Structural theorem
 
@@ -18,9 +18,11 @@ For **every** exact prime-power component qᵃ of an odd perfect N, the integral
 
 The same paper's Theorem 1.2 is checked as `OddPerfect.finite_of_bounded_component_index`. For every real K, only finitely many odd perfect numbers have an exact component of index below K. The project gives an explicit bound, using Dickson finiteness and a count of exceptional components with multiplicity. [Lean proof](OddPerfect/BoundedIndex.lean)
 
-Every component index is composite. Every exact component index also differs from every prime square. The Euler component index has at least three prime factors counted with multiplicity and is at least 63. There are additional restrictions on index primes that are 3 modulo 4 and occur to odd valuation. [Index lower bound](OddPerfect/FermatSmallBound.lean) · [Square-class bounds](research/EULER_SQUARE_CLASS.md)
+Every component index is composite. Every exact component index also differs from every prime square. The Euler component index has at least three prime factors counted with multiplicity and is at least 165. There are additional restrictions on index primes that are 3 modulo 4 and occur to odd valuation. [Index lower bound](OddPerfect/IndexBound165.lean) · [Square-class bounds](research/EULER_SQUARE_CLASS.md)
 
-For an Euler prime q and any positive exponent e, σ(qᵉ) is never square. For an odd perfect number in Euler form with a > 1, the index σ(m²)/qᵃ is also never square. Hirakawa’s stronger prime-times-square claim is checked for the branches q ≢ 1 modulo 16, 3 dividing (a+1)/2, or 5 dividing (a+1)/2. [Exact results and sources](research/HIRAKAWA.md)
+For an Euler prime q and any positive exponent e, σ(qᵉ) is never square. For an odd perfect number in Euler form with a > 1, the index σ(m²)/qᵃ is also never square. Hirakawa’s stronger prime-times-square claim is checked for the branches q ≢ 1 modulo 16, or any of 3, 5, 7, 11 and 13 dividing (a+1)/2. [Exact results and sources](research/HIRAKAWA.md)
+
+When the Euler exponent is one, the index is at least 22,971. For a > 1, a prime-times-square index forces (a+1)/2 to be a prime s or its square. In the square case s must divide q−1. The proof counts how many primes have odd valuation in the geometric blocks of the index. [Exponent-one proof](OddPerfect/ExponentOneIndex.lean) · [Half-length argument](research/HALF_LENGTH_SUPPORT.md)
 
 For each prime divisor q, `OddPerfect.prime_cube_lt_three_mul` proves q³ < 3N. The separate rank theorem `OddPerfect.prime_rank_bound` gives 2t^(2j) < 3N when j of the prime divisors are at least t > 0. [Sources and proofs](research/PRIME_SIZES.md)
 
@@ -53,4 +55,4 @@ Lean is pinned to v4.36.0 and mathlib to `fc4f59e577feb1a4956671bc04ac18aaaf8cd8
 
 ## Remaining question and next assignment
 
-Candidates with a nonspecial fourth power and Ω ≥ 29 survive. Distinct multiplicative orders force distinct primes for a fixed source, while different sources can reuse the same prime. The next assignment is to verify the complete factor trees through Ω ≤ 35, which would reproduce Iannucci and Sorli’s absolute lower bound of 37. [Branch ledger](research/LEDGER.md) · [Certificate method](research/COUNT_CHAIN.md)
+The general existence question remains open. A nonspecial fourth power, Ω ≥ 37, and N > 10⁵⁰ are now necessary. The next numerical assignment is to replay the eight prime-index seed families for Brent and Cohen’s 10¹⁶⁰ bound and prove that their complements are covered. A separate structural track tests whether the remaining prime or prime-square half-lengths can give a prime-times-square Euler index. [Branch ledger](research/LEDGER.md) · [Size results and reproduction](research/ABSOLUTE_SIZE.md)

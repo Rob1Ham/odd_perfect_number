@@ -60,3 +60,15 @@ public import OddPerfect.FermatSmallBound
 public import OddPerfect.SquarefreeIndex
 public import OddPerfect.Quasiperfect
 public import OddPerfect.SpoofBoxes
+public import OddPerfect.PerfectShapes
+public import OddPerfect.IndexResidueCertificates
+public import OddPerfect.FermatIndexSquareClass
+public import OddPerfect.FermatIndexDivisorCount
+public import OddPerfect.IndexSieveCore
+public import OddPerfect.HalfBlockValuation
+public import OddPerfect.AlternatingBlock
+public import OddPerfect.HalfLengthSupport
+public import OddPerfect.SizeBound50
+public import OddPerfect.IndexBound165
+public import OddPerfect.IndexSieveLengths
+public import OddPerfect.SmallOddLengths
