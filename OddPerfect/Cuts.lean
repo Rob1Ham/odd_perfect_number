@@ -87,6 +87,21 @@ theorem exists_sigmaEdge_leaving {N : ℕ} (hn : N.Perfect) (s : Finset ℕ)
   obtain ⟨u, hu, hdiv⟩ := (hr.prime.dvd_finsetProd_iff _).mp hrs
   exact ⟨u, hu, q, hq, hsub hu, ht hq, hdiv⟩
 
+/-- Every proper nonempty group of components also receives an edge from
+its complement. -/
+theorem exists_sigmaEdge_entering {N : ℕ} (hn : N.Perfect) (s : Finset ℕ)
+    (hs : s ⊂ N.primeFactors) (hne : s.Nonempty) :
+    ∃ u ∈ N.primeFactors \ s, ∃ v ∈ s, sigmaEdge N u v := by
+  let c := N.primeFactors \ s
+  have hc : c ⊂ N.primeFactors := by
+    apply (Finset.ssubset_iff_of_subset Finset.sdiff_subset).mpr
+    obtain ⟨p, hp⟩ := hne
+    exact ⟨p, hs.subset hp, fun h => (Finset.mem_sdiff.mp h).2 hp⟩
+  obtain ⟨u, hu, v, hv, h⟩ := exists_sigmaEdge_leaving hn c hc (Finset.sdiff_nonempty.mpr hs.not_superset)
+  refine ⟨u, hu, v, ?_, h⟩
+  by_contra hvs
+  exact (Finset.mem_sdiff.mp hv).2 (Finset.mem_sdiff.mpr ⟨(Finset.mem_sdiff.mp hv).1, hvs⟩)
+
 /-- Every two prime components of a perfect number are connected in the
 indicated direction by a path of exact divisor-sum forcing steps. -/
 theorem sigmaEdge_reachable {N u v : ℕ} (hn : N.Perfect) (hu : u ∈ N.primeFactors)

@@ -1,0 +1,44 @@
+# Component indices and reciprocal divisor sums
+
+For an exact prime power `q^a` in a perfect number `N = q^a b`, define the component index `i = σ(b)/q^a`. Multiplicativity and the congruence `σ(q^a) ≡ 1 (mod q)` give the two integral identities `σ(b) = q^a i` and `σ(q^a) i = 2b`. Dris and Luca prove `i > 5` for every exact component of an odd perfect number in Theorem 1.1. Their Theorem 1.2 gives an effective upper bound for a hypothetical odd perfect number with bounded component index. [Dris and Luca, *A note on odd perfect numbers*, pp. 291–295](https://www.fq.math.ca/Papers1/54-4/DrisLuca09122016.pdf)
+
+## Results checked in Lean
+
+- `OddPerfect.exists_component_index` in `OddPerfect/Reciprocal.lean` constructs a positive index satisfying both identities and dividing `2N`. Its proof also applies to even perfect numbers.
+- `OddPerfect.reciprocal_component_length` formalizes Dris–Luca Lemma 2.2. If `p` is an odd prime and `σ(p^λ) = q^β`, then `p^λ ∣ σ(q^a)` implies `p^(λ−1) ∣ a+1`. The proof computes the exact multiplicity of `p` in `q^β−1` and applies lifting the exponent.
+- `OddPerfect.root_dvd_length_of_reciprocal_square` in `OddPerfect/EulerIndex.lean` aggregates that divisibility. If `m` is odd, `σ(m²) = q^β` and `m² ∣ σ(q^a)`, then `m ∣ a+1`. The exponent `β` may differ from `a`.
+- `OddPerfect.euler_component_index_bound` proves `3q^a < 2m²` and gives an odd index at least three for the Euler decomposition `N = q^a m²`. If the index were one, the root bound would give `m ≤ a+1`. For `a ≥ 2`, the inequality `2(a+1)² < 5^a ≤ q^a` contradicts `q^a < σ(q^a) = 2m²`. The case `a=1` also fails. Dandapat, Hunsucker and Pomerance treated index one in greater generality in their Theorem 1. [Dandapat, Hunsucker and Pomerance, *Some new results on odd perfect numbers*, pp. 359–364](https://msp.org/pjm/1975/57-2/pjm-v57-n2-p07-p.pdf)
+- `OddPerfect.component_index_parity_bound` in `OddPerfect/IndexTwo.lean` covers every odd perfect number, with the exact component and its index supplied as arguments. An odd exponent gives an odd index at least three. An even exponent gives index `2 (mod 4)` and index at least six. Thus every nonspecial component satisfies the inequality in Dris–Luca Theorem 1.1. The subsequent Euler argument treats indices three and five.
+
+## How the nonspecial exclusion works
+
+If the index is two, the identities become `σ(q^a) = b` and `σ(b) = 2q^a`. Deleting the selected nonspecial component from Euler's decomposition leaves `b = r^s m²` with `s` odd, `r` an odd prime coprime to `m`, and `m` odd. Write `s+1 = 2t`. The two factors of `σ(r^s)` are `r^t+1` and `1+r+⋯+r^(t−1)`. The first exceeds two and contributes a factor `q`. Any `q` dividing the second would divide both `r^t−1` and `r^t+1`, which is impossible. The second factor must therefore divide two, forcing `t=1`. The reusable lemma is `OddPerfect.exponent_one_of_sigma_dvd_twice_prime_pow`.
+
+Now set `M=m²` and `U=(r+1)/2`. The equation `U σ(M)=q^a` makes `U>1` and `σ(M)` powers of `q`. Since `M ∣ σ(q^a)`, the reciprocal square lemma gives `m ∣ a+1`. From `σ(q^a)+M=2UM` one gets `q ∣ M+1`. Multiplying the identity by `q−1` gives `U ∣ (q−1)M−1`, so `U < qM` and `q^(a−1) < 2M²`. For `a ≥ 12` this contradicts `2(a+1)^4 < 3^(a−1)`. Consequently the odd `m` is at most eleven. Lean verifies `gcd(σ(m²),m²+1)=1` for those six values. This forces `σ(M)=1` and `M=1`, whereas the odd prime `q` would divide two. The arithmetic theorem `OddPerfect.not_index_two_with_euler_cofactor` takes just the displayed equations and structural conditions on the bases.
+
+## Comparison with the published proof
+
+Section 3 of Dris and Luca handles small indices together. For the branch `q>5`, the authors bound their product `M` by 200,000 and then invoke at least eight other prime factors, with at most one exceptional component. For `q≤5` they use a primitive prime divisor theorem and finish with congruences modulo nine and twenty-five. The Lean index-one and index-two arguments above use no lower bound on the size of an odd perfect number or its prime-factor count. [Dris and Luca, §3](https://www.fq.math.ca/Papers1/54-4/DrisLuca09122016.pdf)
+
+The full-return hypothesis in Lemma 2.2 matters for extending the proof. From `σ(q^a) i = 2b`, an odd prime `p ∣ i` can lose powers when passing from `b` to `σ(q^a)`. A future use of the aggregated root lemma must establish that its square argument divides the returning divisor sum. The prime-index return lemma below explicitly handles that loss.
+
+
+## Euler indices three and five
+
+For either remaining index `i`, a component `r^e` of `m²` contributes the factor `i` in `σ(m²)=q^a i`. Its exponent is positive and even. For each odd prime power dividing `e+1`, the primitive-order theorem supplies a prime divisor of `σ(r^e)` having exactly that order. The modulus `i` cannot realize a nontrivial odd order because `i−1` is a power of two. Thus every such order occurs at `q`, so `e+1` is prime. The additional divisor `i` forces `r ≡ 1 (mod i)` and `e+1=i`. In particular `i ∣ q−1`. These local statements are `OddPerfect.prime_length_of_two_target_component` and `OddPerfect.exceptional_small_index_component` in `OddPerfect/SmallEulerIndex.lean`.
+
+Write `m² = r^e v²` with `r ∤ v`. Then `σ(r^e)=iU`, `U σ(v²)=q^a`, and `σ(q^a) i = 2r^e v²`. Since `i ∣ m`, the last identity gives `i ∣ σ(q^a)`. Together with `q ≡ 1 (mod i)`, this gives `i ∣ a+1`. For every prime of `v` different from `i`, the full exponent returns. At `i`, if `i^c` exactly divides `v`, at least `2c−1` powers return. For `c≥2`, the adjusted LTE gives `i^(2c−2) ∣ a+1`. The case `c=1` uses `i ∣ a+1` directly. Hence `v ∣ a+1`. This is `OddPerfect.root_dvd_length_of_prime_index_return` in `OddPerfect/IndexReturn.lean`.
+
+Set `M=v²`. Multiplication of the return identity by `(q−1)r` gives `ir q^(a+1) = 2M(q−1) r^(e+1)+ir`. Since `U ∣ q^a` and `r^(e+1) ≡ 1 (mod U)`, we have `U ∣ ir+2M(q−1)`. Together with `r² ≤ r^e < iU`, this gives `r ≤ 35qM`, `U ≤ 177qM` and `q^(a−1)<360M²`. Since `q≡1 (mod 4)` and `i ∣ q−1`, we have `q≥7`. For `a≥9`, the inequality `360(a+1)^4 < 7^(a−1)` contradicts `v ≤ a+1`. Thus `a∈{1,5}` and `v≤6`. As `v` is odd with `i ∣ v`, we get `v=i`. This leaves at most the three prime bases `q,r,i`, contrary to the locally proved four-prime lower bound. The arithmetic step is `OddPerfect.small_index_root_le_six` in `OddPerfect/IndexEstimate.lean`.
+
+The resulting `OddPerfect.five_lt_divisor_sum_component_index` in `OddPerfect/DrisLuca.lean` states `5 < σ(N/q^a)/q^a` for every odd perfect `N` and positive exact prime-power component `q^a`. This reproduces Dris–Luca Theorem 1.1 using the four-prime bound and explicit divisor-sum arithmetic. It gives a necessary condition on hypothetical odd perfect numbers.
+
+Hirakawa's Theorem 1.1 treats the Euler component specifically. For Euler exponent greater than one it excludes any index that is a square or a prime times a square. The exponent-one case has separate treatment in the paper. Its quadratic-order and generalized Fermat arguments are independent of the Lean proof here. [Hirakawa, 2023 preprint, published 2024](https://arxiv.org/abs/2309.17084)
+
+## Finiteness with bounded index
+
+`OddPerfect.finite_of_bounded_component_index` in `OddPerfect/BoundedIndex.lean` proves Dris–Luca Theorem 1.2 for any real threshold `K`. Its integral counterpart `OddPerfect.le_of_bounded_component_index` gives the computable upper bound `OddPerfect.componentIndexBound K` when the index is at most the natural number `K`. The real-threshold theorem applies the integer bound at the natural ceiling. The bound can be very large. [Dris and Luca, Theorem 1.2 and §4](https://www.fq.math.ca/Papers1/54-4/DrisLuca09122016.pdf)
+
+The support estimate `OddPerfect.prime_count_le_of_component_index` in `OddPerfect/IndexSupport.lean` gives `ω(N) ≤ 4 floor(log₂ i) + 4`. Write each cofactor component sum as a power of `q` times a part coprime to `q`. The product of all those coprime parts divides `i`, so at most `floor(log₂ i)` of them exceed one. At most another `floor(log₂ i)` distinct primes divide `i` itself. After removing these two sets and the selected and Euler primes, every remaining `p` has exponent `e≥2`, feeds only `q` and receives its full `p^e` back. Lemma 2.2 gives `p^(e−1) ∣ a+1`, including `p ∣ a+1` when `e=2`.
+
+Let `t=ω(a+1)`. The cover just proved gives `ω(N) ≤ t + 2 floor(log₂ i) + 2`. The divisor-count product gives `2^t ≤ τ(a+1)`. The primitive-order result `OddPerfect.component_length_divisor_count` bounds that divisor count by `ω(N)`. As `2t ≤ 2^t` for every natural `t`, including zero, combining the two inequalities gives the claimed uniform prime-count bound. The effective version of Dickson's theorem in `OddPerfect/Dickson.lean` converts it into a bound for `N`. This proof of finiteness does not require solving a family of Diophantine equations.

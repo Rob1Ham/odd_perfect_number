@@ -31,3 +31,9 @@ public import OddPerfect.SupportSieve
 public import OddPerfect.BoundedSupport
 public import OddPerfect.FewPrimes
 public import OddPerfect.Dickson
+public import OddPerfect.DrisLuca
+public import OddPerfect.Reciprocity
+public import OddPerfect.RankBounds
+public import OddPerfect.BoundedIndex
+public import OddPerfect.ChenLuo
+public import OddPerfect.AcquaahKonyagin

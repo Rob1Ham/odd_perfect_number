@@ -4,6 +4,8 @@ Take the actual prime divisors of a perfect number N as vertices. There is a dir
 
 ## Proof
 
+Peter Acquaah's 2015 thesis considers the same propagation between exact components in §5.1. Its Theorem 55 studies the components covered by repeated propagation for prime-multiperfect numbers. Here the reviewed Lean result has the exact hypothesis σ(N)=2N and gives a directed path between any chosen pair of support primes. [Acquaah, §5.1, pp. 54–57](https://ugspace.ug.edu.gh/server/api/core/bitstreams/e5fce598-96cc-41a2-b527-115e2cc8603a/content)
+
 Partition the prime support into two nonempty sets and multiply the full prime powers on the two sides to obtain coprime a and b with ab=N. Since a,b>1, both σ(a)>a and σ(b)>b. The identity σ(a)σ(b)=2ab gives σ(a)<2a. If σ(a) were coprime to b, its divisibility into 2ab would give σ(a)∣2a. Every proper divisor of 2a is at most a, contrary to the two strict inequalities. Thus a prime r divides both σ(a) and b. Multiplicativity on the a-side identifies a source prime u with r∣σ(u^e). The prime r is on the b-side by unique factorization.
 
 This argument applies to every nonempty proper subset of the support. The vertices reachable from a specified u form a nonempty subset. If some vertex v were outside it, the theorem would give an outgoing edge to a reachable vertex outside the subset, a contradiction. [Lean proof](../OddPerfect/Cuts.lean)
