@@ -97,3 +97,7 @@ For all odd harmonic N>1, τ(N)³ ≤ N and P³ < N² for every positive prime p
 Every odd deficient-perfect cofactor has at least four distinct prime factors. If it has exactly four, its least prime is 3 and the second is at most 23. Descartes's cofactor 9,018,009 attains four. For an odd perfect integer at Euler exponent one, its square cofactor lies in this same class. Yang and Togbé's unrestricted four-prime uniqueness theorem remains to be certified. [Definitions, proof, and four-prime reductions](DEFICIENT_PERFECT.md)
 
 Outside the eight Brent seeds the proof gives ω(N) ≥ 101, Ω(N) ≥ 259, and N > 10⁵³⁶. These statements hold across the entire complement; the unconditional size bound in this checkpoint remains 10¹⁶⁰. [Complement and integer certificates](../OddPerfect/BrentSeeds.lean)
+
+A prime-power index at any exact component would give a solution of the Nagell–Ljunggren equation with odd prime base, prime length exceeding two, and odd prime exponent. None of the three classical solutions fits these conditions. The project proves this implication unconditionally. The reverse exclusion assumes a complete positive-solution classification. [Repunit powers](NAGELL_LJUNGGREN_INDEX.md) · [Even-exponent source analysis](EVEN_PRIME_POWER_SOURCES.md)
+
+For k=ω(N) and R the product of the distinct prime divisors of N, 4kR²N ≤ (4k)^(4^k). The same bound on the product of all opening and closing labels holds for positive odd balanced lists of length k with bases above one, including repeated bases. [Bound and numerical-prefix inequality](DICKSON.md)

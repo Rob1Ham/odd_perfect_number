@@ -102,3 +102,6 @@ public import OddPerfect.DeficientFour
 public import OddPerfect.LengthMatching
 public import OddPerfect.BrentSeeds
 public import OddPerfect.ExponentOneSize50
+public import OddPerfect.PrimePowerNagellLjunggren
+public import OddPerfect.EvenPrimePowerParity
+public import OddPerfect.RadicalUpperBound

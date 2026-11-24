@@ -19,3 +19,13 @@ An independent argument with the primitive-divisor theorem covers a different in
 The same proof works for indexed odd bases greater than one and positive exponents whenever the product of their geometric sums is twice the represented integer. Two indices can carry identical pairs. The oddness argument uses divisibility into the full formal sum, which follows from its product formula. Bounding both coordinates of each pair gives finiteness of the set of ordered tuples of fixed length. If a base equals one, its abundancy is already at least two and every other positive component raises it strictly. The only balanced tuple containing such a base is the single entry (1,1). This proves the full positive case of Corollary 4.3. The signed result has additional hypotheses. [BYU Computational Number Theory Group, §4](https://mathdept.byu.edu/~pace/Spoof_web.pdf) · [Lean proofs](../OddPerfect/SpoofFiniteness.lean)
 
 Run `lake build OddPerfect.Dickson OddPerfect.BoundedSupport OddPerfect.SpoofFiniteness` to reproduce the arguments. The project audit includes their named declarations through the public module.
+
+## An explicit bound for the radical and size
+
+Write k = ω(N) and R for the product of the distinct primes of an odd perfect N. The declaration `radical_squared_size_upper` gives
+
+$$4k R^2 N \le (4k)^{4^k}.$$
+
+This bound follows from the same elementary product-gap argument that proves finiteness. For each true prime p use the two labels p and p^(vₚ(N)+1). Their product over all 2k labels is R²N. The argument also gives a bound for every positive odd spoof list with all bases greater than one and positive exponents. In that setting R is replaced by the product of the indexed bases, with repetitions preserved. Nielsen's published upper bound N < 2^(4^k) remains a stronger absolute bound. [True-prime specialization](../OddPerfect/RadicalUpperBound.lean) · [Spoof product bound](../OddPerfect/SpoofFiniteness.lean) · [Nielsen, Theorem 1](https://mathdept.byu.edu/~pace/upper_bound_web.pdf)
+
+For any threshold t, let A be the product of all labels at most t, let m count the remaining labels, and take C=4k. The checked prefix bound is C times the entire product at most (CA)^(2^m). A new cutoff is an actual remaining label at most CA. If g labels enter together, their product is at most (CA)^g. The new scaled prefix is therefore at most (CA)^(g+1), and g+1 ≤ 2^g. This accounts for equal labels across different entries. [Product bound from an arbitrary cutoff](../OddPerfect/LabelProductBound.lean)

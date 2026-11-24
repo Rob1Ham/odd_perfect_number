@@ -36,6 +36,10 @@ It follows that Ω(N) ≥ 2ω(N)+1. Here Ω counts prime factors with multiplici
 
 For an odd deficient-perfect n, the proper divisor d with σ(n)+d=2n yields an odd multiplier x=2n/d−1. The true prime powers of n together with (x,1) give a positive odd spoof list. Its five-entry minimum proves Tang and Feng’s three-prime exclusion. The cofactor of an odd perfect number at Euler exponent one belongs to this deficient-perfect class, with its Euler index as d. [Exact equivalence, count and source references](research/DEFICIENT_PERFECT.md)
 
+For any exact component, a prime-power index would yield an odd-prime-base, odd-prime-exponent solution of the Nagell–Ljunggren equation at a prime length greater than two. The unconditional result is an implication from the hypothetical component. The three classical solutions do not have that parity data, and completeness of their classification remains open. [Statements and source](research/NAGELL_LJUNGGREN_INDEX.md)
+
+The product-gap proof also gives 4kR²N ≤ (4k)^(4^k), where k counts the distinct primes of N and R is their product. Its finite-list version applies to positive odd spoof factorizations even if the bases repeat. [Proof and cutoff-dependent version](research/DICKSON.md)
+
 ## Published works and checked examples
 
 The project contains checked proofs of Euler form, Sylvester's exclusion of multiples of 105, Touchard's congruence, Roberts's refinement, the exact-square chain steps at 3 and 13 from Iannucci–Sorli, and Steuerwald's fourth-power result. It also checks five even perfect numbers using mathlib's Euclid–Euler theorem. The corpus records the sources and the outstanding work for stronger published bounds. [Literature corpus](research/CORPUS.md) · [Euler replay](research/EULER.md)

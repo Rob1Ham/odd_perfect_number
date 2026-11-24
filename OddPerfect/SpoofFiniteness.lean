@@ -3,6 +3,7 @@ module
 public import OddPerfect.SpoofFactors
 public import OddPerfect.PartialAbundancy
 public import OddPerfect.ProductGap
+import OddPerfect.LabelProductBound
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Basic.Finite.Prod
 
@@ -64,13 +65,12 @@ private theorem prefix_balance_iff {ι : Type*} [DecidableEq ι] (b e : ι → �
   rw [ha, hb]
   exact Nat.mul_left_inj hpos.ne'
 
-/-- Every positive odd spoof with at most k indexed bases has uniformly
-bounded closing labels. Distinctness and coprimality of the bases are unnecessary. -/
-theorem formal_component_le_of_bounded_factor_count {ι : Type*} [DecidableEq ι]
+private theorem formal_factor_count_bounds {ι : Type*} [DecidableEq ι]
     (P : Finset ι) (base exp : ι → ℕ) {k : ℕ} (hk : P.card ≤ k)
     (hb : ∀ i ∈ P, 1 < base i ∧ Odd (base i)) (he : ∀ i ∈ P, 0 < exp i)
     (hbalance : formalSigma P base exp = 2 * ∏ i ∈ P, base i ^ exp i) :
-    ∀ i ∈ P, base i ^ (exp i + 1) ≤ productLabelBound (2*k) (2*k) 1 := by
+    (∀ i ∈ P, base i ^ (exp i + 1) ≤ productLabelBound (2*k) (2*k) 1) ∧
+    (4*k)*(∏ i ∈ P, base i^(exp i+2)) ≤ (4*k)^(4^P.card) := by
   let s := P.disjSum P
   let label : ι ⊕ ι → ℕ := Sum.elim base (closingLabel base exp)
   let a : ι ⊕ ι → ℕ := Sum.elim base (fun p => closingLabel base exp p - 1)
@@ -115,9 +115,38 @@ theorem formal_component_le_of_bounded_factor_count {ι : Type*} [DecidableEq ι
       (fun p hp => (hb p hp).2) (fun p hp => ⟨pow_pos (hb p hp).1.le _, geom_gt_last (base p) (he p hp)⟩)
       hbalance
     exact fun h => hne ((prefix_balance_iff base exp l c hcl (fun p hp => (hb p (hsub hp)).1)).mp h)
-  have h := labels_bounded_of_no_balanced_prefix s label a b hcard hfull hpairs gap
-  intro p hp
-  exact h (.inr p) (inr_mem_disjSum.mpr hp)
+  constructor
+  · have h := labels_bounded_of_no_balanced_prefix s label a b hcard hfull hpairs gap
+    intro p hp
+    exact h (.inr p) (inr_mem_disjSum.mpr hp)
+  · by_cases hk0 : k=0
+    · simp [hk0]
+    have h := product_bound_of_no_balanced_prefix s label a b hcard (by omega) hfull hpairs gap
+    have hprod : s.prod label = ∏ i ∈ P, base i^(exp i+2) := by
+      simp only [s,label,prod_disjSum,Sum.elim_inl,Sum.elim_inr,←prod_mul_distrib]
+      exact prod_congr rfl (fun i _ => (pow_succ' (base i) (exp i+1)).symm)
+    have hexp : 2^s.card=4^P.card := by
+      rw [show s.card=2*P.card by simp [s,two_mul],pow_mul]
+      rfl
+    simpa only [hprod,hexp,show 2*(2*k)=4*k by omega] using h
+
+/-- Every positive odd spoof with at most k indexed bases has uniformly
+bounded closing labels. Distinctness and coprimality of the bases are unnecessary. -/
+theorem formal_component_le_of_bounded_factor_count {ι : Type*} [DecidableEq ι]
+    (P : Finset ι) (base exp : ι → ℕ) {k : ℕ} (hk : P.card ≤ k)
+    (hb : ∀ i ∈ P, 1 < base i ∧ Odd (base i)) (he : ∀ i ∈ P, 0 < exp i)
+    (hbalance : formalSigma P base exp = 2 * ∏ i ∈ P, base i ^ exp i) :
+    ∀ i ∈ P, base i ^ (exp i + 1) ≤ productLabelBound (2*k) (2*k) 1 :=
+  (formal_factor_count_bounds P base exp hk hb he hbalance).1
+
+/-- The product of the represented integer and the square of all its
+indexed bases is bounded even when bases repeat or share prime factors. -/
+theorem formal_product_bound_of_bounded_factor_count {ι : Type*} [DecidableEq ι]
+    (P : Finset ι) (base exp : ι → ℕ) {k : ℕ} (hk : P.card ≤ k)
+    (hb : ∀ i ∈ P, 1 < base i ∧ Odd (base i)) (he : ∀ i ∈ P, 0 < exp i)
+    (hbalance : formalSigma P base exp = 2 * ∏ i ∈ P, base i ^ exp i) :
+    (4*k)*(∏ i ∈ P, base i^(exp i+2)) ≤ (4*k)^(4^P.card) :=
+  (formal_factor_count_bounds P base exp hk hb he hbalance).2
 
 /-- For fixed k there are only finitely many ordered k-term positive odd
 spoof-perfect factorizations. Indexing also permits identical pairs. -/
