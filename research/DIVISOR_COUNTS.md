@@ -24,3 +24,14 @@ lake build OddPerfect.CohenSorli
 ```
 
 For any harmonic N and any positive prime power pᵃ dividing it, (pᵃ)² < Nτ(N). A divisor-count bound τ(N)ᵈ ≤ N therefore gives (pᵃ)²ᵈ < Nᵈ⁺¹. The paper's unconditional numeric lower bound N > 10²⁴ for odd harmonic N also requires excluding the remaining harmonic candidates. [Prime-power inequalities](../OddPerfect/HarmonicSize.lean)
+
+## Odd harmonic integers
+
+For every odd harmonic N greater than one, τ(N)³ ≤ N. Combining this with (pᵃ)² < Nτ(N) yields (pᵃ)³ < N² whenever p is prime, a is positive, and pᵃ divides N. These are Lemmas 1 and 2 of Cohen and Sorli. The public declarations are `harmonic_divisor_count_cubed` and `harmonic_prime_power_cubed_lt_square`. [Lean statements](../OddPerfect/HarmonicCubic.lean) · [Cohen–Sorli, §3](https://doi.org/10.1090/S0025-5718-10-02337-9)
+
+The cubic certificate splits at 18 nodes. At a prefix D with residual m it tracks S = σ(D) alongside T = τ(D). If a prime r divides S and does not divide DT, harmonicity forces r to divide m or τ(m). In the latter case a residual exponent e has r dividing e+1, hence e ≥ r−1. The checker verifies the divisor-count bound on both branches. Each selected prime power also obeys Garcia's necessary congruence modulo four. [Harmonic closure and coverage](../OddPerfect/HarmonicSearch.lean)
+
+```sh
+python3 research/harmonic_counts.py 3 --output OddPerfect/HarmonicCount3
+lake build OddPerfect.HarmonicCubic
+```

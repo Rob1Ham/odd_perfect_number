@@ -88,3 +88,13 @@ public import OddPerfect.OddValuationGraph
 public import OddPerfect.OddSourceWeight
 public import OddPerfect.ExponentOneSize
 public import OddPerfect.ExceptionalIndexResidue
+public import OddPerfect.SizeBound160
+public import OddPerfect.BrentReturn
+public import OddPerfect.ExponentOneSize160
+public import OddPerfect.OddPrimePowerBound
+public import OddPerfect.ExceptionalIndexSources
+public import OddPerfect.OddGraphWeight
+public import OddPerfect.ThreeModFourGraph
+public import OddPerfect.ExceptionalOrder
+public import OddPerfect.ExceptionalNonresidues
+public import OddPerfect.HarmonicCubic
