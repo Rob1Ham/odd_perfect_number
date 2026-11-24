@@ -37,3 +37,11 @@ public import OddPerfect.RankBounds
 public import OddPerfect.BoundedIndex
 public import OddPerfect.ChenLuo
 public import OddPerfect.AcquaahKonyagin
+public import OddPerfect.SpoofFiniteness
+public import OddPerfect.IndexWeight
+public import OddPerfect.CountBound
+public import OddPerfect.EulerSquareClass
+public import OddPerfect.FermatIndex
+public import OddPerfect.CountBound25
+public import OddPerfect.FermatIndexSupport
+public import OddPerfect.QuasiFactors

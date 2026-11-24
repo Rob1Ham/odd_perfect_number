@@ -146,13 +146,11 @@ theorem prime_count_le_length_support_add_index {N q a b i : ℕ} (hN : Nat.Perf
   change (insert s T).card ≤ (L ∪ i.primeFactors ∪ B).card + 1 at hsCard
   omega
 
-/-- The number of primes of an odd perfect number is bounded explicitly by
-the logarithm of any one of its component indices. -/
-theorem prime_count_le_of_component_index {N q a b i : ℕ} (hN : Nat.Perfect N)
-    (ho : Odd N) (hq : Nat.Prime q) (ha : 0 < a) (hform : N = q^a*b) (hqb : ¬ q ∣ b)
-    (hleft : sigma 1 b = q^a*i) (hright : sigma 1 (q^a)*i = 2*b) :
-    N.primeFactors.card ≤ 4 * Nat.log 2 i + 4 := by
-  have hcov := prime_count_le_length_support_add_index hN ho hq hform hleft hright
+/-- Distinct primes in the selected length generate distinct divisors, each
+counted by the primitive-order bound. -/
+theorem two_pow_component_length_support_le_prime_count {N q a b : ℕ} (hN : Nat.Perfect N)
+    (ho : Odd N) (hq : Nat.Prime q) (ha : 0 < a) (hform : N = q^a*b) (hqb : ¬ q ∣ b) :
+    2 ^ (a+1).primeFactors.card ≤ N.primeFactors.card := by
   have hbo := ho.of_dvd_nat (hform ▸ dvd_mul_left b (q^a))
   have hmem := Nat.mem_primeFactors.mpr ⟨hq, hform ▸ (dvd_pow_self q ha.ne').trans
     (dvd_mul_right _ _), hN.2.ne'⟩
@@ -162,7 +160,16 @@ theorem prime_count_le_of_component_index {N q a b i : ℕ} (hN : Nat.Perfect N)
       Finsupp.single_eq_same, add_zero]
   have hdiv := component_length_divisor_count hN ho hmem
   rw [hval] at hdiv
-  have hpow := (two_pow_prime_count_le_divisor_count (by omega : a+1 ≠ 0)).trans hdiv
+  exact (two_pow_prime_count_le_divisor_count (by omega : a+1 ≠ 0)).trans hdiv
+
+/-- The number of primes of an odd perfect number is bounded explicitly by
+the logarithm of any one of its component indices. -/
+theorem prime_count_le_of_component_index {N q a b i : ℕ} (hN : Nat.Perfect N)
+    (ho : Odd N) (hq : Nat.Prime q) (ha : 0 < a) (hform : N = q^a*b) (hqb : ¬ q ∣ b)
+    (hleft : sigma 1 b = q^a*i) (hright : sigma 1 (q^a)*i = 2*b) :
+    N.primeFactors.card ≤ 4 * Nat.log 2 i + 4 := by
+  have hcov := prime_count_le_length_support_add_index hN ho hq hform hleft hright
+  have hpow := two_pow_component_length_support_le_prime_count hN ho hq ha hform hqb
   have linear (t : ℕ) : 2*t ≤ 2^t := by
     cases t with
     | zero => decide

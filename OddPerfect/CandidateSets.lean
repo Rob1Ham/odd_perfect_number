@@ -11,7 +11,7 @@ public section
 namespace OddPerfect
 
 /-- The set whose nonemptiness is the odd perfect number question. -/
-def oddPerfectNumbers : Set ℕ := {n | Odd n ∧ n.Perfect}
+@[expose] def oddPerfectNumbers : Set ℕ := {n | Odd n ∧ n.Perfect}
 
 /-- Three necessary tests, retaining the actual primality and coprimality
 conditions in Euler's form. -/

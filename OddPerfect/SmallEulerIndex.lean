@@ -19,9 +19,9 @@ private theorem eq_one_of_odd_dvd_two_pow {d k : ℕ} (ho : Odd d) (hd : d ∣ 2
 
 /-- If an even-exponent component can feed only primes `i,q`, and `i−1` is a
 power of two, its length is prime and is the order at `q`. -/
-theorem prime_length_of_two_target_component {p e i q a k : ℕ} (hp : Nat.Prime p)
+theorem prime_length_of_two_prime_support {p e i q a k j : ℕ} (hp : Nat.Prime p)
     (he : Even e) (hepos : 0 < e) (hi : Nat.Prime i) (hik : i - 1 = 2 ^ k)
-    (hq : Nat.Prime q) (hσ : sigma 1 (p ^ e) ∣ i * q ^ a) :
+    (hq : Nat.Prime q) (hσ : sigma 1 (p ^ e) ∣ i ^ j * q ^ a) :
     (e + 1).Prime ∧ orderOf (p : ZMod q) = e + 1 ∧ e + 1 ∣ q - 1 := by
   have ho : Odd (e + 1) := Nat.odd_iff.mpr (by have := Nat.even_iff.mp he; omega)
   have force (l : ℕ) (hl : Nat.Prime l) (j : ℕ) (hd : l ^ (j+1) ∣ e+1) :
@@ -34,7 +34,7 @@ theorem prime_length_of_two_target_component {p e i q a k : ℕ} (hp : Nat.Prime
       rw [sigma_one_apply, dvd_sum_divisors_prime_pow_iff hp hr]
       simpa [hne, hor] using hd
     rcases hr.dvd_mul.mp (hdiv.trans hσ) with hri | hrq
-    · have hri := (Nat.prime_dvd_prime_iff_eq hr hi).mp hri
+    · have hri := (Nat.prime_dvd_prime_iff_eq hr hi).mp (hr.dvd_of_dvd_pow hri)
       subst r
       rw [hik] at hcon
       have := eq_one_of_odd_dvd_two_pow hlo.pow hcon
@@ -61,13 +61,20 @@ theorem prime_length_of_two_target_component {p e i q a k : ℕ} (hp : Nat.Prime
   have := Nat.mul_lt_mul_of_pos_left hl.one_lt hl.pos
   omega
 
+/-- The case in which the first target prime occurs only once. -/
+theorem prime_length_of_two_target_component {p e i q a k : ℕ} (hp : Nat.Prime p)
+    (he : Even e) (hepos : 0 < e) (hi : Nat.Prime i) (hik : i - 1 = 2 ^ k)
+    (hq : Nat.Prime q) (hσ : sigma 1 (p ^ e) ∣ i * q ^ a) :
+    (e + 1).Prime ∧ orderOf (p : ZMod q) = e + 1 ∧ e + 1 ∣ q - 1 :=
+  prime_length_of_two_prime_support hp he hepos hi hik hq (j := 1) (by simpa using hσ)
+
 /-- If the small prime contributes to this outgoing sum, it is the exact
 length, and the base is one modulo that prime. -/
-theorem exceptional_small_index_component {p e i q a k : ℕ} (hp : Nat.Prime p)
+theorem exceptional_prime_power_index_component {p e i q a k j : ℕ} (hp : Nat.Prime p)
     (he : Even e) (hepos : 0 < e) (hi : Nat.Prime i) (hik : i - 1 = 2 ^ k)
-    (hq : Nat.Prime q) (hσ : sigma 1 (p ^ e) ∣ i * q ^ a) (hd : i ∣ sigma 1 (p ^ e)) :
+    (hq : Nat.Prime q) (hσ : sigma 1 (p ^ e) ∣ i ^ j * q ^ a) (hd : i ∣ sigma 1 (p ^ e)) :
     e + 1 = i ∧ (p : ZMod i) = 1 ∧ i ∣ q - 1 := by
-  obtain ⟨hl, _, hcon⟩ := prime_length_of_two_target_component hp he hepos hi hik hq hσ
+  obtain ⟨hl, _, hcon⟩ := prime_length_of_two_prime_support hp he hepos hi hik hq hσ
   have ho : Odd (e+1) := Nat.odd_iff.mpr (by have := Nat.even_iff.mp he; omega)
   let : Fact i.Prime := ⟨hi⟩
   rw [sigma_one_apply, dvd_sum_divisors_prime_pow_iff hp hi] at hd
@@ -83,5 +90,12 @@ theorem exceptional_small_index_component {p e i q a k : ℕ} (hp : Nat.Prime p)
     have hcard := ZMod.orderOf_dvd_card_sub_one hz
     rw [hik] at hcard
     exact (hone (orderOf_eq_one_iff.mp (eq_one_of_odd_dvd_two_pow (ho.of_dvd_nat hd) hcard))).elim
+
+/-- Exceptional component when the first target has exponent one. -/
+theorem exceptional_small_index_component {p e i q a k : ℕ} (hp : Nat.Prime p)
+    (he : Even e) (hepos : 0 < e) (hi : Nat.Prime i) (hik : i - 1 = 2 ^ k)
+    (hq : Nat.Prime q) (hσ : sigma 1 (p ^ e) ∣ i * q ^ a) (hd : i ∣ sigma 1 (p ^ e)) :
+    e + 1 = i ∧ (p : ZMod i) = 1 ∧ i ∣ q - 1 :=
+  exceptional_prime_power_index_component hp he hepos hi hik hq (j := 1) (by simpa using hσ) hd
 
 end OddPerfect

@@ -14,4 +14,8 @@ With at most K=2k labels, processed products at cutoff t≥1 are bounded by 2t�
 
 An independent argument with the primitive-divisor theorem covers a different input. If every prime divisor is at most B, then the full length e+1 of every component occurs as an order modulo another prime r≤B, so e+1<r. Consequently N divides (B!)ᴮ. The formal proof of Dickson's theorem above uses the adjacent-factor argument for both bases and exponents. [Bounded support](../OddPerfect/BoundedSupport.lean)
 
-Run `lake build OddPerfect.Dickson OddPerfect.BoundedSupport` to reproduce both arguments. The project audit includes their named declarations through the public module.
+## Positive odd spoof factorizations
+
+The same proof works for indexed odd bases greater than one and positive exponents whenever the product of their geometric sums is twice the represented integer. Two indices can carry identical pairs. The oddness argument uses divisibility into the full formal sum, which follows from its product formula. Bounding both coordinates of each pair gives finiteness of the set of ordered tuples of fixed length. If a base equals one, its abundancy is already at least two and every other positive component raises it strictly. The only balanced tuple containing such a base is the single entry (1,1). This proves the full positive case of Corollary 4.3. The signed result has additional hypotheses. [BYU Computational Number Theory Group, §4](https://mathdept.byu.edu/~pace/Spoof_web.pdf) · [Lean proofs](../OddPerfect/SpoofFiniteness.lean)
+
+Run `lake build OddPerfect.Dickson OddPerfect.BoundedSupport OddPerfect.SpoofFiniteness` to reproduce the arguments. The project audit includes their named declarations through the public module.
