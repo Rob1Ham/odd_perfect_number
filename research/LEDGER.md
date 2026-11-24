@@ -35,3 +35,9 @@ The literature track will cover published necessary conditions, factor-chain met
 - Steuerwald's 1937 theorem now eliminates candidates whose every nonspecial prime has exact exponent two. Both branches of the split on 3 dividing N passed independent review and the integrated audit. As a consequence Ω(N) ≥ 2ω(N)+1. Candidates with a nonspecial fourth power remain open. [Proof coverage](STEUERWALD.md) · [Counting corollaries](COUNTS.md)
 - Descartes's positive composite-base spoof passes Euler form, Touchard's congruence and the 105 exclusion simultaneously. Its true prime factorization contains no fourth power, so it witnesses the strict containment proved by `fourthPowerCandidates_ssubset`. Every genuine odd perfect number lies in the smaller set. Its emptiness remains open. [Spoof calculation](SPOOFS.md)
 - Active rounds address Ochem–Rao's prime-count inequality, primitive divisors of geometric sums and the extension of the spoof comparison to finite factorizations.
+
+## Ochem–Rao's first count bound
+
+The integrated project proves `18 * N.primeFactors.card ≤ 7 * N.primeFactorsList.length + 31` from exactly `Odd N` and `Nat.Perfect N`. The proof counts exact-square components other than 3, proves injectivity of the normalized quadratic divisor sum on the relevant primes, and bounds their transferred multiplicities by the true prime exponents. A separate worker checked the partition and the transfer against equations (1)–(8) in the paper. [Ochem–Rao, §3](https://www.lirmm.fr/~ochem/opn/opnf.pdf) · [Local counting argument](../OddPerfect/OchemRao.lean)
+
+Two cases exhaust the sharper local conclusion. If 3 is absent then `18ω ≤ 7Ω + 15`. If 3 is present then `18ω + v₃(N) ≤ 7Ω + 33`. Neither case excludes all candidates. The separate bound `Ω ≥ 2ω + 51` in §4 still needs a computational proof.

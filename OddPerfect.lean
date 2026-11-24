@@ -14,3 +14,9 @@ public import OddPerfect.Steuerwald
 public import OddPerfect.Counts
 public import OddPerfect.Even
 public import OddPerfect.CandidateSets
+public import OddPerfect.OchemRao
+public import OddPerfect.SteuerwaldSupplement
+public import OddPerfect.SpoofFactors
+public import OddPerfect.Primitive
+public import OddPerfect.RepeatedPrimes
+public import OddPerfect.CyclotomicOrders

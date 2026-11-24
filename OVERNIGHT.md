@@ -2,7 +2,11 @@
 
 The existence of an odd perfect number remains open. This report tracks verified milestones during the run scheduled through November 24, 2026 at 7:00 a.m. Chicago time.
 
-## Strongest structural theorem at this checkpoint
+## Strongest unconditional count theorem at this checkpoint
+
+For **every** odd perfect N, `18 * N.primeFactors.card ≤ 7 * N.primeFactorsList.length + 31`. This is Ochem and Rao's published Theorem 1. Its local proof covers both the presence and absence of 3 and has received independent review against the paper. The exact declaration is `OddPerfect.ochem_rao_prime_factor_count`. [Lean proof](OddPerfect/OchemRao.lean) · [Ochem–Rao, §3](https://www.lirmm.fr/~ochem/opn/opnf.pdf)
+
+## Structural theorem
 
 For every odd perfect natural number N, there are distinct prime divisors p and q such that p and its exponent are both 1 modulo 4, while the exponent of q is even and at least four. This proves Steuerwald's 1937 theorem. Its Lean declaration is `OddPerfect.steuerwald`. The proof covers both possibilities for 3 dividing N. [Declaration](OddPerfect/Steuerwald.lean) · [Source and independent case review](research/STEUERWALD.md)
 
@@ -27,4 +31,4 @@ Lean is pinned to v4.36.0 and mathlib to `fc4f59e577feb1a4956671bc04ac18aaaf8cd8
 
 ## Remaining question and next assignment
 
-Candidates with a nonspecial fourth power survive the structural exclusion. An additional prime forced from a divisor sum can already divide the number, and an infinite family of possible exponents remains. The next assignment is to formalize inequality (8) in Ochem–Rao §3 by counting the non-3 primes supplied by exact-square components, with their multiplicities. [Branch ledger](research/LEDGER.md) · [Ochem–Rao, 2014](https://doi.org/10.1090/S0025-5718-2013-02776-7)
+Candidates with a nonspecial fourth power survive the structural exclusion. An additional prime forced from a divisor sum can already divide the number. Distinct multiplicative orders force distinct primes for a fixed source, while different sources can reuse the same prime. The next assignment is to turn the list of possible orders for a bounded prime support into a Lean-checked elimination of every allowed exact exponent. [Branch ledger](research/LEDGER.md) · [Primitive divisor argument](research/PRIMITIVE.md)

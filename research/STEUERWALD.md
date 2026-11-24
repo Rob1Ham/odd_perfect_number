@@ -26,3 +26,7 @@ Choose a prime (q) dividing ((p+1)/2). This half-successor is an odd integer gre
 Choose any prime (r∣q²+q+1). In the field of order (r), the residue of (q) has multiplicative order three unless (q≡1); the latter case forces (r=3). The 3-free branch therefore gives (r≡1) modulo 3. If (r≠p), its exact square contributes (r²+r+1), a multiple of 3, to (N). Hence (r=p).
 
 Finally, write (q²+q+1=py). Both sides are odd, and (q∣p+1) implies (q∣y+1) by reduction modulo (q). As (y+1) is even and (q) is odd, (2q∣y+1). We also have (2q≤p+1) from the half-successor. Thus (p,y≥q+1) and (py≥(q+1)^2>q²+q+1), a contradiction.
+
+## The supplementary branch
+
+Page 72 treats exact exponent four at 3 with every other nonspecial exponent two. `OddPerfect.steuerwald_four_at_three` in `OddPerfect/SteuerwaldSupplement.lean` specifies the finite set where a second exponent of at least four must occur. Its six primes are 7, 11, 19, 31, 127 and 5419, all congruent to 3 modulo 4. If each of these that divides N occurs exactly twice, then the square components forced successively from 3⁴ include 7², 19², 31², 127² and 5419². Those five distinct sources contribute at least five factors of 3, exceeding the assumed exponent four. This case imposes no conditions on primes outside the six-element set.

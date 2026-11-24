@@ -34,3 +34,18 @@ The Lean predicate `OddPerfect.SingleCompositeSpoof m w` requires both factors o
 A search that checks only the relaxed equation can retain the displayed composite-base pair. Verifying primality at each use of the prime-power divisor-sum formula removes this false positive. With coprime factors and the displayed equation, a hypothetical genuine solution would have to lie in the prime branch. There is no theorem here producing a composite distinguished base for every hypothetical odd perfect number. Such a coverage theorem, together with the strict inequality, would imply nonexistence. Removing this one class leaves the original existence question open.
 
 Reproduce the local results with `lake build OddPerfect.Spoof`.
+
+## Positive factorizations with several bases
+
+For a finite collection of positive bases `bᵢ > 1` with exponents `eᵢ > 0`, let `F` be the product of the geometric sums `1 + bᵢ + ⋯ + bᵢ^eᵢ` and `N` the product of the stated powers. The following two tests apply to any number of bases and any positive exponents.
+
+| Hypotheses | Comparison | Consequence when `F = 2N` |
+| --- | --- | --- |
+| Pairwise coprime bases, all prime | `F = σ(N)` | Genuine perfection |
+| Pairwise coprime bases, some composite | `F < σ(N)` | Abundance |
+| All prime bases, some repeated | `σ(N) < F` | Deficiency |
+| Positive bases with a composite and a common factor | No general comparison proved here | Open in this analysis |
+
+The first two rows exhaust the pairwise coprime class. For a composite base its smallest prime divisor lies strictly between 1 and the base. It divides every positive power and is missing from the geometric progression. Coprimality then multiplies the inequalities. The equivalence `formalSigma_eq_iff_prime` and the abundance conclusion `abundant_of_formalSigma_eq_two_mul_of_composite` are in `OddPerfect/SpoofFactors.lean`.
+
+The third row follows from a collision among divisor pairs. Each divisor of `ab` is a product of a divisor of `a` and a divisor of `b`. If `d > 1` divides both, the ordered pairs `(d,1)` and `(1,d)` contribute the same divisor to that product. This gives strict submultiplicativity of the true divisor sum for positive inputs with a common factor. The theorem `deficient_of_repeated_prime_spoof` in `OddPerfect/RepeatedPrimes.lean` applies it at a repeated prime. Signed bases and unit bases lie outside all four rows. A genuine odd perfect number would enter the first row via its ordinary prime factorization.
