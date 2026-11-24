@@ -22,6 +22,8 @@ For **every** exact prime-power component qᵃ of an odd perfect N, the integral
 
 The same paper's Theorem 1.2 is checked as `OddPerfect.finite_of_bounded_component_index`. For every real K, only finitely many odd perfect numbers have an exact component of index below K. The project gives an explicit bound, using Dickson finiteness and a count of exceptional components with multiplicity. [Lean proof](OddPerfect/BoundedIndex.lean)
 
+A bound on the number of prime factors of the index suffices for the same finiteness conclusion. For every exact component with index i, ω(N) ≤ 2(ω(i)+Ω(i))+4. A prime-power index pʲ forces j ≥ 66. [Finiteness proof](research/COMPONENT_INDEX_MULTIPLICITY.md) · [Exponent bound](research/PRIME_POWER_EXPONENT.md)
+
 Every component index is composite. Every exact component index also differs from every prime square. The Euler component index has at least three prime factors counted with multiplicity and is at least 343. No exact component has prime-cube index. More generally the index of any component differs from pʲ for odd j < 191. For an Euler index that is an odd power of a prime, the stronger checked restrictions are j ≥ 191, p ≥ 137 and i > 10⁴⁰⁸. [Scope and proof](OddPerfect/OddPrimePowerBound.lean) There are additional restrictions on index primes that are 3 modulo 4 and occur to odd valuation. [Index lower bound](OddPerfect/IndexBound343.lean) · [Square-class bounds](research/EULER_SQUARE_CLASS.md)
 
 For an Euler prime q and any positive exponent e, σ(qᵉ) is never square. For an odd perfect number in Euler form with a > 1, the index σ(m²)/qᵃ is also never square. Hirakawa’s stronger prime-times-square claim is checked for the branches q ≢ 1 modulo 16, or any of 3, 5, 7, 11 and 13 dividing (a+1)/2. [Exact results and sources](research/HIRAKAWA.md)
@@ -56,7 +58,7 @@ Every perfect integer is harmonic in Ore’s sense. For an odd harmonic integer 
 
 For positive odd formally balanced lists with bases exceeding one, the least possible number of entries is exactly five. Descartes attains it. The true prime-power factorization of any odd perfect N has the additional property that every odd prime divisor of a local sum occurs as a base. [Sharp minimum](OddPerfect/SpoofBelowFive.lean) · [Prime closure](OddPerfect/PrimeSlots.lean)
 
-The positive-base square classification at odd lengths has the sole solution (3,5), giving σ(3⁴) = 11². Cohen and Sorli’s three divisor-count estimates for odd integers are checked, including both sharp upper endpoints for exceptions. Their Lemmas 1 and 2 are checked across the full odd harmonic class. They give τ(N)³ ≤ N and P³ < N² for every positive prime power P dividing N. [Geometric-square proof](research/ODD_GEOMETRIC_SQUARES.md) · [Divisor-count proofs](research/DIVISOR_COUNTS.md)
+The positive-base square classification at odd lengths has the sole solution (3,5), giving σ(3⁴) = 11². Cohen and Sorli’s three divisor-count estimates for odd integers are checked, including both sharp upper endpoints for exceptions. Their Lemmas 1–2 and Theorems 4–5 are checked across the full odd harmonic class. The strongest estimates give τ(N)⁴ ≤ N and P⁸ < N⁵ for every positive prime power P dividing N. Consequently P ≥ 10¹⁵ implies N > 10²⁴. [Geometric-square proof](research/ODD_GEOMETRIC_SQUARES.md) · [Divisor-count proofs](research/DIVISOR_COUNTS.md)
 
 ## Reproduce
 

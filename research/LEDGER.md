@@ -101,3 +101,7 @@ Outside the eight Brent seeds the proof gives ω(N) ≥ 101, Ω(N) ≥ 259, and 
 A prime-power index at any exact component would give a solution of the Nagell–Ljunggren equation with odd prime base, prime length exceeding two, and odd prime exponent. None of the three classical solutions fits these conditions. The project proves this implication unconditionally. The reverse exclusion assumes a complete positive-solution classification. [Repunit powers](NAGELL_LJUNGGREN_INDEX.md) · [Even-exponent source analysis](EVEN_PRIME_POWER_SOURCES.md)
 
 For k=ω(N) and R the product of the distinct prime divisors of N, 4kR²N ≤ (4k)^(4^k). The same bound on the product of all opening and closing labels holds for positive odd balanced lists of length k with bases above one, including repeated bases. [Bound and numerical-prefix inequality](DICKSON.md)
+
+Cohen and Sorli’s Theorems 4 and 5 hold for every nontrivial odd harmonic integer. Its divisor count satisfies τ(N)⁴ ≤ N. Every positive prime power P dividing N satisfies P⁸ < N⁵. Proposition 1 thus gives N > 10²⁴ whenever P ≥ 10¹⁵. The large-prime branch of Proposition 2 gives the same conclusion whenever a prime r ≥ 37 divides τ(N). [Proofs and replay](DIVISOR_COUNTS.md)
+
+At every exact component, index i = pʲ with p prime implies j ≥ 66. A separate support count gives ω(N) ≤ 2(ω(i)+Ω(i))+4 and hence finiteness for bounded Ω(i), even when the primes dividing i vary. [Exponent](PRIME_POWER_EXPONENT.md) · [Finiteness](COMPONENT_INDEX_MULTIPLICITY.md)

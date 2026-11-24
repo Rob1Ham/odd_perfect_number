@@ -35,3 +35,14 @@ The cubic certificate splits at 18 nodes. At a prefix D with residual m it track
 python3 research/harmonic_counts.py 3 --output OddPerfect/HarmonicCount3
 lake build OddPerfect.HarmonicCubic
 ```
+
+### Fourth powers and the component threshold
+
+Cohen and Sorli’s Theorems 4 and 5 give τ(N)⁴ ≤ N and P⁸ < N⁵ for every odd harmonic N greater than one and every positive prime power P dividing N. The fourth-power search uses 505 split nodes and 17 rational envelopes. Its final inequality is strict for the prime power even when P is a proper divisor of its exact component. [Public declarations](../OddPerfect/HarmonicQuartic.lean) · [Cohen–Sorli, §4](https://doi.org/10.1090/S0025-5718-10-02337-9)
+
+For P ≥ 10¹⁵ the inequality gives N > 10²⁴. This is Proposition 1. If a prime r ≥ 37 divides τ(N), multiplicativity of the divisor count gives an exact component pᵉ with r dividing e+1. Then e ≥ 36 and p ≥ 3, so the threshold applies to p³⁶. [Proposition 1 and large divisor-count primes](../OddPerfect/HarmonicThreshold.lean)
+
+```sh
+python3 research/harmonic_counts.py 4 --output OddPerfect/HarmonicCount4
+lake build OddPerfect.HarmonicThreshold
+```

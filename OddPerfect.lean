@@ -105,3 +105,6 @@ public import OddPerfect.ExponentOneSize50
 public import OddPerfect.PrimePowerNagellLjunggren
 public import OddPerfect.EvenPrimePowerParity
 public import OddPerfect.RadicalUpperBound
+public import OddPerfect.HarmonicThreshold
+public import OddPerfect.BoundedIndexWeight
+public import OddPerfect.EvenPrimePowerSixteen
