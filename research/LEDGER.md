@@ -94,7 +94,7 @@ For an exact component of an odd perfect number, its index differs from every p�
 
 For all odd harmonic N>1, τ(N)³ ≤ N and P³ < N² for every positive prime power P dividing N. These two bounds use the full harmonic divisibility and cover the small odd integers left open by the unrestricted cubic estimate. [Harmonic certificate and published lemmas](DIVISOR_COUNTS.md)
 
-Every odd deficient-perfect cofactor has at least four distinct prime factors. If it has exactly four, its least prime is 3 and the second is at most 17. Descartes's cofactor 9,018,009 attains four. For an odd perfect integer at Euler exponent one, its square cofactor lies in this same class. Yang and Togbé's unrestricted four-prime uniqueness theorem remains to be certified. [Definitions, proof, and four-prime reductions](DEFICIENT_PERFECT.md)
+Every odd deficient-perfect cofactor has at least four distinct prime factors. If it has exactly four, its least prime is 3 and the second is at most 13. Descartes's cofactor 9,018,009 attains four. For an odd perfect integer at Euler exponent one, its square cofactor lies in this same class. Yang and Togbé's unrestricted four-prime uniqueness theorem remains to be certified. [Definitions, proof, and four-prime reductions](DEFICIENT_PERFECT.md)
 
 Outside the eight Brent seeds the proof gives ω(N) ≥ 101, Ω(N) ≥ 259, and N > 10⁵³⁶. These statements hold across the entire complement; the unconditional size bound in this checkpoint remains 10¹⁶⁰. [Complement and integer certificates](../OddPerfect/BrentSeeds.lean)
 
@@ -117,3 +117,9 @@ At any exact component a prime-power index pʲ with j odd forces j ≥ 36207. Fo
 For an odd cofactor n ≤ 10¹² the only nontrivial odd Tóth multiplier occurs at (n,x)=(9,018,009,22,021). The corresponding deficient divisor is 819. The proof splits over every odd square root through 10⁶. The unbounded four-prime branches with second prime 19 and 23 close by applying the largest-prime theorem to the genuinely perfect product 5n. [Bounded classification](TOTH.md) · [Unbounded exclusion](DEFICIENT_PERFECT.md)
 
 At Euler exponent e>1, every exact component index contains a prime whose predecessor has an odd prime divisor. For a nonspecial component the count of distinct such primes is at least 2τ((e+1)/2)−3. A prime-times-square Euler index gives a new square equation for the positive half of the geometric sum. [Non-Fermat divisors](FERMAT_INDEX_TARGETS.md) · [Square equations and simultaneous divisibility](INDEX_EXPONENT_RESIDUES.md)
+
+With 5 and 7 absent, every odd deficient-perfect n with at most four true prime factors has complementary divisor n/d=3. For an odd square satisfying 3σ(n)=5n and 3∣n, at most two prime factors one modulo three forces the exact component 3² and the divisor 13. A Fermat prime ℓ dividing σ(n) in that equation forces two distinct prime factors of n congruent to one modulo ℓ. The latter applies to all square cofactors satisfying the equation. [Complement](../OddPerfect/DeficientQuotient.lean) · [Residues and the published §5.3 enumeration](DEFICIENT_FERMAT.md)
+
+Every odd perfect N satisfies Ω(N)≥2ω(N)+5. When 3∤N the constant increases to seven. Both follow from the verified absolute and linear prime-factor counts. [Additive bounds and stronger published results](COUNT_CHAIN.md)
+
+If the index of an exact component equals p^(2u), with p prime and u positive, then either p≤2u or p²≤2((u+1)4^(2u−4)−1)+p. The lift uses the radical of the cofactor and the source multiplicities equal to one. [Proof and index equations](EVEN_INDEX_RADICAL_LIFTS.md)

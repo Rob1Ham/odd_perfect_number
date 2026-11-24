@@ -119,3 +119,8 @@ public import OddPerfect.DeficientLargeSecond
 public import OddPerfect.FermatIndexTargets
 public import OddPerfect.OddIndexFeedback
 public import OddPerfect.PositiveHalfReturn
+public import OddPerfect.CountExcess
+public import OddPerfect.DeficientSeventeen
+public import OddPerfect.DeficientThreeExponent
+public import OddPerfect.EvenIndexRadicalCutoff
+public import OddPerfect.IndexBaseCoverage

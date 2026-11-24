@@ -1,18 +1,20 @@
 # Overnight proof report
 
-The existence of an odd perfect number remains open. This report tracks verified milestones during the run scheduled through November 24, 2026 at 7:00 a.m. Chicago time.
+The existence of an odd perfect number remains open. The research cutoff was 7:00 a.m. Chicago time on November 24, 2026. Final verification and publication resumed after the cutoff.
 
 ## Strongest unconditional count theorem at this checkpoint
 
 For **every** odd perfect N, `18 * N.primeFactors.card ≤ 7 * N.primeFactorsList.length + 31`. This is Ochem and Rao's published Theorem 1. Its local proof covers both the presence and absence of 3 and has received independent review against the paper. The exact declaration is `OddPerfect.ochem_rao_prime_factor_count`. [Lean proof](OddPerfect/OchemRao.lean) · [Ochem–Rao, §3](https://www.lirmm.fr/~ochem/opn/opnf.pdf)
 
-Every odd perfect number N satisfies **Ω(N) ≥ 37** and **N > 10¹⁶⁰**. Brent and Cohen published the size bound in 1989. The local replay uses 2,728 certified primes and eight prime-index factor chains, followed by the complementary case. Independent review checked both the coverage argument and the compiled declaration. [Public size theorem](OddPerfect/SizeBound160.lean) · [Eight cases and replay](research/BRENT_SIZE.md)
+Every odd perfect natural number N satisfies **Ω(N) ≥ 37** and **N > 10¹⁶⁰**. The size declaration is `OddPerfect.ten_pow_one_sixty_lt_of_odd_perfect {N : ℕ} (ho : Odd N) (hN : N.Perfect) : 10^160 < N`. Brent and Cohen published the size bound in 1989. The local replay uses 2,728 certified primes and eight prime-index factor chains, followed by the complementary case. Independent review checked both the coverage argument and the compiled declaration. [Public size theorem](OddPerfect/SizeBound160.lean) · [Eight cases and replay](research/BRENT_SIZE.md)
 
 The nine exceptional branches in §4 of Brent, Cohen and te Riele’s 1991 paper now have checked proofs of their conditional size estimates. These use all 20 prime factors of nine specified divisor sums. The eighth case needs the paper’s preceding exclusion of 11. The proof of the full 10³⁰⁰ bound still needs the remaining branches. [Branch statements, certificates and primary sources](research/BRENT_300.md)
 
 The earlier pair of results established Ω(N) ≥ 37 and N > 10⁵⁰. The first theorem counts prime factors with multiplicity and reproduces Iannucci and Sorli’s bound. The second reproduces Hagis’s 1973 bound using a fresh exact-exponent proof. Both declarations quantify over every odd perfect natural number. The count certificate uses 101 reusable subtree proofs covering two roots and an analytic bound for the complement. The size proof handles least primes 3, 5 and 7, followed by a separate bound for the complement. [Count declaration and certificate](research/COUNT_CHAIN.md) · [Size declaration](OddPerfect/SizeBound50.lean) · [Size certificate](research/ABSOLUTE_SIZE.md)
 
 When none of 127, 19, 7, 11, 31, 13, 3, or 5 divides N, the stronger conditional bounds are ω(N) ≥ 101, Ω(N) ≥ 259, and N > 10⁵³⁶. The eight cases in which a listed prime divides N are still required for any improvement to the unconditional size bound. [Complement theorem](OddPerfect/BrentSeeds.lean)
+
+The count bounds also give Ω(N)≥2ω(N)+5 for every odd perfect N and Ω(N)≥2ω(N)+7 when 3 is absent. [Additive bounds](research/COUNT_CHAIN.md)
 
 ## Structural theorem
 
@@ -23,6 +25,8 @@ A kernel-checked finite sieve forces a prime divisor greater than 257. It yields
 For **every** exact prime-power component qᵃ of an odd perfect N, the integral quotient σ(N/qᵃ)/qᵃ is greater than five. The declaration `OddPerfect.five_lt_divisor_sum_component_index` proves Dris and Luca's Theorem 1.1. An independent worker checked the universal hypotheses, the Euler and nonspecial cases, and each finite endpoint. [Lean proof](OddPerfect/DrisLuca.lean) · [Argument and source](research/RECIPROCAL.md)
 
 If the index of any exact component is p^(2u), put B = 14(u+1)4^(2u−4). Then p ≤ B and N < 2B^(6u). The simultaneous repunit equations in this case require either another Goormaghtigh prime or at least three different odd-base solutions of the Nagell–Ljunggren equation at a common prime. [Effective bound](research/EVEN_INDEX_EFFECTIVE.md) · [Equations and known cases](research/EVEN_INDEX_REPUNITS.md)
+
+A lift modulo p² sharpens the dependence on the exponent: p≤2u or p²≤2((u+1)4^(2u−4)−1)+p. [Radical identity and quadratic bound](research/EVEN_INDEX_RADICAL_LIFTS.md)
 
 The same paper's Theorem 1.2 is checked as `OddPerfect.finite_of_bounded_component_index`. For every real K, only finitely many odd perfect numbers have an exact component of index below K. The project gives an explicit bound, using Dickson finiteness and a count of exceptional components with multiplicity. [Lean proof](OddPerfect/BoundedIndex.lean)
 
@@ -42,9 +46,11 @@ If an odd perfect N has any divisor q with 2 ≤ q < 53, some prime sixth power 
 
 It follows that Ω(N) ≥ 2ω(N)+1. Here Ω counts prime factors with multiplicity and ω counts distinct primes. The declaration is `OddPerfect.steuerwald_prime_factor_count`. [Prime counts](OddPerfect/Counts.lean)
 
-For an odd deficient-perfect n, the proper divisor d with σ(n)+d=2n yields an odd multiplier x=2n/d−1. The true prime powers of n together with (x,1) give a positive odd spoof list. Its five-entry minimum proves Tang and Feng’s three-prime exclusion. Through 10¹², the only such cofactor is 9,018,009 and d=819. For all sizes, a four-prime cofactor must contain 3 and another prime at most 17. The cofactor of an odd perfect number at Euler exponent one belongs to this deficient-perfect class, with its Euler index as d. [Trillion-bound proof](research/TOTH.md) [Exact equivalence, count and source references](research/DEFICIENT_PERFECT.md)
+For an odd deficient-perfect n, the proper divisor d with σ(n)+d=2n yields an odd multiplier x=2n/d−1. The true prime powers of n together with (x,1) give a positive odd spoof list. Its five-entry minimum proves Tang and Feng’s three-prime exclusion. Through 10¹², the only such cofactor is 9,018,009 and d=819. For all sizes, a four-prime cofactor must contain 3 and another prime at most 13. The cofactor of an odd perfect number at Euler exponent one belongs to this deficient-perfect class, with its Euler index as d. [Trillion-bound proof](research/TOTH.md) [Exact equivalence, count and source references](research/DEFICIENT_PERFECT.md)
 
 For any exact component, a prime-power index would yield an odd-prime-base, odd-prime-exponent solution of the Nagell–Ljunggren equation at a prime length greater than two. The unconditional result is an implication from the hypothetical component. The three classical solutions do not have that parity data, and completeness of their classification remains open. [Statements and source](research/NAGELL_LJUNGGREN_INDEX.md)
+
+When 5 and 7 are absent, the complementary divisor n/d of a four-prime odd deficient-perfect number is exactly 3. At most two prime factors one modulo three then forces the exact component 3² and the divisor 13. The residue argument also excludes the entire case containing the omitted prime 3061 in the published §5.3 enumeration. [Derived restrictions and source](research/DEFICIENT_FERMAT.md) · [Quotient proof](OddPerfect/DeficientQuotient.lean)
 
 Every Euler component index has a prime divisor p for which p−1 is not a power of two. Above Euler exponent one such a p occurs with odd valuation in the Euler index, and every other component index also has a prime of this kind. [All-component result](research/FERMAT_INDEX_TARGETS.md) Thus a positive power of a Fermat prime cannot be the index of any exact component. [Fermat-support obstruction](research/FERMAT_INDEX_OBSTRUCTION.md)
 
@@ -68,6 +74,12 @@ For positive odd formally balanced lists with bases exceeding one, the least pos
 
 The positive-base square classification at odd lengths has the sole solution (3,5), giving σ(3⁴) = 11². Cohen and Sorli’s three divisor-count estimates for odd integers are checked, including both sharp upper endpoints for exceptions. Their Lemmas 1–2 and Theorems 4–5 are checked across the full odd harmonic class. The strongest estimates give τ(N)⁴ ≤ N and P⁸ < N⁵ for every positive prime power P dividing N. Consequently P ≥ 10¹⁵ implies N > 10²⁴. [Geometric-square proof](research/ODD_GEOMETRIC_SQUARES.md) · [Divisor-count proofs](research/DIVISOR_COUNTS.md)
 
+## Open cases at handoff
+
+The eight seeds for the 10³⁰⁰ size bound are 127, 19, 7, 11, 31, 13, 3 and 5. Each seed assumes the earlier primes are absent. All 6,977 prime witnesses have passed Lean checks, including the eleven elliptic-certificate steps. The aggregate 10³⁰⁰ declaration awaits the remaining tree evaluations. Its claim is a published theorem of Brent, Cohen and te Riele. [Case split and prime certificates](research/BRENT_300.md)
+
+The unrestricted four-prime deficient-perfect classification also remains outside the verified corpus. The finite search identified the Descartes cofactor across the candidate branches, with unbounded exponents, but the full Lean tree replay is unfinished. The bounded classification through 10¹² and the unrestricted second-prime bound of 13 are independently checked. The near-perfect fixed-rank proof, larger prime-factor counts, and complete odd-harmonic 10²⁴ exclusion also have outstanding local work. The corpus records gaps by theorem. [Deficient-perfect proof status](research/DEFICIENT_PERFECT.md) · [Literature and outstanding results](research/CORPUS.md)
+
 ## Reproduce
 
 On the research branch with Elan installed, run these commands from the repository root.
@@ -81,4 +93,4 @@ Lean is pinned to v4.36.0 and mathlib to `fc4f59e577feb1a4956671bc04ac18aaaf8cd8
 
 ## Remaining question and next assignment
 
-The general existence question remains open. A nonspecial fourth power, Ω ≥ 37, and N > 10¹⁶⁰ are now necessary. The next numerical assignment is to verify the prime witnesses and arithmetic closure in all eight trees for the Brent–Cohen–te Riele 10³⁰⁰ bound. A separate structural track tests the remaining prime half-length and square-class equation for the Euler prime. [Branch ledger](research/LEDGER.md) · [Size results and reproduction](research/ABSOLUTE_SIZE.md)
+The general existence question remains open. A nonspecial fourth power, Ω ≥ 37, and N > 10¹⁶⁰ are now necessary. The single best next assignment is to replay `lake build OddPerfect.SizeBound300` and independently audit `OddPerfect.ten_pow_three_hundred_lt_of_odd_perfect`. The prime bank passed. Arithmetic closure of the eight seed cases is pending. The final aggregate excludes that conjectured local improvement until it passes. [Branch ledger](research/LEDGER.md) · [Size results and reproduction](research/ABSOLUTE_SIZE.md)
