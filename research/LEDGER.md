@@ -105,3 +105,7 @@ For k=ω(N) and R the product of the distinct prime divisors of N, 4kR²N ≤ (4
 Cohen and Sorli’s Theorems 4 and 5 hold for every nontrivial odd harmonic integer. Its divisor count satisfies τ(N)⁴ ≤ N. Every positive prime power P dividing N satisfies P⁸ < N⁵. Proposition 1 thus gives N > 10²⁴ whenever P ≥ 10¹⁵. The large-prime branch of Proposition 2 gives the same conclusion whenever a prime r ≥ 37 divides τ(N). [Proofs and replay](DIVISOR_COUNTS.md)
 
 At every exact component, index i = pʲ with p prime implies j ≥ 66. A separate support count gives ω(N) ≤ 2(ω(i)+Ω(i))+4 and hence finiteness for bounded Ω(i), even when the primes dividing i vary. [Exponent](PRIME_POWER_EXPONENT.md) · [Finiteness](COMPONENT_INDEX_MULTIPLICITY.md)
+
+The Euler index always has a prime factor p whose predecessor is not a power of two. At Euler exponent greater than one a prime with that property occurs with odd valuation. The result gives an obstruction to all positive powers of Fermat primes at arbitrary exact components. [Proof and antecedents](FERMAT_INDEX_OBSTRUCTION.md)
+
+The nine exceptional branches singled out in Brent, Cohen and te Riele (1991), §4, all close under their specified hypotheses. Case viii uses the preceding exclusion of 11 and the exact 3-adic cases. The unconditional size bound remains 10¹⁶⁰ until the entire 10³⁰⁰ tree passes replay. [Nine branches and full coverage status](BRENT_300.md)

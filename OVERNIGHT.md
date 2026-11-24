@@ -8,6 +8,8 @@ For **every** odd perfect N, `18 * N.primeFactors.card ≤ 7 * N.primeFactorsLis
 
 Every odd perfect number N satisfies **Ω(N) ≥ 37** and **N > 10¹⁶⁰**. Brent and Cohen published the size bound in 1989. The local replay uses 2,728 certified primes and eight prime-index factor chains, followed by the complementary case. Independent review checked both the coverage argument and the compiled declaration. [Public size theorem](OddPerfect/SizeBound160.lean) · [Eight cases and replay](research/BRENT_SIZE.md)
 
+The nine exceptional branches in §4 of Brent, Cohen and te Riele’s 1991 paper now have checked proofs of their conditional size estimates. These use all 20 prime factors of nine specified divisor sums. The eighth case needs the paper’s preceding exclusion of 11. The proof of the full 10³⁰⁰ bound still needs the remaining branches. [Branch statements, certificates and primary sources](research/BRENT_300.md)
+
 The earlier pair of results established Ω(N) ≥ 37 and N > 10⁵⁰. The first theorem counts prime factors with multiplicity and reproduces Iannucci and Sorli’s bound. The second reproduces Hagis’s 1973 bound using a fresh exact-exponent proof. Both declarations quantify over every odd perfect natural number. The count certificate uses 101 reusable subtree proofs covering two roots and an analytic bound for the complement. The size proof handles least primes 3, 5 and 7, followed by a separate bound for the complement. [Count declaration and certificate](research/COUNT_CHAIN.md) · [Size declaration](OddPerfect/SizeBound50.lean) · [Size certificate](research/ABSOLUTE_SIZE.md)
 
 When none of 127, 19, 7, 11, 31, 13, 3, or 5 divides N, the stronger conditional bounds are ω(N) ≥ 101, Ω(N) ≥ 259, and N > 10⁵³⁶. The eight cases in which a listed prime divides N are still required for any improvement to the unconditional size bound. [Complement theorem](OddPerfect/BrentSeeds.lean)
@@ -39,6 +41,8 @@ It follows that Ω(N) ≥ 2ω(N)+1. Here Ω counts prime factors with multiplici
 For an odd deficient-perfect n, the proper divisor d with σ(n)+d=2n yields an odd multiplier x=2n/d−1. The true prime powers of n together with (x,1) give a positive odd spoof list. Its five-entry minimum proves Tang and Feng’s three-prime exclusion. The cofactor of an odd perfect number at Euler exponent one belongs to this deficient-perfect class, with its Euler index as d. [Exact equivalence, count and source references](research/DEFICIENT_PERFECT.md)
 
 For any exact component, a prime-power index would yield an odd-prime-base, odd-prime-exponent solution of the Nagell–Ljunggren equation at a prime length greater than two. The unconditional result is an implication from the hypothetical component. The three classical solutions do not have that parity data, and completeness of their classification remains open. [Statements and source](research/NAGELL_LJUNGGREN_INDEX.md)
+
+Every Euler component index has a prime divisor p for which p−1 is not a power of two. Above Euler exponent one such a p occurs with odd valuation. Thus a positive power of a Fermat prime cannot be the index of any exact component. [Fermat-support obstruction](research/FERMAT_INDEX_OBSTRUCTION.md)
 
 The product-gap proof also gives 4kR²N ≤ (4k)^(4^k), where k counts the distinct primes of N and R is their product. Its finite-list version applies to positive odd spoof factorizations even if the bases repeat. [Proof and cutoff-dependent version](research/DICKSON.md)
 

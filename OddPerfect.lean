@@ -108,3 +108,5 @@ public import OddPerfect.RadicalUpperBound
 public import OddPerfect.HarmonicThreshold
 public import OddPerfect.BoundedIndexWeight
 public import OddPerfect.EvenPrimePowerSixteen
+public import OddPerfect.FermatIndexObstruction
+public import OddPerfect.BrentHistorical
