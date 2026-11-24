@@ -112,12 +112,12 @@ def emit_partition(trees, factorer, output, chunk_limit=450, module_bytes=90000)
             check = f'private theorem checked{name} : {ver} {args} = true := by\n  decide +kernel'
             theorem = (f'theorem reject{name} {{N m : ℕ}} (H : Conditions N {B} {w}) (hs : {seed} ∣ N)\n'
                        f'    (hav : Nat.Coprime {avoid} N) (hc : 18*N.primeFactors.card ≤ 7*{B}+{c})\n'
-                       f'    (h : Realizes {state} N m) : False := ')
+                       f'    (h : Realizes {state} N m) : False :=')
             rest = f'splitPrimes prime_proofs {B+1} h tree{name} checked{name}'
             if earlier:
                 prior = ' | '.join('rfl' for _ in earlier)
                 branches = '\n'.join(f'  · exact reject{identifier(t,x)} H hs hav hc ht' for x in earlier)
-                theorem += (f'by\n  apply replayChunk_correct H hs hav hc {deps} ?_ {rest}\n'
+                theorem += (f' by\n  apply replayChunk_correct H hs hav hc {deps} ?_ {rest}\n'
                             '  intro t ht m hreal\n  simp only [List.mem_cons, List.not_mem_nil, or_false] at ht\n'
                             f'  rcases ht with {prior}\n' + branches.replace(' hc ht', ' hc hreal'))
             else:

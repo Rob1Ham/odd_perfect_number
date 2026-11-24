@@ -33,11 +33,11 @@ theorem pure_component_index_return_length {p q a m i β : ℕ} (hp : p.Prime) (
   apply reciprocal_return_length hp hpo hq hepos hout
   exact (hp.pow_dvd_iff_le_factorization (sigma_pos 1 _ (pow_ne_zero _ hq.ne_zero)).ne').mpr (by omega)
 
-/-- If the Euler exponent is one and its index is a power of a single odd
-prime, that index power has even exponent. -/
-theorem even_prime_power_index_at_euler_exponent_one {q m p j : ℕ} (hq : q.Prime)
+/-- At Euler exponent one, a prime-power index is an exact square-cofactor
+component and its divisor sum equals the Euler prime. -/
+theorem prime_power_index_data_at_one {q m p j : ℕ} (hq : q.Prime)
     (hm : 0 < m) (hp : p.Prime) (hpo : Odd p) (hj : 0 < j)
-    (hleft : sigma 1 (m^2)=q*p^j) (hright : sigma 1 q*p^j=2*m^2) : Even j := by
+    (hleft : sigma 1 (m^2)=q*p^j) (hright : sigma 1 q*p^j=2*m^2) : 2*m.factorization p=j ∧ sigma 1 (p^j)=q := by
   have hr : sigma 1 (q^1)*p^j=2*m^2 := by simpa
   have hv := index_prime_return_valuation hp hpo hq hm (Nat.pow_pos hp.pos) hr
   rw [hp.factorization_pow,Finsupp.single_eq_same] at hv
@@ -63,6 +63,14 @@ theorem even_prime_power_index_at_euler_exponent_one {q m p j : ℕ} (hq : q.Pri
     have h2 : p ∣ 1+1 := (hcon.add_left 1).dvd_iff dvd_rfl |>.mp hd2
     exact hpo.not_two_dvd_nat ((Nat.prime_dvd_prime_iff_eq hp Nat.prime_two).mp h2 ▸ dvd_rfl)
   rw [Nat.factorization_eq_zero_of_not_dvd hneg,zero_add] at hv
+  exact ⟨hv,by rwa [←hv]⟩
+
+/-- If the Euler exponent is one and its index is a power of a single odd
+prime, that index power has even exponent. -/
+theorem even_prime_power_index_at_euler_exponent_one {q m p j : ℕ} (hq : q.Prime)
+    (hm : 0 < m) (hp : p.Prime) (hpo : Odd p) (hj : 0 < j)
+    (hleft : sigma 1 (m^2)=q*p^j) (hright : sigma 1 q*p^j=2*m^2) : Even j := by
+  have h := (prime_power_index_data_at_one hq hm hp hpo hj hleft hright).1
   exact ⟨m.factorization p,by omega⟩
 
 end OddPerfect

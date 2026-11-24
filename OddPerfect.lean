@@ -72,3 +72,7 @@ public import OddPerfect.SizeBound50
 public import OddPerfect.IndexBound165
 public import OddPerfect.IndexSieveLengths
 public import OddPerfect.SmallOddLengths
+public import OddPerfect.HarmonicComponents
+public import OddPerfect.IndexBound343
+public import OddPerfect.ChenChenIndex
+public import OddPerfect.ExceptionalLength
