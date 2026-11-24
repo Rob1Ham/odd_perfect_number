@@ -114,3 +114,8 @@ public import OddPerfect.OddIndexExponentScreen
 public import OddPerfect.EvenIndexEffective
 public import OddPerfect.EvenIndexRepunits
 public import OddPerfect.SixthPowerSieve
+public import OddPerfect.TothTrillion
+public import OddPerfect.DeficientLargeSecond
+public import OddPerfect.FermatIndexTargets
+public import OddPerfect.OddIndexFeedback
+public import OddPerfect.PositiveHalfReturn

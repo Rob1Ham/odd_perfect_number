@@ -94,7 +94,7 @@ For an exact component of an odd perfect number, its index differs from every p�
 
 For all odd harmonic N>1, τ(N)³ ≤ N and P³ < N² for every positive prime power P dividing N. These two bounds use the full harmonic divisibility and cover the small odd integers left open by the unrestricted cubic estimate. [Harmonic certificate and published lemmas](DIVISOR_COUNTS.md)
 
-Every odd deficient-perfect cofactor has at least four distinct prime factors. If it has exactly four, its least prime is 3 and the second is at most 23. Descartes's cofactor 9,018,009 attains four. For an odd perfect integer at Euler exponent one, its square cofactor lies in this same class. Yang and Togbé's unrestricted four-prime uniqueness theorem remains to be certified. [Definitions, proof, and four-prime reductions](DEFICIENT_PERFECT.md)
+Every odd deficient-perfect cofactor has at least four distinct prime factors. If it has exactly four, its least prime is 3 and the second is at most 17. Descartes's cofactor 9,018,009 attains four. For an odd perfect integer at Euler exponent one, its square cofactor lies in this same class. Yang and Togbé's unrestricted four-prime uniqueness theorem remains to be certified. [Definitions, proof, and four-prime reductions](DEFICIENT_PERFECT.md)
 
 Outside the eight Brent seeds the proof gives ω(N) ≥ 101, Ω(N) ≥ 259, and N > 10⁵³⁶. These statements hold across the entire complement; the unconditional size bound in this checkpoint remains 10¹⁶⁰. [Complement and integer certificates](../OddPerfect/BrentSeeds.lean)
 
@@ -113,3 +113,7 @@ The nine exceptional branches singled out in Brent, Cohen and te Riele (1991), �
 A divisor q between 2 and 52 inclusive forces a prime sixth power in every odd perfect N. Lean covers all possible least primes and all five positive exponents under the sixth-power-free hypothesis. This gives the complete sixth-power-free exclusion of 5 in Fletcher–Nielsen–Ochem. [Cases and source](SIXTH_POWERS.md)
 
 At any exact component a prime-power index pʲ with j odd forces j ≥ 36207. For even j=2u the explicit bound is p ≤ B and N < 2B^(6u), with B=14(u+1)4^(2u−4). The repunit alternatives leave a conditional route through two unsolved Diophantine classifications. [Odd exponents](INDEX_EXPONENT_RESIDUES.md) · [Even bounds](EVEN_INDEX_EFFECTIVE.md) · [Repunit equations](EVEN_INDEX_REPUNITS.md)
+
+For an odd cofactor n ≤ 10¹² the only nontrivial odd Tóth multiplier occurs at (n,x)=(9,018,009,22,021). The corresponding deficient divisor is 819. The proof splits over every odd square root through 10⁶. The unbounded four-prime branches with second prime 19 and 23 close by applying the largest-prime theorem to the genuinely perfect product 5n. [Bounded classification](TOTH.md) · [Unbounded exclusion](DEFICIENT_PERFECT.md)
+
+At Euler exponent e>1, every exact component index contains a prime whose predecessor has an odd prime divisor. For a nonspecial component the count of distinct such primes is at least 2τ((e+1)/2)−3. A prime-times-square Euler index gives a new square equation for the positive half of the geometric sum. [Non-Fermat divisors](FERMAT_INDEX_TARGETS.md) · [Square equations and simultaneous divisibility](INDEX_EXPONENT_RESIDUES.md)
