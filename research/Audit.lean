@@ -23,3 +23,19 @@ open OddPerfect
 #print axioms seven_dvd_of_exact_thirteen_pow
 #check sixtyOne_dvd_of_exact_thirteen_sq
 #print axioms sixtyOne_dvd_of_exact_thirteen_sq
+#check euler_exponents
+#print axioms euler_exponents
+#check euler_form
+#print axioms euler_form
+#check dvd_geom_sum_iff_remainder
+#print axioms dvd_geom_sum_iff_remainder
+#check prime_dvd_sigma_thirteen_pow_ge_twentyThree
+#print axioms prime_dvd_sigma_thirteen_pow_ge_twentyThree
+#check twentyThree_dvd_sigma_thirteen_pow_ten
+#print axioms twentyThree_dvd_sigma_thirteen_pow_ten
+#check thirteen_factor_alternatives
+#print axioms thirteen_factor_alternatives
+#check sq_dvd_of_prime_mod_four_three
+#print axioms sq_dvd_of_prime_mod_four_three
+#check not_dvd_105_of_odd_perfect
+#print axioms not_dvd_105_of_odd_perfect

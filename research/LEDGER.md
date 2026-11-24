@@ -21,8 +21,15 @@ An exact exponent `e` means `p^e ∣ N` and `¬p^(e+1) ∣ N`. Every positive in
 | Perfect, exact exponent at 13 | `e % 6 = 2` | 61 divides the number |
 | Same | `e % 6 = 1` or `3` | 7 divides the number |
 | Same | `e % 6 = 5` | Both 7 and 61 divide the number |
-| Same | `e % 6 = 0` or `4` | Neither 7 nor 61 divides the divisor sum of this component. Other components could supply either prime. |
+| Same | `e % 6 = 0` or `4` | For `e > 0`, the component supplies a prime at least 23 different from 61. The bound is attained locally at `e = 10`. Other components could supply 7 or 61. |
 
 The six possible remainders exhaust the exact exponents, including zero. The conclusion at 3 gives divisibility by 13 but leaves its exponent unknown. The congruence tests in `OddPerfect/Thirteen.lean` are equivalences for the local divisor sum and implications for the full number.
 
 The literature track will cover published necessary conditions, factor-chain methods, computational bounds, formal proofs and spoof constructions. The coordinator records the status of each result and assigns further formalizations from the cited papers.
+
+## Verified exclusions and open cases
+
+- Euler form holds for every candidate. The port and the historical replay pass the standard-axiom audit. [Source and replay](EULER.md)
+- Sylvester's exclusion eliminates all multiples of 105. If 3, 5 and 7 divide an odd perfect number, 3² and 7² also divide it, so its divisor 2205 is abundant. Every candidate either is a multiple of 105 or survives this exclusion.
+- For perfect numbers containing 13, the final line of the residue table supplies a witness even with an unknown exponent. [Proof and counterexamples to weaker hypotheses](REVIEW.md)
+- The remaining candidates include the cases with and without 3. The next joint proof targets Steuerwald's exclusion of candidates whose every nonspecial prime has exact exponent two. The spoof worker is studying Descartes's composite-base class in parallel.

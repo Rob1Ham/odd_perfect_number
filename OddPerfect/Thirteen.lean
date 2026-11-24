@@ -10,7 +10,7 @@ public section
 namespace OddPerfect
 
 /-- Complete blocks of geometric terms can be discarded when testing divisibility. -/
-private theorem dvd_geom_sum_iff_remainder {p r t : ℕ}
+theorem dvd_geom_sum_iff_remainder {p r t : ℕ}
     (ht : r ∣ ∑ i ∈ Finset.range t, p ^ i) (n : ℕ) :
     (r ∣ ∑ i ∈ Finset.range n, p ^ i) ↔
       r ∣ ∑ i ∈ Finset.range (n % t), p ^ i := by
