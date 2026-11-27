@@ -97,7 +97,7 @@ theorem verifiedBan_sound {k b : ℕ} {rows : Vector Slot k} {x : Fin k → ℕ 
 
 /-- Look only at the integers skipped by a proposed change of endpoint. -/
 @[expose] def primeGap (start width stride banned : ℕ) : Bool :=
-  decide (∀ j : Fin width, ¬ ((start+j.val).Prime ∧ (start+j.val)%stride=1 ∧ start+j.val≠banned))
+  decide (∀ j : Fin width, ¬ (fastPrimeBool (start+j.val) = true ∧ (start+j.val)%stride=1 ∧ start+j.val≠banned))
 
 theorem outside_prime_gap {start width stride banned p : ℕ}
     (h : primeGap start width stride banned) (hp : p.Prime) (hr : p%stride=1) (hb : p≠banned) :
@@ -107,7 +107,7 @@ theorem outside_prime_gap {start width stride banned p : ℕ}
   have he : start+j.val=p := by dsimp [j]; omega
   have hh := of_decide_eq_true h j
   rw [he] at hh
-  exact hh ⟨hp,hr,hb⟩
+  exact hh ⟨fastPrimeBool_eq_true_iff.mpr hp,hr,hb⟩
 
 /-- Raise a base past its predecessor and any forbidden primes in the gap. -/
 theorem covered_prime_lower {k : ℕ} (rows : Vector Slot k) (i : Fin k) (lo start ban : ℕ)
