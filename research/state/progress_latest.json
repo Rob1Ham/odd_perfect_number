@@ -1,0 +1,147 @@
+{
+  "timestamp": "2026-11-27T03:31:53Z",
+  "counts": {
+    "total_lean_modules": 1311,
+    "audited_reached_modules": 795,
+    "unintegrated_modules": 516,
+    "root_direct_imports": 180,
+    "structural_modules": 345,
+    "certificate_chunk_modules": 966,
+    "structural_share_pct": 26.3,
+    "distinct_mathlib_imports_in_structural": 80,
+    "hygiene_violations": 0,
+    "mathlib_declarations": 230753,
+    "project_structural_declarations": 3578,
+    "project_certificate_declarations": 41648
+  },
+  "hygiene_violations": [],
+  "unintegrated_tracks": [
+    {
+      "track": "HarmonicRange (background \u2014 Cohen\u2013Sorli odd harmonic exclusion)",
+      "total_modules": 322,
+      "top_level_modules": [
+        "OddPerfect.HarmonicTauSmooth"
+      ],
+      "fresh_olean": 67,
+      "stale_olean": 16,
+      "unbuilt": 239,
+      "ready_pct": 20.8
+    },
+    {
+      "track": "CountBound47 (background \u2014 \u03a9(N) \u2265 47)",
+      "total_modules": 167,
+      "top_level_modules": [
+        "OddPerfect.ChainArithmetic",
+        "OddPerfect.ChainWitness",
+        "OddPerfect.CountBound47",
+        "OddPerfect.CountChain45"
+      ],
+      "fresh_olean": 7,
+      "stale_olean": 2,
+      "unbuilt": 158,
+      "ready_pct": 4.2
+    },
+    {
+      "track": "DeficientFour & \u03c9(N) \u2265 6 (background \u2014 Yang\u2013Togb\u00e9 / Gradshtein)",
+      "total_modules": 27,
+      "top_level_modules": [],
+      "fresh_olean": 0,
+      "stale_olean": 0,
+      "unbuilt": 27,
+      "ready_pct": 0.0
+    }
+  ],
+  "frontier": [
+    {
+      "axis": "Absolute Size Bound (N > 10^k)",
+      "audited_claim": "N > 10^300 (> 10^740 on all I=\u2113t\u00b2 a>1; > 10^17240 if i=p^j; > 10^3136 if 6th-power-free)",
+      "audited_mod": "OddPerfect.SizeBound300",
+      "audited_thm": "ten_pow_three_hundred_lt_of_odd_perfect",
+      "staged_claim": "N > 10^1500 branch-tree replay",
+      "staged_mod": null,
+      "published_best": "N > 10^1500 (Ochem\u2013Rao 2012); 10^2200 reported",
+      "audited_status": "IMPORTED",
+      "staged_status": "OPEN"
+    },
+    {
+      "axis": "Distinct Prime Divisors \u03c9(N)",
+      "audited_claim": "\u03c9(N) \u2265 6 (\u2265 8 if 3 \u2224 N or i=p^(2u); \u2265 443 if 6th-power-free)",
+      "audited_mod": "OddPerfect.PrimeFive",
+      "audited_thm": "six_le_distinct_prime_factor_count",
+      "staged_claim": "\u03c9(N) \u2265 7 / Nielsen \u03c9(N) \u2265 10",
+      "staged_mod": null,
+      "published_best": "\u03c9(N) \u2265 10 (Nielsen 2015)",
+      "audited_status": "IMPORTED",
+      "staged_status": "OPEN"
+    },
+    {
+      "axis": "Total Prime Divisors \u03a9(N)",
+      "audited_claim": "\u03a9(N) \u2265 37. Every candidate has an index with \u03a9(i_p)+5 \u2264 \u03a9(N). Sixth-power-free gives \u03a9(N) \u2265 1179.",
+      "audited_mod": "OddPerfect.ComponentIndexDrop",
+      "audited_thm": "exists_componentIndex_cardFactors_add_five_le",
+      "staged_claim": "\u03a9(N) \u2265 47",
+      "staged_mod": "OddPerfect.CountBound47",
+      "published_best": "\u03a9(N) \u2265 101 (Ochem\u2013Rao 2012)",
+      "audited_status": "IMPORTED",
+      "staged_status": "STAGED (unbuilt)"
+    },
+    {
+      "axis": "Linear / Additive Factor Excess",
+      "audited_claim": "21\u03c9 \u2264 8\u03a9+39. At 3\u2224N, 8\u03c9+4L\u2082 \u2264 3\u03a9+7. In the sixth-power-free case more than one sixth of the support is an exact-square prime \u22611 mod 5.",
+      "audited_mod": "OddPerfect.ZelinskyFullSlope",
+      "audited_thm": "multi_block_slope_above_zelinsky",
+      "staged_claim": "Extend Clayton\u2013Hansen and Zelinsky slopes across uncovered residue classes",
+      "staged_mod": null,
+      "published_best": "\u03a9 \u2265 2\u03c9 + 51 (Ochem\u2013Rao). Clayton\u2013Hansen (2023) give 99\u03c9 \u2264 37\u03a9+187 and, for 3\u2224N, 51\u03c9 \u2264 19\u03a9+46.",
+      "audited_status": "IMPORTED",
+      "staged_status": "OPEN"
+    },
+    {
+      "axis": "Euler Component Index i_q = \u03c3(m\u00b2)/q\u1d43",
+      "audited_claim": "i_q \u2265 2379. At a>1, I=\u2113t\u00b2 forces N > 10^740 and excludes q \u2261 2,4 mod 7.",
+      "audited_mod": "OddPerfect.ExceptionalBranchClosure",
+      "audited_thm": "exceptional_index_size_gt_ten_pow_740",
+      "staged_claim": "Full closure of I = \u2113 t\u00b2 (Hirakawa 2024)",
+      "staged_mod": null,
+      "published_best": "Dris / Broughan\u2013Delbourgo\u2013Zhou / Hirakawa (2024)",
+      "audited_status": "IMPORTED",
+      "staged_status": "OPEN"
+    },
+    {
+      "axis": "Prime-Power Component Index i = p^j",
+      "audited_claim": "j \u2265 30028 (\u2265 36207 odd); 5 repunits |S\u2081|\u22655; i,N > 10^17240 (> 10^300280 even)",
+      "audited_mod": "OddPerfect.PrimePowerHigherObstruction",
+      "audited_thm": "component_prime_power_index_exponent_ge_30028",
+      "staged_claim": "Unconditional elimination of i = p^(2u) via higher p-adic congruences",
+      "staged_mod": null,
+      "published_best": "Conditional exclusion via Nagell\u2013Ljunggren / Goormaghtigh",
+      "audited_status": "IMPORTED",
+      "staged_status": "OPEN"
+    },
+    {
+      "axis": "Odd Harmonic Superclass (\u03c3(N) \u2223 N\u03c4(N))",
+      "audited_claim": "\u03c9 \u2265 3 (\u2265 4 if 5th-power-free); HarmonicRange/Smooth; fixed-support/mean finite",
+      "audited_mod": "OddPerfect.HarmonicBoundedExp",
+      "audited_thm": "odd_oreHarmonic_four_le_primeFactors_of_fifthPowerFree",
+      "staged_claim": "HarmonicTauSmooth toward N > 10^24",
+      "staged_mod": "OddPerfect.HarmonicTauSmooth",
+      "published_best": "N > 10^24 (Cohen\u2013Sorli 2010); Pollack (2014) Subspace finiteness",
+      "audited_status": "IMPORTED",
+      "staged_status": "STAGED (unbuilt)"
+    },
+    {
+      "axis": "Deficient-Perfect / Near-Perfect / Spoof Classes",
+      "audited_claim": "The unique four-prime odd deficient-perfect case is (9018009, 819). A coprime divisor-sum split gives the proper factor 19 of its T\u00f3th multiplier.",
+      "audited_mod": "OddPerfect.DeficientFourClassification",
+      "audited_thm": "odd_deficientPerfect_four_iff",
+      "staged_claim": "4-prime odd near-perfect uniqueness (Tang\u2013Ma\u2013Feng)",
+      "staged_mod": null,
+      "published_best": "Yang\u2013Togb\u00e9 (2023), Tang\u2013Ma\u2013Feng (2016), BYU signed spoofs",
+      "audited_status": "IMPORTED",
+      "staged_status": "OPEN"
+    }
+  ],
+  "recommendations": [
+    "See [the resolution handoff](RESOLUTION_HANDOFF.md) for the six-factor criterion, T\u00f3th split, exceptional Fermat reduction and the global B3 cap."
+  ]
+}

@@ -1,0 +1,17 @@
+--- a/FormalConjectures/Wikipedia/DescartesNumber.lean
++++ b/FormalConjectures/Wikipedia/DescartesNumber.lean
+@@ -145,11 +145,13 @@
+     (hd : IsDescartesNumber n) (hcf : Powerfree 3 n) (h3 : ¬ 3 ∣ n) :
+     10 ^ 6 < n.primeFactors.card := by
+   sorry
+ 
++set_option linter.style.formal_proof_palomar false in
+ /-- **Tóth's Lower Bound on Spoof Factorizations** [To21]: every Descartes factorization
+ $m \cdot w \ne 198{,}585{,}576{,}189$ satisfies $m > 10^{12}$. -/
+-@[category research solved, AMS 11]
++@[category research solved, AMS 11, formal_proof using lean4 at
++  "https://github.com/Rob1Ham/odd_perfect_number/blob/841bbce6a93f3b79aac04bb79f845a878057d124/OddPerfect/TothTrillion.lean#L23-L29"]
+ theorem descartes_non_example_factor_gt_ten_pow_twelve (m w : ℕ)
+     (hf : IsDescartesFactorization m w) (hne : m * w ≠ descartesExample) :
+     10 ^ 12 < m := by
+   sorry

@@ -1,0 +1,35 @@
+# Complete the empty fields and confirm the disclosures before saving as formalization.yaml.
+version: v0.4
+project:
+  name: $title
+  description: >-
+    $description
+  authors: []
+  responsible_maintainers: []
+  license: null
+classification:
+  arxiv: ["math.NT"]
+  msc2020: ["11A25"]
+sources:
+  - title: $paper
+    authors: $authors
+    type: paper
+    id: $doi
+    # Confirm the relationship to the paper's argument before registration.
+    relationship: $relationship
+automation:
+  methods:
+    - method: agent
+      framework: Codex
+      tool_setup: AI-assisted preparation and local Lean verification of the catalog statement.
+  # Add the material methods used in the underlying proof development.
+review:
+  # Describe the actual human or automated review completed before registration.
+  status: null
+alignment:
+  namespace: DescartesNumber
+  statements:
+    - source: $paper
+      lean: $theorem
+      module: Solution
+      status: proved

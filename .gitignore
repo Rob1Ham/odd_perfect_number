@@ -1,1 +1,4 @@
 /.lake/
+/research/state/*.sqlite*
+**/__pycache__/
+

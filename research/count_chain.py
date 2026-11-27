@@ -308,8 +308,9 @@ class Tree:
         return '\n\n'.join(sections) + '\n'
 
 
-    def script(self, root=1, blocked=frozenset(), label=None):
+    def script(self, root=1, blocked=frozenset(), label=None, arithmetic=False):
         label = label or f'seed{self.seed}Script'
+        tree_type = 'ArithmeticTree' if arithmetic else 'Script'
         # Local indices identify children without repeatedly storing D in the
         # witness text. The independent verifier recomputes every omitted case.
         data = {}
@@ -332,11 +333,22 @@ class Tree:
                     if child in self.hints and child not in blocked:
                         children.append((i*(self.budget+1)+e, child))
                         size += collect(child, spent+e)
+            if arithmetic:
+                if action.startswith('.groups '):
+                    entries = action.removeprefix('.groups ')
+                    g = prod(map(int, entries[1:-1].split(','))) if entries != '[]' else 1
+                    action = f'.groups {pow(2*d, -1, g)} {entries}'
+                elif action.startswith('.cut '):
+                    _, threshold, large, witness = action.split()
+                    a, L, g = map(int, (threshold, large, witness))
+                    inverse = pow(2*d, -1, g) if L > a else 0
+                    rough_inverse = pow(factorial(L-1), -1, g) if L > a else 0
+                    action += f' {inverse} {rough_inverse}'
             data[d] = action, children, size
             return size
 
         if root not in self.hints:
-            return f'private noncomputable def {label} : Script := .automatic\n'
+            return f'private noncomputable def {label} : {tree_type} := .automatic\n'
         collect(root, sum(e for _, e in self.hints[root][0]))
         sections = []
         declared = {}
@@ -350,7 +362,7 @@ class Tree:
                     path, _ = self.hints[d]
                     desc = ' * '.join(str(p) if e == 1 else f'{p}^{e}' for p, e in path)
                     block = render_body(d, 2)
-                    sections.append(f'-- Exact component {desc}.\nprivate noncomputable def {name} : Script :=\n  {block}')
+                    sections.append(f'-- Exact component {desc}.\nprivate noncomputable def {name} : {tree_type} :=\n  {block}')
                 return declared[d]
             return render_body(d, indent)
 
@@ -366,7 +378,7 @@ class Tree:
             return action + ' [\n' + ' '*(indent+2) + sep.join(chunks) + ']'
 
         body = render_body(root, 2)
-        sections.append(f'private noncomputable def {label} : Script :=\n  {body}')
+        sections.append(f'private noncomputable def {label} : {tree_type} :=\n  {body}')
         return '\n\n'.join(sections) + '\n'
 
     def replay(self):
@@ -470,11 +482,16 @@ def main():
     parser.add_argument('--min-count', type=int, default=37, help='minimum total factor count for size searches')
     parser.add_argument('--output', type=Path, help='write a Lean module if every path closes')
     parser.add_argument('--partition', action='store_true', help='emit bounded independent exact-exponent modules')
+    parser.add_argument('--frequent-primes-first', action='store_true', help='check the most commonly used split primes first in partitioned replay')
+    parser.add_argument('--arithmetic-after', type=int, help='use modular inverse transcripts after this many ordinary partitions')
+    parser.add_argument('--lanes', type=int, default=1, help='maximum independent arithmetic partition chains')
     parser.add_argument('--compact', action='store_true', help='key each child by its local branch number')
     parser.add_argument('--tight', action='store_true', help='use sharper residual group and count cutoffs')
     parser.add_argument('--cutoffs', action='store_true', help='use conditional small-prime branches')
     parser.add_argument('--factor-seconds', type=float, default=0.4)
     args = parser.parse_args()
+    if args.lanes < 1 or (args.arithmetic_after is not None and args.arithmetic_after < 0):
+        parser.error('use a positive number of lanes and a nonnegative partition prefix')
     if args.budget < 1 or args.factor_seconds <= 0:
         parser.error('budget and factor-seconds must be positive')
     factorer = Factorer(args.factor_seconds)
@@ -511,7 +528,8 @@ def main():
         if args.size:
             parser.error('partitioned replay currently applies to count budgets')
         from partition_chain import emit_partition
-        emit_partition(trees, factorer, args.output)
+        emit_partition(trees, factorer, args.output, frequent_primes_first=args.frequent_primes_first,
+                       arithmetic_after=args.arithmetic_after, lanes=args.lanes)
         return
     primes = sorted(set.union(*(t.primes for t in trees)))
     proofs = ',\n    '.join(factorer.prime_proof(p) for p in primes)
