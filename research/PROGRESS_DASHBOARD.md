@@ -1,6 +1,6 @@
 # Odd Perfect Number — Continuous Progress & Reevaluation Dashboard
 
-**Snapshot UTC**: `2026-11-27T03:31:53Z` · **Hygiene (`sorry`/`axiom`)**: `0 violations`
+**Snapshot UTC**: `2026-11-27T14:09:23Z` · **Hygiene (`sorry`/`axiom`)**: `0 violations`
 
 ## 1. Macro Health & Integration Metrics
 
@@ -8,11 +8,11 @@ Module totals come from the import graph. See the [research ledger](LEDGER.md) f
 
 | Metric | Current (Δ vs prior) | Interpretation |
 | --- | --- | --- |
-| Modules reachable from `OddPerfect.lean` | `795` (0) | Covered by the public audit when it passes |
-| Unintegrated modules in `OddPerfect/` | `516` (0) | Staged / WIP debt awaiting harvest or pruning |
-| Structural modules vs Certificate chunks | `345` / `966` (`26.3%` structural) | Guards against brute-force tree bloat |
-| Structural declarations (`OddPerfect/`) | `3,578` (+1) | Reusable lemmas & public theorems |
-| Distinct Mathlib modules imported (structural) | `80` (0) | Breadth of Mathlib theorem reuse |
+| Modules reachable from `OddPerfect.lean` | `845` (+12) | Covered by the public audit when it passes |
+| Unintegrated modules in `OddPerfect/` | `516` (-4) | Staged / WIP debt awaiting harvest or pruning |
+| Structural modules vs Certificate chunks | `395` / `966` (`29.0%` structural) | Guards against brute-force tree bloat |
+| Structural declarations (`OddPerfect/`) | `4,206` (+85) | Reusable lemmas & public theorems |
+| Distinct Mathlib modules imported (structural) | `115` (+23) | Breadth of Mathlib theorem reuse |
 
 ## 2. Candidate-Set Contraction Frontier (`∃ N, Odd N ∧ Nat.Perfect N`)
 

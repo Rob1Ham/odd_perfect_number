@@ -27,7 +27,7 @@ python3 research/tools/mathlib_kb.py overlap
 
 - **Pinned Mathlib files indexed**: `8,799`
 - **Pinned Mathlib declarations indexed**: `230,753`
-- **Project structural declarations (`OddPerfect/`)**: `3,578`
+- **Project structural declarations (`OddPerfect/`)**: `4,206`
 - **Project generated certificate declarations**: `41,648`
 
 ---
@@ -61,11 +61,11 @@ Dirichlet ring of arithmetic functions, multiplicativity of `σ k` (`isMultiplic
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.NumberTheory.ArithmeticFunction.Misc` | 66 | 7 |
-| `Mathlib.NumberTheory.ArithmeticFunction.Defs` | 60 | 0 |
+| `Mathlib.NumberTheory.ArithmeticFunction.Misc` | 66 | 16 |
+| `Mathlib.NumberTheory.ArithmeticFunction.Defs` | 60 | 3 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Zeta` | 32 | 0 |
-| `Mathlib.NumberTheory.ArithmeticFunction.Moebius` | 35 | 0 |
-| `Mathlib.NumberTheory.ArithmeticFunction.Carmichael` | 19 | 0 |
+| `Mathlib.NumberTheory.ArithmeticFunction.Moebius` | 35 | 1 |
+| `Mathlib.NumberTheory.ArithmeticFunction.Carmichael` | 19 | 1 |
 
 **Representative Mathlib declarations:**
 - `sigma_one_apply` (`Mathlib.NumberTheory.ArithmeticFunction.Misc`): `(n : ℕ) : σ 1 n = ∑ d ∈ divisors n, d`
@@ -83,12 +83,12 @@ Exact component extraction (`ordProj[p] n`, `ordCompl[p] n`), `Nat.factorization
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.Data.Nat.Factorization.Basic` | 77 | 1 |
-| `Mathlib.Data.Nat.Factorization.Defs` | 43 | 0 |
+| `Mathlib.Data.Nat.Factorization.Basic` | 77 | 6 |
+| `Mathlib.Data.Nat.Factorization.Defs` | 43 | 3 |
 | `Mathlib.Data.Nat.Factorization.PrimePow` | 19 | 2 |
 | `Mathlib.Data.Nat.Factorization.LCM` | 10 | 0 |
 | `Mathlib.Algebra.IsPrimePow` | 20 | 0 |
-| `Mathlib.NumberTheory.Padics.PadicVal.Basic` | 84 | 0 |
+| `Mathlib.NumberTheory.Padics.PadicVal.Basic` | 84 | 1 |
 | `Mathlib.NumberTheory.Multiplicity` | 25 | 5 |
 
 **Representative Mathlib declarations:**
@@ -107,13 +107,13 @@ Bang-Zsigmondy / primitive prime divisor machinery, `Polynomial.cyclotomic` root
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.RingTheory.Polynomial.Cyclotomic.Basic` | 58 | 0 |
-| `Mathlib.RingTheory.Polynomial.Cyclotomic.Eval` | 15 | 1 |
+| `Mathlib.RingTheory.Polynomial.Cyclotomic.Basic` | 58 | 1 |
+| `Mathlib.RingTheory.Polynomial.Cyclotomic.Eval` | 15 | 2 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Expand` | 9 | 1 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization` | 5 | 0 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Roots` | 18 | 0 |
-| `Mathlib.Algebra.Ring.GeomSum` | 54 | 3 |
-| `Mathlib.GroupTheory.OrderOfElement` | 170 | 2 |
+| `Mathlib.Algebra.Ring.GeomSum` | 54 | 11 |
+| `Mathlib.GroupTheory.OrderOfElement` | 170 | 4 |
 | `Mathlib.NumberTheory.PrimesCongruentOne` | 3 | 0 |
 
 **Representative Mathlib declarations:**
@@ -132,11 +132,11 @@ Direction constraints on prime-forcing edges (`3 mod 4` reciprocity), Euler's cr
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity` | 10 | 3 |
+| `Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity` | 10 | 4 |
 | `Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol` | 50 | 3 |
 | `Mathlib.NumberTheory.LegendreSymbol.Basic` | 30 | 0 |
-| `Mathlib.FieldTheory.Finite.Basic` | 80 | 41 |
-| `Mathlib.Algebra.Field.ZMod` | 0 | 2 |
+| `Mathlib.FieldTheory.Finite.Basic` | 80 | 45 |
+| `Mathlib.Algebra.Field.ZMod` | 0 | 3 |
 
 **Representative Mathlib declarations:**
 - `legendreSym.at_two` (`Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity`): `(hp : p ≠ 2) : legendreSym p 2 = χ₈ p`
@@ -154,9 +154,9 @@ Ljunggren / Nagell-Ljunggren reductions, Pell solution groups (`Pell.Solution1`)
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.NumberTheory.Pell` | 59 | 1 |
+| `Mathlib.NumberTheory.Pell` | 59 | 2 |
 | `Mathlib.NumberTheory.PellMatiyasevic` | 81 | 0 |
-| `Mathlib.NumberTheory.Zsqrtd.Basic` | 107 | 4 |
+| `Mathlib.NumberTheory.Zsqrtd.Basic` | 107 | 5 |
 | `Mathlib.NumberTheory.LucasLehmer` | 75 | 0 |
 | `Mathlib.Tactic.Primality` | 3 | 26 |
 | `Mathlib.Tactic.NormNum.Prime` | 19 | 3 |
@@ -175,7 +175,7 @@ Underutilized analytical bridge for formalizing Zelinsky (2025) prime-reciprocal
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.Analysis.SpecialFunctions.Log.Basic` | 110 | 2 |
+| `Mathlib.Analysis.SpecialFunctions.Log.Basic` | 110 | 3 |
 | `Mathlib.Analysis.SpecialFunctions.Log.Sum` | 7 | 0 |
 | `Mathlib.Analysis.SpecialFunctions.Log.Monotone` | 5 | 0 |
 | `Mathlib.NumberTheory.SumPrimeReciprocals` | 8 | 0 |
@@ -202,28 +202,23 @@ structural `OddPerfect/` modules:
 | `Mathlib.NumberTheory.Divisors` | 1. Divisors, Perfection, Abundancy & Factorisation Properties | 125 | 1 |
 | `Mathlib.Data.Nat.Factorization.Divisors` | 1. Divisors, Perfection, Abundancy & Factorisation Properties | 8 | 0 |
 | `Archive.Wiedijk100Theorems.PerfectNumbers` | 1. Divisors, Perfection, Abundancy & Factorisation Properties | 7 | 2 |
-| `Mathlib.NumberTheory.ArithmeticFunction.Defs` | 2. Arithmetic Functions (`σ`, `ω`, `Ω`, `ζ`, `μ`) & Multiplicativity | 60 | 0 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Zeta` | 2. Arithmetic Functions (`σ`, `ω`, `Ω`, `ζ`, `μ`) & Multiplicativity | 32 | 0 |
-| `Mathlib.NumberTheory.ArithmeticFunction.Moebius` | 2. Arithmetic Functions (`σ`, `ω`, `Ω`, `ζ`, `μ`) & Multiplicativity | 35 | 0 |
-| `Mathlib.NumberTheory.ArithmeticFunction.Carmichael` | 2. Arithmetic Functions (`σ`, `ω`, `Ω`, `ζ`, `μ`) & Multiplicativity | 19 | 0 |
-| `Mathlib.Data.Nat.Factorization.Basic` | 3. Prime Factorization, Exact Prime Powers (`ordProj` / `ordCompl`) & Valuations | 77 | 1 |
-| `Mathlib.Data.Nat.Factorization.Defs` | 3. Prime Factorization, Exact Prime Powers (`ordProj` / `ordCompl`) & Valuations | 43 | 0 |
+| `Mathlib.NumberTheory.ArithmeticFunction.Moebius` | 2. Arithmetic Functions (`σ`, `ω`, `Ω`, `ζ`, `μ`) & Multiplicativity | 35 | 1 |
+| `Mathlib.NumberTheory.ArithmeticFunction.Carmichael` | 2. Arithmetic Functions (`σ`, `ω`, `Ω`, `ζ`, `μ`) & Multiplicativity | 19 | 1 |
 | `Mathlib.Data.Nat.Factorization.PrimePow` | 3. Prime Factorization, Exact Prime Powers (`ordProj` / `ordCompl`) & Valuations | 19 | 2 |
 | `Mathlib.Data.Nat.Factorization.LCM` | 3. Prime Factorization, Exact Prime Powers (`ordProj` / `ordCompl`) & Valuations | 10 | 0 |
 | `Mathlib.Algebra.IsPrimePow` | 3. Prime Factorization, Exact Prime Powers (`ordProj` / `ordCompl`) & Valuations | 20 | 0 |
-| `Mathlib.NumberTheory.Padics.PadicVal.Basic` | 3. Prime Factorization, Exact Prime Powers (`ordProj` / `ordCompl`) & Valuations | 84 | 0 |
-| `Mathlib.RingTheory.Polynomial.Cyclotomic.Basic` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 58 | 0 |
-| `Mathlib.RingTheory.Polynomial.Cyclotomic.Eval` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 15 | 1 |
+| `Mathlib.NumberTheory.Padics.PadicVal.Basic` | 3. Prime Factorization, Exact Prime Powers (`ordProj` / `ordCompl`) & Valuations | 84 | 1 |
+| `Mathlib.RingTheory.Polynomial.Cyclotomic.Basic` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 58 | 1 |
+| `Mathlib.RingTheory.Polynomial.Cyclotomic.Eval` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 15 | 2 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Expand` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 9 | 1 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 5 | 0 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Roots` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 18 | 0 |
-| `Mathlib.GroupTheory.OrderOfElement` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 170 | 2 |
 | `Mathlib.NumberTheory.PrimesCongruentOne` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 3 | 0 |
 | `Mathlib.NumberTheory.LegendreSymbol.Basic` | 5. Quadratic Reciprocity, Legendre/Jacobi Symbols & Finite Fields | 30 | 0 |
-| `Mathlib.NumberTheory.Pell` | 6. Pell Equations, `Zsqrtd`, Squares & Exponential Diophantine Tools | 59 | 1 |
+| `Mathlib.NumberTheory.Pell` | 6. Pell Equations, `Zsqrtd`, Squares & Exponential Diophantine Tools | 59 | 2 |
 | `Mathlib.NumberTheory.PellMatiyasevic` | 6. Pell Equations, `Zsqrtd`, Squares & Exponential Diophantine Tools | 81 | 0 |
 | `Mathlib.NumberTheory.LucasLehmer` | 6. Pell Equations, `Zsqrtd`, Squares & Exponential Diophantine Tools | 75 | 0 |
-| `Mathlib.Analysis.SpecialFunctions.Log.Basic` | 7. Logarithmic, Prime-Reciprocal & Rational Envelope Inequalities | 110 | 2 |
 | `Mathlib.Analysis.SpecialFunctions.Log.Sum` | 7. Logarithmic, Prime-Reciprocal & Rational Envelope Inequalities | 7 | 0 |
 | `Mathlib.Analysis.SpecialFunctions.Log.Monotone` | 7. Logarithmic, Prime-Reciprocal & Rational Envelope Inequalities | 5 | 0 |
 | `Mathlib.NumberTheory.SumPrimeReciprocals` | 7. Logarithmic, Prime-Reciprocal & Rational Envelope Inequalities | 8 | 0 |
