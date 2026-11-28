@@ -308,3 +308,5 @@ public import OddPerfect.GlobalTier2WaveQObstruction
 public import OddPerfect.SquareOutputCapacity
 public import OddPerfect.LinearEulerRightSourceForcing
 public import OddPerfect.QuarticChainModFiveTargetReuse
+public import OddPerfect.LinearEulerRightBranchStructure
+public import OddPerfect.HighEulerHalfSumReduction

@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-11-28T04:13:36Z",
+  "timestamp": "2026-11-28T04:59:58Z",
   "counts": {
-    "total_lean_modules": 1455,
-    "audited_reached_modules": 925,
+    "total_lean_modules": 1457,
+    "audited_reached_modules": 927,
     "unintegrated_modules": 530,
-    "root_direct_imports": 308,
-    "structural_modules": 489,
+    "root_direct_imports": 310,
+    "structural_modules": 491,
     "certificate_chunk_modules": 966,
-    "structural_share_pct": 33.6,
-    "distinct_mathlib_imports_in_structural": 136,
+    "structural_share_pct": 33.7,
+    "distinct_mathlib_imports_in_structural": 137,
     "hygiene_violations": 0,
     "mathlib_declarations": 230753,
-    "project_structural_declarations": 4980,
+    "project_structural_declarations": 4991,
     "project_certificate_declarations": 41648
   },
   "hygiene_violations": [],
@@ -36,8 +36,8 @@
         "id": "ROOT",
         "kind": "partition",
         "status": "OPEN",
-        "active": true,
-        "missing": "IDEAS #7 and multi-degree cyclotomic count-LPs killed (NO_GO \u00a78); IQ_MULTI local/count-LP closure killed (NO_GO \u00a710). Needs a non-cardinality mechanism valid when S = 0 (all non-Euler exponents \u2265 4); pivot/freeze if Round 2 stalls.",
+        "active": false,
+        "missing": "FROZEN at Round 2 pivot checkpoint: IDEAS #7 and multi-degree cyclotomic count-LPs killed (NO_GO \u00a78); S = 0 powerful-m non-cardinality mechanisms killed (NO_GO \u00a712).",
         "hypothesis": null
       },
       {
@@ -45,15 +45,15 @@
         "kind": "partition",
         "status": "OPEN",
         "active": true,
-        "missing": "r\u2080 \u2223 m_L eliminated unconditionally across all g \u2265 1 (IDEAS #9). Remaining branch is r\u2080 \u2223 m_R (W_R \u03c3(m_L\u00b2) = g u\u2080\u00b2, r\u2080 \u2223 u\u2080): test r\u2080 \u2223 g_R vs \u00ac r\u2080 \u2223 g_R peeling and A1 powerful-m / g > 1 constraints in Round 2.",
+        "missing": "r\u2080 \u2223 m_L eliminated unconditionally (IDEAS #9), and Branch R1 (r\u2080 \u2223 g_R) restricted to r\u2080 \u2261 1 mod 4, non-Fermat 4\u2113 \u2223 q \u2212 1, A < r\u2080^(v_{r\u2080}(I)), k_R \u2264 2b, and b = 1 \u21d2 k_R = 1 (IDEAS #11). All 7 remaining local (R1/R2)\u00d7(g_L, g_R) regimes retain abundancy < 2 witnesses (Round 2 pivot budget exhausted for local/valuation attacks).",
         "hypothesis": null
       },
       {
         "id": "A1_SPF",
         "kind": "partition",
         "status": "OPEN",
-        "active": true,
-        "missing": "5 D_all \u2265 4k \u2212 2 proved (sharp on D_all), but both lower-square-count and a 27/10 (k=0) integer family survive full fine/mod-5/mod-4/complete-factorization LPs (NO_GO \u00a711). Round 2 tests non-cardinality obstructions or freezes A1_SPF on 2-round stall.",
+        "active": false,
+        "missing": "FROZEN at Round 2 pivot checkpoint: 5 D_all \u2265 4k \u2212 2 proved, but Ray_18 (364-var integer + bipartite log-height witness at \u03c9 = 1800) and lower-square-count (k \u2265 m - 2) survive every linear count, residue, complete-factorization, and log-height LP (NO_GO \u00a7\u00a711, 13).",
         "hypothesis": null
       },
       {
@@ -84,8 +84,8 @@
         "id": "A_GT1",
         "kind": "partition",
         "status": "OPEN",
-        "active": false,
-        "missing": null,
+        "active": true,
+        "missing": "Subcase A ((q^d+1)/2 = \u25a1, prime and composite d) isolated to the explicit external modular-forms prerequisite PrimePowerFermatObstruction (Ivorra 2003, Acta Arith. 108(4); Bennett\u2013Skinner 2004, Canad. J. Math. 56(1), Prop. 8.1 \u2014 absent from pinned Mathlib). Subcase B ((q^d+1)/2 \u2260 \u25a1) forces d.Prime unconditionally at |oddVal(I)| = 2, but prime-d Subcase B retains local witnesses (17, 13, 7) and (293, 5, 3) (NO_GO \u00a710).",
         "hypothesis": null
       },
       {
@@ -109,7 +109,7 @@
         "kind": "partition",
         "status": "OPEN",
         "active": false,
-        "missing": null,
+        "missing": "Subcase A ((q^d+1)/2 = \u25a1) conditionally closed on PrimePowerFermatObstruction; Subcase B unconditionally forces d.Prime when |oddVal(I)| = 2, but prime-d Subcase B is locally unobstructed (witnesses (17, 13, 7) and (293, 5, 3), NO_GO \u00a710).",
         "hypothesis": null
       },
       {
@@ -155,64 +155,45 @@
     ],
     "active_nodes": [
       {
-        "id": "ROOT",
-        "kind": "partition",
-        "parent": null,
-        "status": "OPEN",
-        "active": true,
-        "missing": "IDEAS #7 and multi-degree cyclotomic count-LPs killed (NO_GO \u00a78); IQ_MULTI local/count-LP closure killed (NO_GO \u00a710). Needs a non-cardinality mechanism valid when S = 0 (all non-Euler exponents \u2265 4); pivot/freeze if Round 2 stalls.",
-        "owner": "Carbon Strategist",
-        "description": "Odd perfect N in Euler form q^a m^2, q \u2261 a \u2261 1 (mod 4).",
-        "lean": [
-          "euler_form"
-        ],
-        "floors": "N > 10^300, \u03c9 \u2265 6, \u03a9 \u2265 37 (frontier: 10^1500, \u03c9 \u2265 10, \u03a9 \u2265 101)"
-      },
-      {
         "id": "A1",
         "kind": "partition",
         "parent": "ROOT",
         "status": "OPEN",
         "active": true,
         "description": "Euler exponent a = 1. Then m^2 is odd deficient-perfect with omitted divisor i_q (T\u00f3th pair with prime multiplier q).",
-        "missing": "r\u2080 \u2223 m_L eliminated unconditionally across all g \u2265 1 (IDEAS #9). Remaining branch is r\u2080 \u2223 m_R (W_R \u03c3(m_L\u00b2) = g u\u2080\u00b2, r\u2080 \u2223 u\u2080): test r\u2080 \u2223 g_R vs \u00ac r\u2080 \u2223 g_R peeling and A1 powerful-m / g > 1 constraints in Round 2.",
+        "missing": "r\u2080 \u2223 m_L eliminated unconditionally (IDEAS #9), and Branch R1 (r\u2080 \u2223 g_R) restricted to r\u2080 \u2261 1 mod 4, non-Fermat 4\u2113 \u2223 q \u2212 1, A < r\u2080^(v_{r\u2080}(I)), k_R \u2264 2b, and b = 1 \u21d2 k_R = 1 (IDEAS #11). All 7 remaining local (R1/R2)\u00d7(g_L, g_R) regimes retain abundancy < 2 witnesses (Round 2 pivot budget exhausted for local/valuation attacks).",
         "owner": "Carbon Strategist",
         "lean": [
           "linear_euler_unique_q_source_and_bound",
           "universal_half_succ_index_gcd_square_parametrization",
-          "linear_euler_unique_source_right_forcing"
+          "linear_euler_unique_source_right_forcing",
+          "linear_euler_right_branch_structure"
         ]
       },
       {
-        "id": "A1_SPF",
+        "id": "A_GT1",
         "kind": "partition",
-        "parent": "A1",
+        "parent": "ROOT",
         "status": "OPEN",
         "active": true,
-        "description": "Sixth-power-free (forces a = 1; every other exponent is 2 or 4; least prime \u2265 53).",
+        "description": "Euler exponent a > 1. Split by the odd-valuation primes of the Euler index I = \u03c3(m\u00b2)/q^a.",
         "lean": [
-          "sixth_power_free_euler_exponent_one",
-          "sixth_power_or_large_support",
-          "sixth_power_free_oneModThreeLarge_ge_80",
-          "OddPerfect.SquareOutputCapacity.sixth_power_free_square_output_capacity",
-          "quartic_chain_mod_five_target_reuse"
+          "high_euler_half_sum_not_square_of_prime_power_fermat"
         ],
-        "floors": "\u03c9 \u2265 443, \u03a9 \u2265 1179, N > 10^3136, |Q13| \u2265 80, E \u2265 221",
-        "missing": "5 D_all \u2265 4k \u2212 2 proved (sharp on D_all), but both lower-square-count and a 27/10 (k=0) integer family survive full fine/mod-5/mod-4/complete-factorization LPs (NO_GO \u00a711). Round 2 tests non-cardinality obstructions or freezes A1_SPF on 2-round stall.",
+        "missing": "Subcase A ((q^d+1)/2 = \u25a1, prime and composite d) isolated to the explicit external modular-forms prerequisite PrimePowerFermatObstruction (Ivorra 2003, Acta Arith. 108(4); Bennett\u2013Skinner 2004, Canad. J. Math. 56(1), Prop. 8.1 \u2014 absent from pinned Mathlib). Subcase B ((q^d+1)/2 \u2260 \u25a1) forces d.Prime unconditionally at |oddVal(I)| = 2, but prime-d Subcase B retains local witnesses (17, 13, 7) and (293, 5, 3) (NO_GO \u00a710).",
         "owner": "Carbon Strategist"
       }
     ],
     "ideas": {
-      "DONE": 5,
-      "KILLED": 2,
-      "PAUSED": 2,
-      "PROPOSED": 1
+      "DONE": 7,
+      "KILLED": 3,
+      "PAUSED": 2
     },
     "claims": {
       "REPLAY": 15,
-      "CANDIDATE-NEW": 9,
+      "CANDIDATE-NEW": 10,
       "LIBRARY": 6,
-      "REDUCTION": 2
+      "REDUCTION": 4
     },
     "claims_problems": [],
     "count_lp": {
@@ -386,10 +367,8 @@
     }
   ],
   "recommendations": [
-    "[ACTIVE ROOT] Missing ingredient: IDEAS #7 and multi-degree cyclotomic count-LPs killed (NO_GO \u00a78); IQ_MULTI local/count-LP closure killed (NO_GO \u00a710). Needs a non-cardinality mechanism valid when S = 0 (all non-Euler exponents \u2265 4); pivot/freeze if Round 2 stalls.",
-    "[ACTIVE A1] Missing ingredient: r\u2080 \u2223 m_L eliminated unconditionally across all g \u2265 1 (IDEAS #9). Remaining branch is r\u2080 \u2223 m_R (W_R \u03c3(m_L\u00b2) = g u\u2080\u00b2, r\u2080 \u2223 u\u2080): test r\u2080 \u2223 g_R vs \u00ac r\u2080 \u2223 g_R peeling and A1 powerful-m / g > 1 constraints in Round 2.",
-    "[ACTIVE A1_SPF] Missing ingredient: 5 D_all \u2265 4k \u2212 2 proved (sharp on D_all), but both lower-square-count and a 27/10 (k=0) integer family survive full fine/mod-5/mod-4/complete-factorization LPs (NO_GO \u00a711). Round 2 tests non-cardinality obstructions or freezes A1_SPF on 2-round stall.",
-    "[GATES] Ideas are waiting in IDEAS.md without gate records. Run research/GATES.md G1\u2013G4 and the Skeptic before dispatching any prover.",
+    "[ACTIVE A1] Missing ingredient: r\u2080 \u2223 m_L eliminated unconditionally (IDEAS #9), and Branch R1 (r\u2080 \u2223 g_R) restricted to r\u2080 \u2261 1 mod 4, non-Fermat 4\u2113 \u2223 q \u2212 1, A < r\u2080^(v_{r\u2080}(I)), k_R \u2264 2b, and b = 1 \u21d2 k_R = 1 (IDEAS #11). All 7 remaining local (R1/R2)\u00d7(g_L, g_R) regimes retain abundancy < 2 witnesses (Round 2 pivot budget exhausted for local/valuation attacks).",
+    "[ACTIVE A_GT1] Missing ingredient: Subcase A ((q^d+1)/2 = \u25a1, prime and composite d) isolated to the explicit external modular-forms prerequisite PrimePowerFermatObstruction (Ivorra 2003, Acta Arith. 108(4); Bennett\u2013Skinner 2004, Canad. J. Math. 56(1), Prop. 8.1 \u2014 absent from pinned Mathlib). Subcase B ((q^d+1)/2 \u2260 \u25a1) forces d.Prime unconditionally at |oddVal(I)| = 2, but prime-d Subcase B retains local witnesses (17, 13, 7) and (293, 5, 3) (NO_GO \u00a710).",
     "[LIABILITY] 530 unintegrated modules. Harvest only those on an active branch's critical path; archive the rest.",
     "Policy: harvesting, floor-raising and count tightening are not progress unless they change BRANCH_MAP, FLOOR_CEILING or the count-LP status (see NO_GO.md)."
   ]

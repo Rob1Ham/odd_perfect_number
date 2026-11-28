@@ -21,9 +21,9 @@ Rules:
 
 ```mermaid
 flowchart TD
-  ROOT["ROOT: odd perfect N = q^a m^2 (ACTIVE)"] --> A1["A1: a = 1 (OPEN, ACTIVE)"]
-  ROOT --> AG["A_GT1: a > 1 (OPEN)"]
-  A1 --> SPF["A1_SPF: sixth-power-free (OPEN, ACTIVE)"]
+  ROOT["ROOT: odd perfect N = q^a m^2 (OPEN, FROZEN)"] --> A1["A1: a = 1 (OPEN, ACTIVE)"]
+  ROOT --> AG["A_GT1: a > 1 (OPEN, ACTIVE)"]
+  A1 --> SPF["A1_SPF: sixth-power-free (OPEN, FROZEN)"]
   SPF -.-> HS["A1_SPF_HIGH_SQUARE: all square sources 1 mod 5 and S ≥ 2Q (CLOSED)"]
   A1 --> P6["A1_P6: some p^6 divides N (OPEN)"]
   AG --> SQ["IQ_SQUARE: Euler index a square (CLOSED)"]
@@ -41,20 +41,20 @@ flowchart TD
 ```json
 {
   "nodes": [
-    {"id": "ROOT", "kind": "partition", "parent": null, "status": "OPEN", "active": true,
-     "missing": "IDEAS #7 and multi-degree cyclotomic count-LPs killed (NO_GO §8); IQ_MULTI local/count-LP closure killed (NO_GO §10). Needs a non-cardinality mechanism valid when S = 0 (all non-Euler exponents ≥ 4); pivot/freeze if Round 2 stalls.", "owner": "Carbon Strategist",
+    {"id": "ROOT", "kind": "partition", "parent": null, "status": "OPEN", "active": false,
+     "missing": "FROZEN at Round 2 pivot checkpoint: IDEAS #7 and multi-degree cyclotomic count-LPs killed (NO_GO §8); S = 0 powerful-m non-cardinality mechanisms killed (NO_GO §12).", "owner": "Carbon Strategist",
      "description": "Odd perfect N in Euler form q^a m^2, q ≡ a ≡ 1 (mod 4).",
      "lean": ["euler_form"], "floors": "N > 10^300, ω ≥ 6, Ω ≥ 37 (frontier: 10^1500, ω ≥ 10, Ω ≥ 101)"},
     {"id": "A1", "kind": "partition", "parent": "ROOT", "status": "OPEN", "active": true,
      "description": "Euler exponent a = 1. Then m^2 is odd deficient-perfect with omitted divisor i_q (Tóth pair with prime multiplier q).",
-     "missing": "r₀ ∣ m_L eliminated unconditionally across all g ≥ 1 (IDEAS #9). Remaining branch is r₀ ∣ m_R (W_R σ(m_L²) = g u₀², r₀ ∣ u₀): test r₀ ∣ g_R vs ¬ r₀ ∣ g_R peeling and A1 powerful-m / g > 1 constraints in Round 2.",
+     "missing": "r₀ ∣ m_L eliminated unconditionally (IDEAS #9), and Branch R1 (r₀ ∣ g_R) restricted to r₀ ≡ 1 mod 4, non-Fermat 4ℓ ∣ q − 1, A < r₀^(v_{r₀}(I)), k_R ≤ 2b, and b = 1 ⇒ k_R = 1 (IDEAS #11). All 7 remaining local (R1/R2)×(g_L, g_R) regimes retain abundancy < 2 witnesses (Round 2 pivot budget exhausted for local/valuation attacks).",
      "owner": "Carbon Strategist",
-     "lean": ["linear_euler_unique_q_source_and_bound", "universal_half_succ_index_gcd_square_parametrization", "linear_euler_unique_source_right_forcing"]},
-    {"id": "A1_SPF", "kind": "partition", "parent": "A1", "status": "OPEN", "active": true,
+     "lean": ["linear_euler_unique_q_source_and_bound", "universal_half_succ_index_gcd_square_parametrization", "linear_euler_unique_source_right_forcing", "linear_euler_right_branch_structure"]},
+    {"id": "A1_SPF", "kind": "partition", "parent": "A1", "status": "OPEN", "active": false,
      "description": "Sixth-power-free (forces a = 1; every other exponent is 2 or 4; least prime ≥ 53).",
      "lean": ["sixth_power_free_euler_exponent_one", "sixth_power_or_large_support", "sixth_power_free_oneModThreeLarge_ge_80", "OddPerfect.SquareOutputCapacity.sixth_power_free_square_output_capacity", "quartic_chain_mod_five_target_reuse"],
      "floors": "ω ≥ 443, Ω ≥ 1179, N > 10^3136, |Q13| ≥ 80, E ≥ 221",
-     "missing": "5 D_all ≥ 4k − 2 proved (sharp on D_all), but both lower-square-count and a 27/10 (k=0) integer family survive full fine/mod-5/mod-4/complete-factorization LPs (NO_GO §11). Round 2 tests non-cardinality obstructions or freezes A1_SPF on 2-round stall.",
+     "missing": "FROZEN at Round 2 pivot checkpoint: 5 D_all ≥ 4k − 2 proved, but Ray_18 (364-var integer + bipartite log-height witness at ω = 1800) and lower-square-count (k ≥ m - 2) survive every linear count, residue, complete-factorization, and log-height LP (NO_GO §§11, 13).",
      "owner": "Carbon Strategist"},
     {"id": "A1_SPF_HIGH_SQUARE", "kind": "slice", "parent": "A1_SPF", "status": "CLOSED", "active": false,
      "description": "All exponent-two prime sources are 1 mod 5 (U = 0) and their number S is at least twice the number Q of exponent-four primes that are 1 mod 3.",
@@ -66,8 +66,11 @@ flowchart TD
      "lean": ["linear_euler_coprime_half_succ_quotient_system"],
      "missing": "A descent (strictly smaller solution of the same system) or a size contradiction on (h, u, W).",
      "owner": "Carbon Strategist"},
-    {"id": "A_GT1", "kind": "partition", "parent": "ROOT", "status": "OPEN", "active": false,
-     "description": "Euler exponent a > 1. Split by the odd-valuation primes of the Euler index I = σ(m²)/q^a."},
+    {"id": "A_GT1", "kind": "partition", "parent": "ROOT", "status": "OPEN", "active": true,
+     "description": "Euler exponent a > 1. Split by the odd-valuation primes of the Euler index I = σ(m²)/q^a.",
+     "lean": ["high_euler_half_sum_not_square_of_prime_power_fermat"],
+     "missing": "Subcase A ((q^d+1)/2 = □, prime and composite d) isolated to the explicit external modular-forms prerequisite PrimePowerFermatObstruction (Ivorra 2003, Acta Arith. 108(4); Bennett–Skinner 2004, Canad. J. Math. 56(1), Prop. 8.1 — absent from pinned Mathlib). Subcase B ((q^d+1)/2 ≠ □) forces d.Prime unconditionally at |oddVal(I)| = 2, but prime-d Subcase B retains local witnesses (17, 13, 7) and (293, 5, 3) (NO_GO §10).",
+     "owner": "Carbon Strategist"},
     {"id": "IQ_SQUARE", "kind": "partition", "parent": "A_GT1", "status": "CLOSED", "active": false,
      "description": "I is a square.", "lean": ["euler_index_not_square_of_exponent_gt_one"]},
     {"id": "IQ_PRIME_SQUARE", "kind": "partition", "parent": "A_GT1", "status": "CONDITIONAL", "active": false,
@@ -76,7 +79,9 @@ flowchart TD
      "hypothesis": "ExceptionalFermatObstruction (OddPerfect/ExceptionalFermatReduction.lean)",
      "note": "Residue sieves cannot finish ((q,y) = (1,1) survives every modulus; NO_GO §2). Hirakawa Lemma 2.5 supplies the published result. The local Lean reduction retains an explicit premise."},
     {"id": "IQ_MULTI", "kind": "partition", "parent": "A_GT1", "status": "OPEN", "active": false,
-     "description": "I has at least two primes of odd valuation."},
+     "description": "I has at least two primes of odd valuation.",
+     "lean": ["two_odd_valuations_nonsquare_half_sum_forces_prime_half_length"],
+     "missing": "Subcase A ((q^d+1)/2 = □) conditionally closed on PrimePowerFermatObstruction; Subcase B unconditionally forces d.Prime when |oddVal(I)| = 2, but prime-d Subcase B is locally unobstructed (witnesses (17, 13, 7) and (293, 5, 3), NO_GO §10)."},
     {"id": "IQ_PRIME_POWER_NONEULER", "kind": "slice", "parent": "ROOT", "status": "CLOSED", "active": false,
      "description": "Some non-Euler component index i_r (r ≠ q) is a prime power.",
      "lean": ["component_prime_power_index_euler_only_and_septuple_lift"]},

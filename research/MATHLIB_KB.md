@@ -27,7 +27,7 @@ python3 research/tools/mathlib_kb.py overlap
 
 - **Pinned Mathlib files indexed**: `8,799`
 - **Pinned Mathlib declarations indexed**: `230,753`
-- **Project structural declarations (`OddPerfect/`)**: `4,980`
+- **Project structural declarations (`OddPerfect/`)**: `4,991`
 - **Project generated certificate declarations**: `41,648`
 
 ---
@@ -61,7 +61,7 @@ Dirichlet ring of arithmetic functions, multiplicativity of `σ k` (`isMultiplic
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.NumberTheory.ArithmeticFunction.Misc` | 66 | 27 |
+| `Mathlib.NumberTheory.ArithmeticFunction.Misc` | 66 | 28 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Defs` | 60 | 3 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Zeta` | 32 | 1 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Moebius` | 35 | 2 |
@@ -83,11 +83,11 @@ Exact component extraction (`ordProj[p] n`, `ordCompl[p] n`), `Nat.factorization
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.Data.Nat.Factorization.Basic` | 77 | 16 |
+| `Mathlib.Data.Nat.Factorization.Basic` | 77 | 18 |
 | `Mathlib.Data.Nat.Factorization.Defs` | 43 | 5 |
-| `Mathlib.Data.Nat.Factorization.PrimePow` | 19 | 3 |
+| `Mathlib.Data.Nat.Factorization.PrimePow` | 19 | 4 |
 | `Mathlib.Data.Nat.Factorization.LCM` | 10 | 1 |
-| `Mathlib.Algebra.IsPrimePow` | 20 | 1 |
+| `Mathlib.Algebra.IsPrimePow` | 20 | 2 |
 | `Mathlib.NumberTheory.Padics.PadicVal.Basic` | 84 | 3 |
 | `Mathlib.NumberTheory.Multiplicity` | 25 | 5 |
 
@@ -112,7 +112,7 @@ Bang-Zsigmondy / primitive prime divisor machinery, `Polynomial.cyclotomic` root
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Expand` | 9 | 2 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization` | 5 | 1 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Roots` | 18 | 1 |
-| `Mathlib.Algebra.Ring.GeomSum` | 54 | 12 |
+| `Mathlib.Algebra.Ring.GeomSum` | 54 | 13 |
 | `Mathlib.GroupTheory.OrderOfElement` | 170 | 7 |
 | `Mathlib.NumberTheory.PrimesCongruentOne` | 3 | 1 |
 
@@ -135,7 +135,7 @@ Direction constraints on prime-forcing edges (`3 mod 4` reciprocity), Euler's cr
 | `Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity` | 10 | 9 |
 | `Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol` | 50 | 4 |
 | `Mathlib.NumberTheory.LegendreSymbol.Basic` | 30 | 1 |
-| `Mathlib.FieldTheory.Finite.Basic` | 80 | 51 |
+| `Mathlib.FieldTheory.Finite.Basic` | 80 | 52 |
 | `Mathlib.Algebra.Field.ZMod` | 0 | 3 |
 
 **Representative Mathlib declarations:**
@@ -206,7 +206,7 @@ structural `OddPerfect/` modules:
 | `Mathlib.NumberTheory.ArithmeticFunction.Moebius` | 2. Arithmetic Functions (`σ`, `ω`, `Ω`, `ζ`, `μ`) & Multiplicativity | 35 | 2 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Carmichael` | 2. Arithmetic Functions (`σ`, `ω`, `Ω`, `ζ`, `μ`) & Multiplicativity | 19 | 2 |
 | `Mathlib.Data.Nat.Factorization.LCM` | 3. Prime Factorization, Exact Prime Powers (`ordProj` / `ordCompl`) & Valuations | 10 | 1 |
-| `Mathlib.Algebra.IsPrimePow` | 3. Prime Factorization, Exact Prime Powers (`ordProj` / `ordCompl`) & Valuations | 20 | 1 |
+| `Mathlib.Algebra.IsPrimePow` | 3. Prime Factorization, Exact Prime Powers (`ordProj` / `ordCompl`) & Valuations | 20 | 2 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Basic` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 58 | 1 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Eval` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 15 | 2 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Expand` | 4. Cyclotomic Polynomials, Geometric Sums & Multiplicative Orders | 9 | 2 |

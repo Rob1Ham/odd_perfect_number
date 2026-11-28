@@ -415,3 +415,25 @@ Each round appends:
 **Classification (`literature-checker` 2026-11-28).**
 - `linear_euler_unique_source_right_forcing` (`A1`): `CANDIDATE-NEW` (`NO-PRIOR-FOUND`; builds on Dris `arXiv:2202.08116` and BDZ/Gallardo).
 - `quartic_chain_mod_five_target_reuse` (`A1_SPF`): `CANDIDATE-NEW` (`NO-PRIOR-FOUND` for `Φ₃(Φ₅(w))` mod-5 disjoint target-reuse bounds; standalone bound on `D_all`, does not change `A1_SPF` status).
+
+
+## Round 2 — `A1` Branch R1 Structure (`IDEAS #11`), Full `A_GT1` Subcase A / `IQ_MULTI` Prime-`d` Reduction (`IDEAS #12`), & `ROOT` / `A1_SPF` Pivot Freezes (`NO_GO` §§12–13) (28 November 2026, tag `audit-20261128-r2`)
+
+**Audit.** `lake build && lake lean research/Audit.lean` passed (exit 0), auditing **10,125** named theorems and checking axioms of **61,380** project declarations using only `[propext, Classical.choice, Quot.sound]`. Integrated `OddPerfect/LinearEulerRightBranchStructure.lean` and `OddPerfect/HighEulerHalfSumReduction.lean` with zero errors and zero warnings; both passed separate-session `skeptic` (`pro`), `literature-checker` (`flash`), and 8-point `neon-auditor` (`flash`) review.
+
+**Branch impact.** No partition node changed `CLOSED` status (`Partitions: CLOSED 1 · CONDITIONAL 1 · OPEN 6 | Slices: CLOSED 3 · CONDITIONAL 1 · OPEN 2`), while two exhausted active tracks were frozen and the active frontier shifted to `A1` and `A_GT1` (`2/3` active slots):
+- `ROOT` (`OPEN`, **FROZEN**): Exhausted Round 2 pivot budget. `S = 0` powerful-`m` non-cardinality checks (`NO_GO §12`: exact `I3`-balanced `e_p = 4` witnesses at `ω = 60, 120`, `Φ_7` mod-5 coverage, unbounded Zsigmondy + mod-(3,4,5,7) LP, automatic `τ(N)^4 ≤ N` & Ore harmonicity, locally unobstructed powerful-`m` / powerful-`A` systems) join the Round 1 refutation of `IDEAS #7` (`NO_GO §8`).
+- `A1_SPF` (`OPEN`, **FROZEN**): Exhausted Round 2 pivot budget. Coupling all 28 `farkas_int_reductions` rows, `_nsq` cuts, exact `Ω ≡ 1 (mod 4)` convex hulls, mod-5 `A/B` injections, `HS_1`/`HS_2`, mod-4 parity, `IDEAS #9`, and node-strata bipartite log-height bounds still leaves `Ray_18` (`k = 0`, verified 364-variable integer + bipartite log-height witness at `ω = 1800` with `× 8` height-amplification loop) and `lower-square-count` (`k ≥ m − 2`) unobstructed (`NO_GO §§11, 13`).
+- `A1` (`OPEN`, active): `OddPerfect/LinearEulerRightBranchStructure.lean` proves `r₀ = 3 ⇒ q ≡ 1 (mod 12)` unconditionally across `A1` and restricts Branch R1 (`r₀ ∣ g_R ⇔ r₀ ∣ (q+1)/2`) to `r₀ ≡ 1 (mod 4)`, non-Fermat `4ℓ ∣ q − 1` (`ℓ ∣ 2e₀ + 1`, `ℓ ≠ r₀`), `A < r₀^(v_{r₀}(I))`, `q < 2 r₀^(v_{r₀}(I))` (doubled when `Odd k_R`), `k_R ≤ 2b` (`3 k_R ≤ 2 e₀`), and `b = 1 ⇒ k_R = 1`. Exact-`Fraction` local experiments confirm all 7 remaining `(R1/R2) × (g_L, g_R)` regimes admit abundancy `< 2` witnesses (exhausting local/valuation attacks on `A1`).
+- `A_GT1` (`OPEN`, active) & `IQ_MULTI` (`OPEN`, inactive): `OddPerfect/HighEulerHalfSumReduction.lean` conditionally closes the entire Subcase A (`(q^d + 1)/2 = □`, prime and composite `d`) across `A_GT1` on the explicit external modular-forms prerequisite `PrimePowerFermatObstruction` (Ivorra 2003 / Bennett–Skinner 2004, absent from pinned Mathlib), unifying `IQ_SQUARE`, `IQ_PRIME_SQUARE`, and Subcase A of `IQ_MULTI`, and **unconditionally** proves `d.Prime` on Subcase B (`¬ IsSquare ((q^d + 1)/2)`) of `I = ℓ₁ ℓ₂ t²` (via `s ∣ q − 1` vs `s ∣ q + 1`). Prime-`d` Subcase B retains local abundancy/Jacobi witnesses `(17, 13, 7)` and `(293, 5, 3)` (`NO_GO §10`).
+
+**Gate record.**
+- `IDEAS #8` (`A1_SPF` coupled fine/residue/log-height LP): **KILLED** at G2/G3 (`NO_GO §13` — `Ray_18` 364-variable integer + bipartite log-height witness at `ω = 1800` and `lower-square-count`).
+- `ROOT` `S = 0` non-cardinality screen: **KILL_WITH_EVIDENCE** (`NO_GO §12`).
+- `IDEAS #11` (`A1` Branch R1 structure): **G1–G4 PASS → Skeptic `SURVIVES` → `neon-auditor` PASS → INTEGRATED** (`OddPerfect/LinearEulerRightBranchStructure.lean`).
+- `IDEAS #12` (`A_GT1` Subcase A + unconditional Subcase B `d.Prime`): **G1–G4 PASS → Skeptic `SURVIVES` (strengthened Subcase B to unconditional `d.Prime`) → `neon-auditor` PASS → INTEGRATED** (`OddPerfect/HighEulerHalfSumReduction.lean`).
+
+**Classification (`literature-checker` 2026-11-28).**
+- `linear_euler_right_branch_structure` (`A1`): `CANDIDATE-NEW` (Claim 1 `r₀ ≡ 1 mod 4` is `REPLAY` of classical QR / `OddPerfect/Reciprocity.lean::not_dvd_sigma_even_of_dvd_succ`; Claims 2–5 `NO-PRIOR-FOUND`).
+- `high_euler_half_sum_not_square_of_prime_power_fermat` (`A_GT1`): `REDUCTION` (conditional replay of Hirakawa *Indag. Math.* (N.S.) 35(2) 2024 pp. 282–287, Bennett–Skinner *Canad. J. Math.* 56(1) 2004 Prop. 8.1, Ivorra *Acta Arith.* 108(4) 2003 pp. 327–338 Thm. 2(b); elementary composite-`d` witness strengthens Gallardo *Integers* 22 2022 Prop. 4).
+- `two_odd_valuations_nonsquare_half_sum_forces_prime_half_length` (`IQ_MULTI`): `REDUCTION` (unconditional `d.Prime` on Subcase B; Gallardo *Integers* 22 2022 Prop. 5 flagged for direct PDF verification before any novelty claim).

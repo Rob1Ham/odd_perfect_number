@@ -104,3 +104,24 @@ If a prime target P divides Φ₅(p), the polynomial gives P ≤ Φ₅(p) < (p+1
   3. Ochem–Zelinsky (`arXiv:2607.19746`) forces exponential growth only because restrained OPNs have fixed large-exponent support `|L(N)| = 1` (`rad(σ(s²)) ∣ q n`), whereas on `A1_SPF` the target set `Q₁₃` grows linearly with `ω` (`≥ (7/20) ω` on `27/10`, `ω/3` on `lower-square-count`).
 - **Used in.** Round 1 Track 1b quartic-reuse & Ochem–Zelinsky experiment (`IDEAS #10`).
 - **Allowed residual use.** `5 D_all ≥ 4k − 2` stands as an audited, sharp standalone quartic-reuse theorem (`OddPerfect/QuarticChainModFiveTargetReuse.lean`), but does not reset `A1_SPF`'s pivot clock. Closing `A1_SPF` requires non-cardinality mechanisms beyond linear partition counts.
+
+## 12. Elementary global mechanisms on `ROOT` at `S = 0` (odd powerful `m`) — `ROOT` frozen
+
+- **Method.** Seek a global non-cardinality obstruction on `ROOT` (`N = q^a m²`) remaining nontrivial when `S = 0` (every non-Euler prime has `e_p ≥ 4`), via abundancy/reciprocal sums (`I3`), cyclotomic primitive-divisor graphs (`Bang`/`Zsigmondy`) + `v_2(σ)` + `mod (3,4,5,7)` + quadratic reciprocity, `τ(N)` / Cohen–Sorli / Ore harmonicity, or `A1` powerful-`m` / powerful-`(q+1)/2` splits.
+- **Why it cannot finish.**
+  1. Raising `e_p` from `2` to `4` changes local abundancy by `1/p³ + 1/p⁴` (`≤ 6.84×10⁻⁶` for `p ≥ 53`) with no ceiling; exact `I3`-balanced all-`e_p = 4` witnesses exist at arbitrary `ω` (e.g. `ω = 60`, `p ≥ 17`, `∏ σ(p^e)/p^e = 2 - 9.47×10⁻⁵`; `ω = 120`, `p ≥ 29`).
+  2. Unlike `e_p = 4` alone, `Φ_7(p)` (`e_p = 6`) hits all nonzero classes `{1, 2, 3, 4} (mod 5)`, and `3 ∣ N` gains ample `3`-adic slack (`σ(3⁴) = 11²`, `σ(3⁶) = 1093`, `σ(3⁸) = 13·757`, local `QR`-antisymmetric cycle `3⁴ → 11⁸ → 7⁸ → 3`). The `S = 0` Zsigmondy + `mod (3,4,5,7)` count-LP stays **UNBOUNDED** (`Q_4 = 6/7, R_6 = 1/7, ω = 1, Ω = 30/7`).
+  3. `(e+1)⁴ / p^e ≤ 1` for every `p ≥ 5, e ≥ 4` even, so Cohen–Sorli (`τ⁴ ≤ N`) and Ore harmonicity hold automatically.
+  4. On `A1` with `S = 0` (`g_R = 1` forcing `A = (q+1)/2` powerful, or `g = 1` forcing `p⁴ ∣ A`), `106` odd powerful `A ≤ 200,000` yield prime `q = 2A - 1` (`15` with `h₀ < 10,000` powerful), with verified local `q ∥ σ(r₀^{2e₀})` and abundancy-slack witnesses (e.g. `A = 169, q = 337, r₀ = 79, e₀ = 3`; `h₀ = 25, q = 1249, r₀ = 83, e₀ = 6`).
+- **Used in.** Round 2 Track 2 (`ROOT`) pivot-checkpoint experiment (`exp_round2_root_s0.py`).
+- **Allowed residual use.** Freeze `ROOT` (`active: false`); pursue the top-level split `A1` (`a = 1`) and `A_GT1` (`a > 1`) separately.
+
+## 13. Coupled residue-partition + bipartite log-height LPs on `A1_SPF` — `A1_SPF` frozen
+
+- **Method.** Close `A1_SPF` by coupling all 28 fine conservation rows (`farkas_int_reductions`), non-square cuts (`1 ≤ e_1 + e_3`), exact `Ω ≡ 1 (mod 4)` convex-hull / slot-residue cuts (including `w_{2,2} = 0`), disjoint mod-5 `A/B` prime injections, `HS_1`/`HS_2`, mod-4 parity, `IDEAS #9` (`r₀ ∤ (q+1)/2`), and node-strata bipartite log-height constraints.
+- **Why it cannot finish.**
+  1. Exact rational LP verification (`exp_track1_a1spf.py`) confirms `Ray_18` (`k = 0`) survives every coupled count, residue, non-square, mod-4, and bipartite log-height constraint, with an explicit verified 364-variable integer witness at `m = 100` (`ω = 1800`) and feasible node-strata log-heights (`min h_q ≈ 2360.15 log 3` vs bulk `1–3 log 3`).
+  2. Even with `IDEAS #9` (`r₀ ∤ (q+1)/2`), a 2-step height-amplification loop `(q+1)/2 → s₁² → u₂ → r₀² → q` amplifies log-height by `× 8`, leaving `(7/8) log q` free in `(q+1)/2` to absorb all of `S₅₀`, `Q₂₃`, and `HQ`.
+  3. `lower-square-count` (`m = 100`) is infeasible at `k = 0` but survives at `k ≥ m - 2` (`min_k = 98`) under both mod-4 parity and log-heights; general `k > 0` (`3d`) also stays unbounded, and Branch R2 on `A1_SPF` has 17 local prime witnesses (`61 ≤ r₀ < 3000`, all `A`-factors `≥ 53`).
+- **Used in.** Round 1–2 Track 1 (`A1_SPF`) experiments (`exp_track1_a1spf.py`, `exp_quartic_5D_3k.py`, `exp_round2_a1.py`).
+- **Allowed residual use.** Freeze `A1_SPF` (`active: false`); do not revisit `A1_SPF` without a genuinely non-LP, non-height arithmetic mechanism.
