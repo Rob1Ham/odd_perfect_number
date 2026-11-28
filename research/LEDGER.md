@@ -395,3 +395,23 @@ Each round appends:
 - Retained `CANDIDATE-NEW` with full search records (`NO-PRIOR-FOUND` / `STRONGER-THAN`): `sixth_power_free_square_output_capacity`, `no_high_square_count_of_all_one_mod_five`, `linear_euler_coprime_half_succ_quotient_system`, `sharpened_cyclotomic_prime_factor_count` (explicit $+11|L_2|$ term; pure slope weaker than Clayton–Hansen/Zelinsky), `component_prime_power_index_euler_only_and_septuple_lift` (expanded statement; `r = q` alone is a Dris–Luca corollary), `even_prime_power_component_base_lt_six_pow`, `even_index_base_subexponential`.
 
 **Branch impact.** Activated `A1` (`g > 1` overlap investigation). Partitions: CLOSED 1 · CONDITIONAL 1 · OPEN 6 | Slices: CLOSED 3 · CONDITIONAL 1 · OPEN 2.
+
+
+## Round 1 — Unconditional `A1` Right-Source Forcing (`IDEAS #9`), Sharp `5 D_all ≥ 4k − 2` Quartic Reuse (`IDEAS #10`), & Count-LP / Local Refutations (`NO_GO` §§8–11) (28 November 2026, tag `audit-20261128-r1`)
+
+**Audit.** `lake build && lake lean research/Audit.lean` passed (exit 0), auditing **10,118** named theorems and checking axioms of **61,280** project declarations using only `[propext, Classical.choice, Quot.sound]`. Integrated `OddPerfect/LinearEulerRightSourceForcing.lean` (pulling in `OddPerfect/LinearEulerGcdSplitSourcePeeling.lean`) and `OddPerfect/QuarticChainModFiveTargetReuse.lean` (pulling in `OddPerfect/QuarticChainBaselineAndReuse.lean`); both passed 8-point `neon-auditor` review.
+
+**Branch impact.** No partition node changed status (`Partitions: CLOSED 1 · CONDITIONAL 1 · OPEN 6 | Slices: CLOSED 3 · CONDITIONAL 1 · OPEN 2`):
+- `A1` (OPEN, active): Eliminated the entire `r₀ ∣ m_L` half of the `A1` noncoprime quotient dichotomy unconditionally across all `g ≥ 1` (`linear_euler_unique_source_right_forcing`, `linear_euler_unconditional_right_source_peeling`), forcing `r₀ ∣ m_R`, `r₀ ∣ u₀`, `v_{r₀}((q+1)/2) < v_{r₀}(m) < v_{r₀}(i_q)`, and `W_R σ(m_L²) = g u₀²`, and rendering Wave Q's `r₀ ∣ g_L h₀ → 61 ≤ g_L` branch vacuous.
+- `A1_SPF` (OPEN, active — stall counter unchanged by standalone bound): Proved LP-sharp `5 D_all ≥ 4k − 2` (beating both `4 D_all ≥ 2k − 1` and `5 D_all ≥ 3k − 2`) with exact per-residue mod-5 prime-image bounds (`quartic_chain_mod_five_target_reuse`), while establishing that neither `5 D_all ≥ 4k − 2` nor complete-factorization counting cuts `lower-square-count` or a surviving `k = 0`, `Ω/ω = 27/10` integer family (`NO_GO §11`).
+- `ROOT` (OPEN, active) & `IQ_MULTI` (OPEN, inactive): Refuted `IDEAS #7` (`20S ≤ 14X + 6V + 10U + 2H`), multi-degree cyclotomic count-LPs, and unconditional local/count-LP closure of `IQ_MULTI` (`NO_GO §§8, 10`).
+
+**Gate record.**
+- `IDEAS #7` (`ROOT`): **KILLED** at G2/G3/G4 (`NO_GO §8` — vacuous at `S = 0`, prime `Φ_ℓ(t)` witnesses for all `ℓ ∈ [7, 43]` at `H = 0`, unbounded `S = 0` bipartite rays `(6k, 4k)` and `(5k, 3k)`).
+- `IDEAS #9` (`A1`, `r₀ ∤ m_L`): **G1–G4 PASS → Skeptic `SURVIVES` → `neon-auditor` PASS → INTEGRATED** (`OddPerfect/LinearEulerRightSourceForcing.lean`). Companion `g = r` prime abundancy-ratio attack **KILLED** (`NO_GO §9`: `7,604` surviving `(r, h₀)` pairs).
+- `IDEAS #10` (`A1_SPF`, `5 D_all ≥ 4k − 2`): **G1–G4 PASS → Skeptic `SURVIVES` (sharp mod-40 witness `(8+20m, 6+16m)`) → `neon-auditor` PASS → INTEGRATED** (`OddPerfect/QuarticChainModFiveTargetReuse.lean`).
+- `IQ_MULTI` scouting: **KILL_WITH_EVIDENCE** as unconditional/ROOT route (`NO_GO §10`: prime witnesses `(17, 13, 7)` and `(293, 5, 3)` in Subcase B; Subcase A isolates non-prime-base generalized Fermat `x^p + 1 ≠ 2y²`, `p ≥ 17, p ≡ 1 mod 8`).
+
+**Classification (`literature-checker` 2026-11-28).**
+- `linear_euler_unique_source_right_forcing` (`A1`): `CANDIDATE-NEW` (`NO-PRIOR-FOUND`; builds on Dris `arXiv:2202.08116` and BDZ/Gallardo).
+- `quartic_chain_mod_five_target_reuse` (`A1_SPF`): `CANDIDATE-NEW` (`NO-PRIOR-FOUND` for `Φ₃(Φ₅(w))` mod-5 disjoint target-reuse bounds; standalone bound on `D_all`, does not change `A1_SPF` status).

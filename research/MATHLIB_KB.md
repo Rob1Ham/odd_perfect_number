@@ -27,7 +27,7 @@ python3 research/tools/mathlib_kb.py overlap
 
 - **Pinned Mathlib files indexed**: `8,799`
 - **Pinned Mathlib declarations indexed**: `230,753`
-- **Project structural declarations (`OddPerfect/`)**: `4,963`
+- **Project structural declarations (`OddPerfect/`)**: `4,980`
 - **Project generated certificate declarations**: `41,648`
 
 ---
@@ -61,7 +61,7 @@ Dirichlet ring of arithmetic functions, multiplicativity of `σ k` (`isMultiplic
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.NumberTheory.ArithmeticFunction.Misc` | 66 | 25 |
+| `Mathlib.NumberTheory.ArithmeticFunction.Misc` | 66 | 27 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Defs` | 60 | 3 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Zeta` | 32 | 1 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Moebius` | 35 | 2 |
@@ -83,8 +83,8 @@ Exact component extraction (`ordProj[p] n`, `ordCompl[p] n`), `Nat.factorization
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.Data.Nat.Factorization.Basic` | 77 | 15 |
-| `Mathlib.Data.Nat.Factorization.Defs` | 43 | 4 |
+| `Mathlib.Data.Nat.Factorization.Basic` | 77 | 16 |
+| `Mathlib.Data.Nat.Factorization.Defs` | 43 | 5 |
 | `Mathlib.Data.Nat.Factorization.PrimePow` | 19 | 3 |
 | `Mathlib.Data.Nat.Factorization.LCM` | 10 | 1 |
 | `Mathlib.Algebra.IsPrimePow` | 20 | 1 |
@@ -112,7 +112,7 @@ Bang-Zsigmondy / primitive prime divisor machinery, `Polynomial.cyclotomic` root
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Expand` | 9 | 2 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization` | 5 | 1 |
 | `Mathlib.RingTheory.Polynomial.Cyclotomic.Roots` | 18 | 1 |
-| `Mathlib.Algebra.Ring.GeomSum` | 54 | 11 |
+| `Mathlib.Algebra.Ring.GeomSum` | 54 | 12 |
 | `Mathlib.GroupTheory.OrderOfElement` | 170 | 7 |
 | `Mathlib.NumberTheory.PrimesCongruentOne` | 3 | 1 |
 

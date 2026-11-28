@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-11-28T01:42:10Z",
+  "timestamp": "2026-11-28T04:13:36Z",
   "counts": {
-    "total_lean_modules": 1453,
-    "audited_reached_modules": 921,
-    "unintegrated_modules": 532,
-    "root_direct_imports": 306,
-    "structural_modules": 487,
+    "total_lean_modules": 1455,
+    "audited_reached_modules": 925,
+    "unintegrated_modules": 530,
+    "root_direct_imports": 308,
+    "structural_modules": 489,
     "certificate_chunk_modules": 966,
-    "structural_share_pct": 33.5,
+    "structural_share_pct": 33.6,
     "distinct_mathlib_imports_in_structural": 136,
     "hygiene_violations": 0,
     "mathlib_declarations": 230753,
-    "project_structural_declarations": 4963,
+    "project_structural_declarations": 4980,
     "project_certificate_declarations": 41648
   },
   "hygiene_violations": [],
@@ -37,7 +37,7 @@
         "kind": "partition",
         "status": "OPEN",
         "active": true,
-        "missing": "A bound on incoming target capacity that survives arbitrary exponents, or a different argument for candidates with few exact squares (IDEAS 7).",
+        "missing": "IDEAS #7 and multi-degree cyclotomic count-LPs killed (NO_GO \u00a78); IQ_MULTI local/count-LP closure killed (NO_GO \u00a710). Needs a non-cardinality mechanism valid when S = 0 (all non-Euler exponents \u2265 4); pivot/freeze if Round 2 stalls.",
         "hypothesis": null
       },
       {
@@ -45,7 +45,7 @@
         "kind": "partition",
         "status": "OPEN",
         "active": true,
-        "missing": "Test g = gcd((q+1)/2, i_q) > 1 overlap starting from g = r prime for valuation-budget contradictions or a structural reduction across all of A1.",
+        "missing": "r\u2080 \u2223 m_L eliminated unconditionally across all g \u2265 1 (IDEAS #9). Remaining branch is r\u2080 \u2223 m_R (W_R \u03c3(m_L\u00b2) = g u\u2080\u00b2, r\u2080 \u2223 u\u2080): test r\u2080 \u2223 g_R vs \u00ac r\u2080 \u2223 g_R peeling and A1 powerful-m / g > 1 constraints in Round 2.",
         "hypothesis": null
       },
       {
@@ -53,7 +53,7 @@
         "kind": "partition",
         "status": "OPEN",
         "active": true,
-        "missing": "Use residue-labelled factor partitions to distinguish the lower-square-count family surviving the modulo-five bound (IDEAS 8).",
+        "missing": "5 D_all \u2265 4k \u2212 2 proved (sharp on D_all), but both lower-square-count and a 27/10 (k=0) integer family survive full fine/mod-5/mod-4/complete-factorization LPs (NO_GO \u00a711). Round 2 tests non-cardinality obstructions or freezes A1_SPF on 2-round stall.",
         "hypothesis": null
       },
       {
@@ -160,7 +160,7 @@
         "parent": null,
         "status": "OPEN",
         "active": true,
-        "missing": "A bound on incoming target capacity that survives arbitrary exponents, or a different argument for candidates with few exact squares (IDEAS 7).",
+        "missing": "IDEAS #7 and multi-degree cyclotomic count-LPs killed (NO_GO \u00a78); IQ_MULTI local/count-LP closure killed (NO_GO \u00a710). Needs a non-cardinality mechanism valid when S = 0 (all non-Euler exponents \u2265 4); pivot/freeze if Round 2 stalls.",
         "owner": "Carbon Strategist",
         "description": "Odd perfect N in Euler form q^a m^2, q \u2261 a \u2261 1 (mod 4).",
         "lean": [
@@ -175,11 +175,12 @@
         "status": "OPEN",
         "active": true,
         "description": "Euler exponent a = 1. Then m^2 is odd deficient-perfect with omitted divisor i_q (T\u00f3th pair with prime multiplier q).",
-        "missing": "Test g = gcd((q+1)/2, i_q) > 1 overlap starting from g = r prime for valuation-budget contradictions or a structural reduction across all of A1.",
+        "missing": "r\u2080 \u2223 m_L eliminated unconditionally across all g \u2265 1 (IDEAS #9). Remaining branch is r\u2080 \u2223 m_R (W_R \u03c3(m_L\u00b2) = g u\u2080\u00b2, r\u2080 \u2223 u\u2080): test r\u2080 \u2223 g_R vs \u00ac r\u2080 \u2223 g_R peeling and A1 powerful-m / g > 1 constraints in Round 2.",
         "owner": "Carbon Strategist",
         "lean": [
           "linear_euler_unique_q_source_and_bound",
-          "universal_half_succ_index_gcd_square_parametrization"
+          "universal_half_succ_index_gcd_square_parametrization",
+          "linear_euler_unique_source_right_forcing"
         ]
       },
       {
@@ -193,22 +194,23 @@
           "sixth_power_free_euler_exponent_one",
           "sixth_power_or_large_support",
           "sixth_power_free_oneModThreeLarge_ge_80",
-          "OddPerfect.SquareOutputCapacity.sixth_power_free_square_output_capacity"
+          "OddPerfect.SquareOutputCapacity.sixth_power_free_square_output_capacity",
+          "quartic_chain_mod_five_target_reuse"
         ],
         "floors": "\u03c9 \u2265 443, \u03a9 \u2265 1179, N > 10^3136, |Q13| \u2265 80, E \u2265 221",
-        "missing": "Use residue-labelled factor partitions to distinguish the lower-square-count family surviving the modulo-five bound (IDEAS 8).",
+        "missing": "5 D_all \u2265 4k \u2212 2 proved (sharp on D_all), but both lower-square-count and a 27/10 (k=0) integer family survive full fine/mod-5/mod-4/complete-factorization LPs (NO_GO \u00a711). Round 2 tests non-cardinality obstructions or freezes A1_SPF on 2-round stall.",
         "owner": "Carbon Strategist"
       }
     ],
     "ideas": {
-      "DONE": 3,
-      "KILLED": 1,
+      "DONE": 5,
+      "KILLED": 2,
       "PAUSED": 2,
-      "PROPOSED": 2
+      "PROPOSED": 1
     },
     "claims": {
       "REPLAY": 15,
-      "CANDIDATE-NEW": 7,
+      "CANDIDATE-NEW": 9,
       "LIBRARY": 6,
       "REDUCTION": 2
     },
@@ -236,7 +238,7 @@
   "unintegrated_tracks": [
     {
       "track": "Other Unintegrated Modules",
-      "total_modules": 16,
+      "total_modules": 14,
       "top_level_modules": [
         "OddPerfect.ExceptionalBlockCoprimeFactorizationAndTargetRouting",
         "OddPerfect.ExceptionalEuler42And486FactorDrop",
@@ -244,21 +246,19 @@
         "OddPerfect.GlobalTier2WaveRObstruction",
         "OddPerfect.GlobalTier2WaveSObstruction",
         "OddPerfect.KummerBinomialAndCentralChooseObstruction",
-        "OddPerfect.LinearEulerGcdSplitSourcePeeling",
         "OddPerfect.LinearEulerNoncoprimeVRQuotientObstruction",
         "OddPerfect.LinearEulerSixthPowerFreeRightSourcePeeling",
         "OddPerfect.PadicPade47321SixthOrderContraction",
         "OddPerfect.PellSymbolicAllOrderPadeContraction",
-        "OddPerfect.QuarticChainBaselineAndReuse",
         "OddPerfect.SixthPowerFreeMirrorDichotomy74Pinch",
         "OddPerfect.SixthPowerFreePureCollisionRankCap",
         "OddPerfect.SixthPowerFreeSharpenedPureCollisionCaps",
         "OddPerfect.SixthPowerFreeTargetReuseObstruction"
       ],
-      "fresh_olean": 13,
+      "fresh_olean": 11,
       "stale_olean": 0,
       "unbuilt": 3,
-      "ready_pct": 81.2
+      "ready_pct": 78.6
     },
     {
       "track": "HarmonicRange (background \u2014 Cohen\u2013Sorli odd harmonic exclusion)",
@@ -386,11 +386,11 @@
     }
   ],
   "recommendations": [
-    "[ACTIVE ROOT] Missing ingredient: A bound on incoming target capacity that survives arbitrary exponents, or a different argument for candidates with few exact squares (IDEAS 7).",
-    "[ACTIVE A1] Missing ingredient: Test g = gcd((q+1)/2, i_q) > 1 overlap starting from g = r prime for valuation-budget contradictions or a structural reduction across all of A1.",
-    "[ACTIVE A1_SPF] Missing ingredient: Use residue-labelled factor partitions to distinguish the lower-square-count family surviving the modulo-five bound (IDEAS 8).",
+    "[ACTIVE ROOT] Missing ingredient: IDEAS #7 and multi-degree cyclotomic count-LPs killed (NO_GO \u00a78); IQ_MULTI local/count-LP closure killed (NO_GO \u00a710). Needs a non-cardinality mechanism valid when S = 0 (all non-Euler exponents \u2265 4); pivot/freeze if Round 2 stalls.",
+    "[ACTIVE A1] Missing ingredient: r\u2080 \u2223 m_L eliminated unconditionally across all g \u2265 1 (IDEAS #9). Remaining branch is r\u2080 \u2223 m_R (W_R \u03c3(m_L\u00b2) = g u\u2080\u00b2, r\u2080 \u2223 u\u2080): test r\u2080 \u2223 g_R vs \u00ac r\u2080 \u2223 g_R peeling and A1 powerful-m / g > 1 constraints in Round 2.",
+    "[ACTIVE A1_SPF] Missing ingredient: 5 D_all \u2265 4k \u2212 2 proved (sharp on D_all), but both lower-square-count and a 27/10 (k=0) integer family survive full fine/mod-5/mod-4/complete-factorization LPs (NO_GO \u00a711). Round 2 tests non-cardinality obstructions or freezes A1_SPF on 2-round stall.",
     "[GATES] Ideas are waiting in IDEAS.md without gate records. Run research/GATES.md G1\u2013G4 and the Skeptic before dispatching any prover.",
-    "[LIABILITY] 532 unintegrated modules. Harvest only those on an active branch's critical path; archive the rest.",
+    "[LIABILITY] 530 unintegrated modules. Harvest only those on an active branch's critical path; archive the rest.",
     "Policy: harvesting, floor-raising and count tightening are not progress unless they change BRANCH_MAP, FLOOR_CEILING or the count-LP status (see NO_GO.md)."
   ]
 }

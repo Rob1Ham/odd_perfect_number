@@ -306,3 +306,5 @@ public import OddPerfect.PadicValuationConservationAndLegendreFactorial
 public import OddPerfect.ZsqrtTwoCombinedFirstSecondBlockSieve
 public import OddPerfect.GlobalTier2WaveQObstruction
 public import OddPerfect.SquareOutputCapacity
+public import OddPerfect.LinearEulerRightSourceForcing
+public import OddPerfect.QuarticChainModFiveTargetReuse
