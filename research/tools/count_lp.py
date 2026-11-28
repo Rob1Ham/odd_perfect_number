@@ -261,7 +261,8 @@ def main() -> int:
     ap.add_argument("--profile", help="add the constraints from a named research profile")
     ap.add_argument("--add", action="append", default=[], help="candidate inequality to test")
     ap.add_argument("--objective", default=None, help="variable to maximize (default from data)")
-    ap.add_argument("--verified-only", action="store_true")
+    ap.add_argument("--audited-only", "--verified-only", dest="audited_only", action="store_true",
+                    help="keep only rows marked kernel_audited: true")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
 
@@ -274,12 +275,15 @@ def main() -> int:
     if args.profile and not profile:
         ap.error(f"unknown profile {args.profile!r} for {args.branch}")
     rows = br["constraints"] + profile.get("constraints", [])
-    cons_raw = [c for c in rows if c.get("verified") or not args.verified_only]
-    cons_raw += [{"expr": e, "source": "candidate (--add)", "verified": False} for e in args.add]
+    def is_audited(c: dict) -> bool:
+        return bool(c.get("kernel_audited", c.get("verified", False)))
+    cons_raw = [c for c in rows if is_audited(c) or not args.audited_only]
+    cons_raw += [{"expr": e, "source": "candidate (--add)", "statement_checked": False, "kernel_audited": False} for e in args.add]
     if args.omit_row:
         if not any(c.get("id") == args.omit_row for c in cons_raw):
             ap.error(f"unknown row {args.omit_row!r}")
         cons_raw = [c for c in cons_raw if c.get("id") != args.omit_row]
+    n_unaudited = sum(1 for c in cons_raw if not is_audited(c))
     parsed = [parse_constraint(c["expr"]) for c in cons_raw]
     variables = list(br["variables"])
     for coeffs, _, _ in parsed:
@@ -298,6 +302,7 @@ def main() -> int:
         fam_reports.append({"family": fam["name"], "survives": not fails, "first_failures": fails[:5]})
 
     out = {"branch": args.branch, "objective": obj_var, "n_constraints": len(cons_raw),
+           "n_unaudited_constraints": n_unaudited,
            "status": res.status, "families": fam_reports}
     if args.omit_row:
         out["omitted_row"] = args.omit_row
@@ -316,7 +321,8 @@ def main() -> int:
         print(json.dumps(out, indent=2))
     else:
         print(f"# count_lp — branch {args.branch} — maximize {obj_var} over {len(cons_raw)} constraints"
-              f"{' (verified only)' if args.verified_only else ''}")
+              f"{' (kernel-audited only)' if args.audited_only else ''}"
+              f"{f' ({n_unaudited} unaudited)' if n_unaudited else ''}")
         if args.omit_row:
             print(f"row omitted: {args.omit_row}")
         if args.profile:

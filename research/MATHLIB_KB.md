@@ -27,7 +27,7 @@ python3 research/tools/mathlib_kb.py overlap
 
 - **Pinned Mathlib files indexed**: `8,799`
 - **Pinned Mathlib declarations indexed**: `230,753`
-- **Project structural declarations (`OddPerfect/`)**: `4,929`
+- **Project structural declarations (`OddPerfect/`)**: `4,963`
 - **Project generated certificate declarations**: `41,648`
 
 ---
@@ -61,7 +61,7 @@ Dirichlet ring of arithmetic functions, multiplicativity of `σ k` (`isMultiplic
 
 | Mathlib Module | Public Decls | `OddPerfect` Imports |
 | --- | ---: | ---: |
-| `Mathlib.NumberTheory.ArithmeticFunction.Misc` | 66 | 24 |
+| `Mathlib.NumberTheory.ArithmeticFunction.Misc` | 66 | 25 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Defs` | 60 | 3 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Zeta` | 32 | 1 |
 | `Mathlib.NumberTheory.ArithmeticFunction.Moebius` | 35 | 2 |

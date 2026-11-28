@@ -15,10 +15,10 @@ Use this skill whenever you coordinate a research round from a Carbon (`pro`) se
 
 ```sh
 git status --short
-python3 research/tools/evaluate_progress.py --strict --dashboard research/PROGRESS_DASHBOARD.md
+python3 research/tools/evaluate_progress.py --check --strict
 ```
 
-If `OddPerfect.lean` imports untracked files, or the last audited state is uncommitted, commit and tag (`audit-YYYYMMDD`) before anything else.
+If `OddPerfect.lean` imports untracked files, claims validation fails, more than 3 nodes are active, or the last audited state is uncommitted, fix/commit and tag (`audit-YYYYMMDD`) before anything else.
 
 ## Phase 1: Frontier review
 
@@ -70,11 +70,12 @@ Only ideas with status `SURVIVES` are formalized. Pipeline: `neon-mathlib-scout`
 ## Phase 6: Pivot check
 
 - **Advancing** means one of:
-  - a node changed status;
+  - a **partition** node changed status (`CLOSED` or `CONDITIONAL` on an explicit external-math prerequisite);
   - a ceiling was added to FLOOR_CEILING;
-  - a count-LP ray was cut;
-  - a descent step or reduction shrank a node to a strictly smaller, precisely stated family;
-  - an idea was killed with a documented, generalizable reason.
+  - a count-LP ray or named surviving family was genuinely cut in the fine model;
+  - a descent step or reduction shrank a partition node to a strictly smaller, precisely stated family;
+  - an idea was killed with a documented, generalizable reason in `NO_GO.md`.
+- **Anti-slice-inflation rule:** Inventing a narrow post-hoc `slice` node and marking it `CLOSED` does **not** reset its parent partition node's stall counter. Partition closures and slice closures are reported separately.
 - **Not advancing**: new declarations with none of the above.
 - After **two consecutive non-advancing rounds** on a node, freeze it (`active: false`), write a NO_GO entry explaining the stall, and promote another node, or spend the slot on a terminating deliverable.
 - Keep [WHITEBOARD.md](../../../research/WHITEBOARD.md) current. Clear finished sketches every round and move history to LEDGER.

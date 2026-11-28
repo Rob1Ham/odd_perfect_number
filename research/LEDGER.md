@@ -376,3 +376,22 @@ Each round appends:
 **Verification.** Public `lake build` and `lake lean research/Audit.lean` passed, checking 10,090 named theorems and 60,981 project declarations with only the three permitted axioms. The earlier public baseline also passed before the change. The count gate now checks affine families for all integer parameters in their stated ranges. The staged target-reuse profile and the public modulo-five inequality together leave an explicit integer count family of rank 6m+2 for all m ≥ 100. [Reproduction and coverage](STRATEGY_REVIEW.md)
 
 **Classification and next work.** Literature priority for the arithmetic refinement is unassessed. The parent sixth-power-free branch and both main Euler-exponent branches remain open. Current research addresses the surviving count family and the capacity contributed by arbitrary exponents. [Roadmap](ROADMAP.md)
+
+
+## Phase 0 — Pipeline Hardening & Literature Priority Sweep (27 November 2026, tag `audit-20261128-p0`)
+
+**Audit.** No Lean proofs edited; public baseline remains `audit-20261128` (10,090 named theorems, 60,981 declarations, `[propext, Classical.choice, Quot.sound]`).
+
+**Pipeline fixes.**
+- `research/tools/evaluate_progress.py`: added `native_decide` to `FORBIDDEN_PATTERNS`, fixed `IMPORT_RE` for `import all`/`private import`, added read-only `--check`, separated partition vs. slice closure counts (anti-slice-inflation rule), and wired `claims.py` validation + `≤ 3 active nodes` enforcement into `--strict`.
+- `research/tools/claims.py`: rejected `private` declarations, verified declared `namespace` headers, and cross-checked `lean` citations in `research/BRANCH_MAP.md`.
+- `research/count_constraints.json` & `research/tools/count_lp.py`: split `statement_checked` from `kernel_audited` (marking all 12 uncompiled `target-reuse` rows `kernel_audited: false`).
+- `research/BRANCH_MAP.md` & `.agents/skills/carbon-reevaluation-loop/SKILL.md`: codified the anti-slice-inflation rule and activated `A1` alongside `ROOT` and `A1_SPF` (3/3 active slots).
+- Rebuilt `research/state/mathlib_kb.sqlite` and `research/MATHLIB_KB.md` (`4,963` structural declarations).
+
+**Priority sweep (`literature-checker` across all 10 `CANDIDATE-NEW` claims).**
+- Reclassified to `REPLAY`: `universal_half_succ_index_gcd_square_parametrization` (Dris `arXiv:2202.08116` $k=1$ specialization), `finite_odd_nearPerfect_of_bounded_prime_count` (Adajar 2016/2019; Gumaru–Casuco–Bernal 2018 Thm. 3.4.1).
+- Reclassified to `LIBRARY`: `linear_euler_unique_q_source_and_bound` (elementary consequence of $q \parallel \sigma(m^2)$).
+- Retained `CANDIDATE-NEW` with full search records (`NO-PRIOR-FOUND` / `STRONGER-THAN`): `sixth_power_free_square_output_capacity`, `no_high_square_count_of_all_one_mod_five`, `linear_euler_coprime_half_succ_quotient_system`, `sharpened_cyclotomic_prime_factor_count` (explicit $+11|L_2|$ term; pure slope weaker than Clayton–Hansen/Zelinsky), `component_prime_power_index_euler_only_and_septuple_lift` (expanded statement; `r = q` alone is a Dris–Luca corollary), `even_prime_power_component_base_lt_six_pow`, `even_index_base_subexponential`.
+
+**Branch impact.** Activated `A1` (`g > 1` overlap investigation). Partitions: CLOSED 1 · CONDITIONAL 1 · OPEN 6 | Slices: CLOSED 3 · CONDITIONAL 1 · OPEN 2.

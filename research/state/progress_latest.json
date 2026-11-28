@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-28T01:17:43Z",
+  "timestamp": "2026-11-28T01:42:10Z",
   "counts": {
     "total_lean_modules": 1453,
     "audited_reached_modules": 921,
@@ -21,6 +21,16 @@
       "CLOSED": 4,
       "CONDITIONAL": 2
     },
+    "partition_status": {
+      "OPEN": 6,
+      "CLOSED": 1,
+      "CONDITIONAL": 1
+    },
+    "slice_status": {
+      "CLOSED": 3,
+      "OPEN": 2,
+      "CONDITIONAL": 1
+    },
     "nodes": [
       {
         "id": "ROOT",
@@ -34,8 +44,8 @@
         "id": "A1",
         "kind": "partition",
         "status": "OPEN",
-        "active": false,
-        "missing": null,
+        "active": true,
+        "missing": "Test g = gcd((q+1)/2, i_q) > 1 overlap starting from g = r prime for valuation-budget contradictions or a structural reduction across all of A1.",
         "hypothesis": null
       },
       {
@@ -159,6 +169,20 @@
         "floors": "N > 10^300, \u03c9 \u2265 6, \u03a9 \u2265 37 (frontier: 10^1500, \u03c9 \u2265 10, \u03a9 \u2265 101)"
       },
       {
+        "id": "A1",
+        "kind": "partition",
+        "parent": "ROOT",
+        "status": "OPEN",
+        "active": true,
+        "description": "Euler exponent a = 1. Then m^2 is odd deficient-perfect with omitted divisor i_q (T\u00f3th pair with prime multiplier q).",
+        "missing": "Test g = gcd((q+1)/2, i_q) > 1 overlap starting from g = r prime for valuation-budget contradictions or a structural reduction across all of A1.",
+        "owner": "Carbon Strategist",
+        "lean": [
+          "linear_euler_unique_q_source_and_bound",
+          "universal_half_succ_index_gcd_square_parametrization"
+        ]
+      },
+      {
         "id": "A1_SPF",
         "kind": "partition",
         "parent": "A1",
@@ -183,11 +207,12 @@
       "PROPOSED": 2
     },
     "claims": {
-      "REPLAY": 13,
-      "CANDIDATE-NEW": 10,
-      "LIBRARY": 5,
+      "REPLAY": 15,
+      "CANDIDATE-NEW": 7,
+      "LIBRARY": 6,
       "REDUCTION": 2
     },
+    "claims_problems": [],
     "count_lp": {
       "A1_SPF": {
         "status": "unbounded",
@@ -362,6 +387,7 @@
   ],
   "recommendations": [
     "[ACTIVE ROOT] Missing ingredient: A bound on incoming target capacity that survives arbitrary exponents, or a different argument for candidates with few exact squares (IDEAS 7).",
+    "[ACTIVE A1] Missing ingredient: Test g = gcd((q+1)/2, i_q) > 1 overlap starting from g = r prime for valuation-budget contradictions or a structural reduction across all of A1.",
     "[ACTIVE A1_SPF] Missing ingredient: Use residue-labelled factor partitions to distinguish the lower-square-count family surviving the modulo-five bound (IDEAS 8).",
     "[GATES] Ideas are waiting in IDEAS.md without gate records. Run research/GATES.md G1\u2013G4 and the Skeptic before dispatching any prover.",
     "[LIABILITY] 532 unintegrated modules. Harvest only those on an active branch's critical path; archive the rest.",

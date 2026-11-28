@@ -25,7 +25,7 @@ REGISTRY = REPO_ROOT / "research" / "claims_registry.json"
 CLAIMS_MD = REPO_ROOT / "research" / "CLAIMS.md"
 BRANCH_MAP = REPO_ROOT / "research" / "BRANCH_MAP.md"
 ROOT_LEAN = REPO_ROOT / "OddPerfect.lean"
-IMPORT_RE = re.compile(r"^(?:public\s+)?import\s+([A-Za-z0-9_.]+)", re.M)
+IMPORT_RE = re.compile(r"^(?:(?:public|private|meta)\s+)*import\s+(?:all\s+)?([A-Za-z0-9_.]+)", re.M)
 CLASS_ORDER = ["REPLAY", "CANDIDATE-NEW", "REDUCTION", "LIBRARY"]
 
 
@@ -49,33 +49,46 @@ def reachable_modules() -> set[str]:
     return seen
 
 
-def branch_ids() -> set[str]:
+def branch_nodes() -> list[dict]:
     if not BRANCH_MAP.exists():
-        return set()
+        return []
     m = re.search(r"```json\s*(\{.*?\})\s*```", BRANCH_MAP.read_text(encoding="utf-8"), re.S)
     if not m:
-        return set()
-    return {n["id"] for n in json.loads(m.group(1))["nodes"]}
+        return []
+    return json.loads(m.group(1))["nodes"]
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--check", action="store_true")
-    args = ap.parse_args()
+def branch_ids() -> set[str]:
+    return {n["id"] for n in branch_nodes()}
 
+
+def validate_claims() -> tuple[list[dict], list[str], list[tuple[int, str]]]:
     claims = json.loads(REGISTRY.read_text(encoding="utf-8"))["claims"]
     reach = reachable_modules()
-    branches = branch_ids()
+    nodes = branch_nodes()
+    branches = {n["id"] for n in nodes}
     problems: list[str] = []
     rows: list[tuple[int, str]] = []
+    registered_names: set[str] = set()
     for c in claims:
         p = mod_path(c["module"])
-        found = p.exists() and re.search(
-            rf"^(?:private\s+)?(?:theorem|lemma|def)\s+{re.escape(c['name'])}(?:\s|$)",
-            p.read_text(encoding="utf-8"), re.M) is not None
+        text = p.read_text(encoding="utf-8") if p.exists() else ""
+        # Reject `private` declarations; headline claims must be publicly importable.
+        decl_pat = rf"^(?:(?:protected|noncomputable)\s+)*(?:theorem|lemma|def)\s+{re.escape(c['name'])}(?:\s|$)"
+        priv_pat = rf"^private\s+(?:(?:noncomputable)\s+)*(?:theorem|lemma|def)\s+{re.escape(c['name'])}(?:\s|$)"
+        is_private = p.exists() and re.search(priv_pat, text, re.M) is not None
+        found = p.exists() and re.search(decl_pat, text, re.M) is not None
         audited = c["module"] in reach
-        if not found:
-            problems.append(f"{c['name']}: declaration not found in {p.relative_to(REPO_ROOT)}")
+        ns = c.get("namespace")
+        ns_ok = True
+        if ns:
+            ns_ok = re.search(rf"^namespace\s+{re.escape(ns)}(?:\s|$)", text, re.M) is not None
+        if is_private and not found:
+            problems.append(f"{c['name']}: declaration is private in {p.relative_to(REPO_ROOT)} (headline claims must be public)")
+        elif not found:
+            problems.append(f"{c['name']}: public declaration not found in {p.relative_to(REPO_ROOT)}")
+        if not ns_ok:
+            problems.append(f"{c['name']}: declared namespace {ns!r} not found in {p.relative_to(REPO_ROOT)}")
         if not audited:
             problems.append(f"{c['name']}: module {c['module']} not reachable from OddPerfect.lean (unaudited)")
         if branches and c["branch"] not in branches:
@@ -83,12 +96,34 @@ def main() -> int:
         if c["class"] not in CLASS_ORDER:
             problems.append(f"{c['name']}: unknown class {c['class']}")
         rel = p.relative_to(REPO_ROOT).as_posix()
-        status = "in public imports" if (found and audited) else "**PROBLEM**"
+        status = "in public imports" if (found and ns_ok and audited) else "**PROBLEM**"
         statement = c["statement"].replace("|", r"\|")
-        display_name = ".".join(filter(None, (c.get("namespace"), c["name"])))
+        display_name = ".".join(filter(None, (ns, c["name"])))
+        registered_names.add(c["name"])
+        registered_names.add(display_name)
         row = (f"| [`{display_name}`](../{rel}) | {statement} | `{c['branch']}` | {c['class']} | "
                f"{c['literature']} | {status} |")
         rows.append((CLASS_ORDER.index(c["class"]) if c["class"] in CLASS_ORDER else 99, row))
+
+    # Cross-check `lean` citations in research/BRANCH_MAP.md against registered claims
+    for n in nodes:
+        for ref in n.get("lean", []):
+            if ref not in registered_names:
+                problems.append(f"BRANCH_MAP node {n['id']}: lean reference {ref!r} not in claims_registry.json")
+        if n.get("status") == "CLOSED" and not n.get("lean"):
+            problems.append(f"BRANCH_MAP node {n['id']}: CLOSED without any cited lean theorem")
+        if n.get("status") == "CONDITIONAL" and not n.get("hypothesis"):
+            problems.append(f"BRANCH_MAP node {n['id']}: CONDITIONAL without named hypothesis")
+
+    return claims, problems, rows
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--check", action="store_true")
+    args = ap.parse_args()
+
+    claims, problems, rows = validate_claims()
 
     for p in problems:
         print(f"PROBLEM: {p}", file=sys.stderr)
@@ -104,7 +139,7 @@ def main() -> int:
         "",
         "This is the **only** list of headline results other documents may cite. Other files should link here instead of copying statements and numbers.",
         "",
-        "This tool checks names, modules and reachability. Check the linked Lean signature for hypotheses and run the kernel audit separately.",
+        "This tool checks public declaration names, namespaces, reachability, and BRANCH_MAP cross-references. Check the linked Lean signature for hypotheses and run the kernel audit separately.",
         "",
         "Classes:",
         "- `REPLAY`: formalizes a published result or a stated consequence.",

@@ -13,6 +13,7 @@ Two kinds of node:
 
 Rules:
 - At most **3** nodes are `active: true`. Each active node names its missing ingredient and owner.
+- **Anti-slice-inflation rule:** Partition closures (`kind: "partition"`) and slice closures (`kind: "slice"`) are counted separately. A narrow post-hoc `slice` closure never counts as closing its parent partition node and never resets a parent node's 2-round pivot clock. Any new `slice` node must state the named unbounded family or pre-existing branch subcase it excludes.
 - Lean theorems that close or restrict a node cite its `id` in their docstring (`BRANCH_MAP: <id>`).
 - The JSON block below is read by `research/tools/evaluate_progress.py` and `research/tools/claims.py`. Keep it valid JSON.
 
@@ -20,7 +21,7 @@ Rules:
 
 ```mermaid
 flowchart TD
-  ROOT["ROOT: odd perfect N = q^a m^2 (ACTIVE)"] --> A1["A1: a = 1 (OPEN)"]
+  ROOT["ROOT: odd perfect N = q^a m^2 (ACTIVE)"] --> A1["A1: a = 1 (OPEN, ACTIVE)"]
   ROOT --> AG["A_GT1: a > 1 (OPEN)"]
   A1 --> SPF["A1_SPF: sixth-power-free (OPEN, ACTIVE)"]
   SPF -.-> HS["A1_SPF_HIGH_SQUARE: all square sources 1 mod 5 and S ≥ 2Q (CLOSED)"]
@@ -44,8 +45,10 @@ flowchart TD
      "missing": "A bound on incoming target capacity that survives arbitrary exponents, or a different argument for candidates with few exact squares (IDEAS 7).", "owner": "Carbon Strategist",
      "description": "Odd perfect N in Euler form q^a m^2, q ≡ a ≡ 1 (mod 4).",
      "lean": ["euler_form"], "floors": "N > 10^300, ω ≥ 6, Ω ≥ 37 (frontier: 10^1500, ω ≥ 10, Ω ≥ 101)"},
-    {"id": "A1", "kind": "partition", "parent": "ROOT", "status": "OPEN", "active": false,
+    {"id": "A1", "kind": "partition", "parent": "ROOT", "status": "OPEN", "active": true,
      "description": "Euler exponent a = 1. Then m^2 is odd deficient-perfect with omitted divisor i_q (Tóth pair with prime multiplier q).",
+     "missing": "Test g = gcd((q+1)/2, i_q) > 1 overlap starting from g = r prime for valuation-budget contradictions or a structural reduction across all of A1.",
+     "owner": "Carbon Strategist",
      "lean": ["linear_euler_unique_q_source_and_bound", "universal_half_succ_index_gcd_square_parametrization"]},
     {"id": "A1_SPF", "kind": "partition", "parent": "A1", "status": "OPEN", "active": true,
      "description": "Sixth-power-free (forces a = 1; every other exponent is 2 or 4; least prime ≥ 53).",

@@ -38,13 +38,14 @@ KB_DB = STATE_DIR / "mathlib_kb.sqlite"
 LATEST_JSON = STATE_DIR / "progress_latest.json"
 HISTORY_JSONL = STATE_DIR / "progress_history.jsonl"
 
-IMPORT_RE = re.compile(r"^(?:public\s+)?import\s+([A-Za-z0-9_.]+)", re.M)
+IMPORT_RE = re.compile(r"^(?:(?:public|private|meta)\s+)*import\s+(?:all\s+)?([A-Za-z0-9_.]+)", re.M)
 FORBIDDEN_PATTERNS = {
     "sorry": re.compile(r"\bsorry\b"),
     "admit": re.compile(r"\badmit\b"),
     "axiom": re.compile(r"^\s*(?:public\s+|private\s+)?axiom\s+", re.M),
     "unsafe": re.compile(r"^\s*unsafe\s+", re.M),
     "implemented_by": re.compile(r"@\[implemented_by\b"),
+    "native_decide": re.compile(r"\bnative_decide\b"),
 }
 CERT_PART_RE = re.compile(r"^(Part\d+|Primes\d*|Seed\d+Part\d+|Seed\d+)$")
 
@@ -235,14 +236,30 @@ def _untracked_imported(reached: set[str]) -> list[str]:
     return hits
 
 
+def _claims_problems() -> list[str]:
+    sys.path.insert(0, str(RESEARCH_DIR / "tools"))
+    try:
+        import claims  # type: ignore
+        _, problems, _ = claims.validate_claims()
+        return problems
+    finally:
+        sys.path.pop(0)
+
+
 def research_frontier(reached: set[str]) -> dict:
     nodes = _branch_nodes()
+    tree_nodes = [n for n in nodes if n.get("parent") is not None or n["id"] == "ROOT"]
+    partition_nodes = [n for n in tree_nodes if n.get("kind") == "partition"]
+    slice_nodes = [n for n in tree_nodes if n.get("kind") == "slice"]
     return {
-        "branch_status": dict(Counter(n["status"] for n in nodes if n.get("parent") is not None or n["id"] == "ROOT")),
+        "branch_status": dict(Counter(n["status"] for n in tree_nodes)),
+        "partition_status": dict(Counter(n["status"] for n in partition_nodes)),
+        "slice_status": dict(Counter(n["status"] for n in slice_nodes)),
         "nodes": [{k: n.get(k) for k in ("id", "kind", "status", "active", "missing", "hypothesis")} for n in nodes],
         "active_nodes": [n for n in nodes if n.get("active")],
         "ideas": _idea_counts(),
         "claims": _claim_counts(),
+        "claims_problems": _claims_problems(),
         "count_lp": _count_lp_status(),
         "untracked_imported": _untracked_imported(reached),
     }
@@ -378,6 +395,14 @@ def analyze_repo() -> dict:
         recommendations.append(
             f"[BLOCKER] {len(frontier['untracked_imported'])} module(s) reachable from `OddPerfect.lean` are not tracked by git. Commit and tag before the next round."
         )
+    if len(frontier["active_nodes"]) > 3:
+        recommendations.append(
+            f"[BLOCKER] {len(frontier['active_nodes'])} active nodes in BRANCH_MAP.md (max 3 allowed by AGENTS.md §0)."
+        )
+    if frontier["claims_problems"]:
+        recommendations.append(
+            f"[BLOCKER] {len(frontier['claims_problems'])} problem(s) reported by `claims.py --check`. Fix before committing."
+        )
     for node in frontier["active_nodes"]:
         recommendations.append(
             f"[ACTIVE {node['id']}] Missing ingredient: {node.get('missing', '(not stated — fill in BRANCH_MAP.md)')}"
@@ -460,12 +485,14 @@ def render_dashboard(report: dict, prev: dict | None) -> str:
     for n in rf.get("nodes", []):
         extra = (n.get("missing") or n.get("hypothesis") or "").replace("|", r"\|")
         lines.append(f"| `{n['id']}` | {n['kind']} | **{n['status']}** | {'yes' if n.get('active') else ''} | {extra} |")
-    bs = rf.get("branch_status", {})
+    ps = rf.get("partition_status", {})
+    ss = rf.get("slice_status", {})
     lines += [
         "",
-        f"Totals: CLOSED {bs.get('CLOSED', 0)} · CONDITIONAL {bs.get('CONDITIONAL', 0)} · OPEN {bs.get('OPEN', 0)}.",
+        f"Partitions: CLOSED {ps.get('CLOSED', 0)} · CONDITIONAL {ps.get('CONDITIONAL', 0)} · OPEN {ps.get('OPEN', 0)}  |  "
+        f"Slices: CLOSED {ss.get('CLOSED', 0)} · CONDITIONAL {ss.get('CONDITIONAL', 0)} · OPEN {ss.get('OPEN', 0)}.",
         "",
-        "Parent nodes and overlapping slices appear in these totals. The totals cannot be interpreted as a fraction of the conjecture resolved.",
+        "Partition closures and slice closures are tracked separately (anti-slice-inflation rule). Totals cannot be interpreted as a fraction of the conjecture resolved.",
         "",
         "### Count-LP gate (G2)",
         "",
@@ -549,30 +576,52 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Evaluate OddPerfect proof progress and strategic frontier")
     parser.add_argument("--dashboard", default=str(REPO_ROOT / "research" / "PROGRESS_DASHBOARD.md"))
     parser.add_argument("--record", action="store_true", help="Append snapshot to progress_history.jsonl")
+    parser.add_argument("--check", action="store_true",
+                        help="Read-only mode: do not modify progress_latest.json, progress_history.jsonl, or dashboard")
     parser.add_argument("--json", action="store_true", help="Print JSON report to stdout")
     parser.add_argument("--strict", action="store_true",
-                        help="Exit 1 if hygiene violations exist or OddPerfect.lean imports untracked files")
+                        help="Exit 1 on hygiene violations, untracked imports, >3 active nodes, or claims.py problems")
     args = parser.parse_args()
 
-    STATE_DIR.mkdir(parents=True, exist_ok=True)
     prev = load_previous_snapshot()
     report = analyze_repo()
-
-    LATEST_JSON.write_text(json.dumps(report, indent=2), encoding="utf-8")
     dash_text = render_dashboard(report, prev)
-    pathlib.Path(args.dashboard).write_text(dash_text, encoding="utf-8")
 
-    if args.record:
-        with HISTORY_JSONL.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(report) + "\n")
+    if not args.check:
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        LATEST_JSON.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        pathlib.Path(args.dashboard).write_text(dash_text, encoding="utf-8")
+        if args.record:
+            with HISTORY_JSONL.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(report) + "\n")
 
     if args.json:
         print(json.dumps(report, indent=2))
-    else:
+    elif not args.check:
         print(dash_text)
-    if args.strict and (report["counts"]["hygiene_violations"] or report["research_frontier"]["untracked_imported"]):
-        print("STRICT FAILURE: hygiene violations or untracked imported modules", file=sys.stderr)
-        return 1
+    else:
+        rf = report["research_frontier"]
+        print(
+            f"CHECK OK-SUMMARY: hygiene={report['counts']['hygiene_violations']}, "
+            f"untracked_imported={len(rf['untracked_imported'])}, "
+            f"active_nodes={len(rf['active_nodes'])}/3, "
+            f"claims_problems={len(rf['claims_problems'])}"
+        )
+
+    if args.strict:
+        rf = report["research_frontier"]
+        failures = []
+        if report["counts"]["hygiene_violations"]:
+            failures.append(f"{report['counts']['hygiene_violations']} hygiene violation(s)")
+        if rf["untracked_imported"]:
+            failures.append(f"{len(rf['untracked_imported'])} untracked imported module(s)")
+        if len(rf["active_nodes"]) > 3:
+            failures.append(f"{len(rf['active_nodes'])} active nodes (>3)")
+        if rf["claims_problems"]:
+            failures.append(f"{len(rf['claims_problems'])} claims.py problem(s): " + "; ".join(rf["claims_problems"][:3]))
+        if failures:
+            print("STRICT FAILURE: " + ", ".join(failures), file=sys.stderr)
+            return 1
     return 0
 
 
