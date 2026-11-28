@@ -305,3 +305,4 @@ public import OddPerfect.CarmichaelExponentAndTotientTwoPowObstruction
 public import OddPerfect.PadicValuationConservationAndLegendreFactorial
 public import OddPerfect.ZsqrtTwoCombinedFirstSecondBlockSieve
 public import OddPerfect.GlobalTier2WaveQObstruction
+public import OddPerfect.SquareOutputCapacity

@@ -83,9 +83,9 @@ FRONTIER_AXES = [
     },
     {
         "axis": "Total Prime Divisors Ω(N)",
-        "audited_claim": "Ω(N) ≥ 37. Every candidate has an index with Ω(i_p)+5 ≤ Ω(N). Sixth-power-free gives Ω(N) ≥ 1179.",
-        "audited_mod": "OddPerfect.ComponentIndexDrop",
-        "audited_thm": "exists_componentIndex_cardFactors_add_five_le",
+        "audited_claim": "Ω(N) ≥ 37. Every candidate has an index with Ω(i_p)+6 ≤ Ω(N). Sixth-power-free gives Ω(N) ≥ 1179.",
+        "audited_mod": "OddPerfect.QuarticTargetCapacity",
+        "audited_thm": "exists_componentIndex_cardFactors_add_six_le",
         "staged_claim": "Ω(N) ≥ 47",
         "staged_mod": "OddPerfect.CountBound47",
         "published_best": "Ω(N) ≥ 101 (Ochem–Rao 2012)",
@@ -113,7 +113,7 @@ FRONTIER_AXES = [
         "audited_claim": "Only at the Euler prime; even j: ≥ 13 repunit bases, 2u ≥ 1.3·10^16 (floor without ceiling, see FLOOR_CEILING.md)",
         "audited_mod": "OddPerfect.TridecupleRepunitObstruction",
         "audited_thm": "even_prime_power_component_size_gt_ten_pow_353234555955090756",
-        "staged_claim": "Ceiling u ≤ g(p) (IDEAS #3); floor-raising frozen (NO_GO §3)",
+        "staged_claim": "Paused pending quantitatively incompatible bounds (IDEAS 3)",
         "staged_mod": None,
         "published_best": "Conditional exclusion via Nagell–Ljunggren / Goormaghtigh",
     },
@@ -163,7 +163,7 @@ def olean_status(mod: str) -> str:
 
 
 RESEARCH_DIR = REPO_ROOT / "research"
-IDEA_STATUSES = ["PROPOSED", "GATED", "SURVIVES", "FORMALIZING", "DONE", "KILLED"]
+IDEA_STATUSES = ["PROPOSED", "GATED", "SURVIVES", "FORMALIZING", "DONE", "KILLED", "PAUSED"]
 
 
 def _branch_nodes() -> list[dict]:
@@ -465,7 +465,11 @@ def render_dashboard(report: dict, prev: dict | None) -> str:
         "",
         f"Totals: CLOSED {bs.get('CLOSED', 0)} · CONDITIONAL {bs.get('CONDITIONAL', 0)} · OPEN {bs.get('OPEN', 0)}.",
         "",
+        "Parent nodes and overlapping slices appear in these totals. The totals cannot be interpreted as a fraction of the conjecture resolved.",
+        "",
         "### Count-LP gate (G2)",
+        "",
+        "This table describes the public baseline projection. See the [profile comparison and surviving families](STRATEGY_REVIEW.md#what-survives-the-calculation) for the effect of including the separate target-reuse inequalities.",
         "",
         "| Branch | Constraints | Status | Recession ray / max |",
         "| --- | ---: | --- | --- |",

@@ -23,7 +23,7 @@ For the assigned entry in `research/IDEAS.md`:
    If every step survives for some spoof, the idea cannot yield a contradiction.
 3. **Count attack (G2).** If the idea is a linear count inequality, run
    `python3 research/tools/count_lp.py --branch <id> --add "<expr>"`.
-   If the recession ray is unchanged, the idea is LIBRARY-level at best.
+   Check the named family and its direction algebraically. A second direction may survive a valid cut of the first.
 4. **Local-solvability attack (G3).** For Diophantine reductions, look for degenerate global solutions (e.g. `q = 1`, `y = ±1`), or for solutions modulo every prime power. Use small Python or `decide` computations.
 5. **Ceiling attack (G4).** If the idea raises a floor, identify the ceiling in `research/FLOOR_CEILING.md`. If none exists, the idea is frozen.
 6. **Hidden-difficulty attack.** Is the step secretly equivalent to a known open problem? Examples: finiteness of odd perfect numbers, a uniform bound on ω, Goormaghtigh/Nagell–Ljunggren in full generality, Baker-type bounds. Search the literature.

@@ -8,7 +8,7 @@ This repository pursues an axiom-pure Lean proof of `¬ OddPerfect.existsOddPerf
 - **Unit of progress.** A node of [research/BRANCH_MAP.md](research/BRANCH_MAP.md) changes status: Lean derives `False` on it, or makes it conditional on a smaller named hypothesis. Floors, residue classes, count inequalities and helper lemmas are means, never progress by themselves.
 - **Closure rule.** No proof task is dispatched without a one-line **closure argument**: how its result could close a node. Acceptable arguments are:
   - a floor meets a ceiling ([FLOOR_CEILING.md](research/FLOOR_CEILING.md));
-  - the count LP loses its recession ray (`research/tools/count_lp.py`);
+  - a named family or direction is proved impossible under an arithmetic constraint, with the remaining cases stated (`research/tools/count_lp.py`);
   - a direct contradiction.
 
   Methods shown to be unable to finish are recorded in [research/NO_GO.md](research/NO_GO.md) and must not be repeated.

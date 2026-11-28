@@ -13,6 +13,8 @@ lake lean research/Audit.lean
 
 The audit checks every project declaration reachable from `OddPerfect.lean`. It fails on any `sorry`, any project axiom, or any dependency outside `[propext, Classical.choice, Quot.sound]`.
 
+Read the [strategy review](research/STRATEGY_REVIEW.md) for the proof gap, the count family that survives the modulo-five restriction, and the current research choices.
+
 ## Navigation
 
 - [Operating rules](AGENTS.md): research premise, roles, gates and invariants

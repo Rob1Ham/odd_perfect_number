@@ -41,7 +41,7 @@ Read the relevant literature before inventing. Start with the closest results in
 
 Run gates G1–G4 from [GATES.md](../../../research/GATES.md) and paste the gate record into the idea entry.
 
-- Test new count inequalities with `count_lp.py --add "<expr>"`. They pass G2 only if the ray changes or the LP becomes bounded.
+- Test new count inequalities with `count_lp.py --add "<expr>"`. Test the same named family or direction before and after adding the row. Record the violated row and the surviving families. A change of solver witness alone is inconclusive.
 - Invoke the Skeptic (`.agents/agents/skeptic.md`, a separate `pro` session) on every idea that passes the gates.
 - Any gate FAIL or Skeptic `KILL` → set the status to `KILLED` and add a NO_GO entry if the reason generalizes. **This counts as a successful round.**
 

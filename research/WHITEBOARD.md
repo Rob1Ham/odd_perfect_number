@@ -19,11 +19,11 @@ Component index: i_p = σ(N/p^{e_p})/p^{e_p} = 2N/(p^{e_p}σ(p^{e_p})). Conserva
 A proof must use at least one property that spoofs violate (see gate G1):
 
 - **I1. Primality of the bases.** Spoofs use composite bases (Descartes: 22021 = 19²·61) or negative bases (Voight: −127).
-- **I2. Closure with exact valuations.** Every prime factor of every σ(p^{e_p}) lies in S, and the incoming valuations at r sum exactly to e_r. Spoofs leak prime factors outside the base set.
+- **I2. Closure with exact valuations.** Every odd prime factor of each σ(p^{e_p}) lies in S. Divide the Euler block by 2. The resulting blocks multiply to N, and their incoming valuations at each r in S sum to e_r. Spoofs leak prime factors outside the base set.
 - **I3. Abundancy balance.** ∏ σ(p^e)/p^e = 2, hence ∑ 1/p < log 2 < ∑ 1/(p−1). On its own this is satisfied by spoofs; it is useful only combined with I1/I2.
 - **I4. Prefix-gap rigidity.** No proper sub-product of local abundancies hits a forbidden rational target (`Dickson.lean`, `NearPerfectFinite.lean`).
 
-Counting arguments use I2 only through *numbers* of targets. The surviving count-LP ray (FLOOR_CEILING) shows that this throws away the information that matters. The next step must use I2 *arithmetically*: which primes, in which residue classes, of which size.
+The count models omit some relations between a source and its actual target primes. The modulo-five test uses such a relation and still admits an unbounded count family.
 
 ## Counterexample filter bank
 
@@ -40,13 +40,8 @@ Every candidate global lemma is tested against these (gate G1):
 
 ## 3. Known reformulations (not routes)
 
-The bridges B1 (cap on ω), B2 (cap on i_p) and B3 (cap on Ω(i_p)) are correct implications (`not_existsOddPerfect_of_*` in `GlobalObstruction.lean`). Each, however, implies finitely many OPNs, and each leaves a remainder that cannot be checked by computation. See NO_GO §1. They are useful only when a cap falls below a floor proven on the same node.
+The bridges B1 (cap on ω), B2 (cap on i_p) and B3 (cap on Ω(i_p)) are correct implications (`not_existsOddPerfect_of_*` in `GlobalObstruction.lean`). Each cap would imply finiteness. The formal reductions separately require an emptiness proof up to the resulting bound. Its feasibility depends on the cap and the method. See NO_GO §1.
 
 ## 4. Current sketches
 
-Sketches are developed in [IDEAS.md](IDEAS.md). One-line summaries:
-
-- **#1 `A1_SPF` target reuse.** A target t of Φ₃ receives only from base primes in 2 root classes mod t (roots summing to −1); a target of Φ₅, from 4 classes. In-capacity is 2 or 4, and t ≤ p²+p+1. Look for a superlinear bound on the number of distinct targets.
-- **#2 `A1_SPF` largest-prime chain.** The largest prime P has a supplier p ≥ P^{1/4}. Iterate down to the least prime, whose floor rises to 10⁸ after an FNO replay.
-- **#3 `IQ_PRIME_POWER_EVEN` ceiling.** 2(p−1)s² = p^{2u+1} + p − 2 and σ(s²) = p^{2u}, so s² is deficient with abundancy just below 2 − 2/p. Look for a Dickson gap giving u ≤ g(p, ω(s)).
-- **#4 `A1_G1` descent.** u² = W·σ(h²) and σ(u²) = W(2h² − 1), with h₀ + 2 ≤ u₀ and W ≥ 5113 on sixth-power-free N.
+The [strategy review](STRATEGY_REVIEW.md) gives the modulo-five target argument, its surviving count family and its extension to arbitrary exponents. [IDEAS.md](IDEAS.md) records the formalization boundary. Each square or quartic target has valuation two or four only under the sixth-power-free hypothesis. In all cases the Euler block must be included in the accounting.

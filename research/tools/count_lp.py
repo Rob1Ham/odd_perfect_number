@@ -6,7 +6,7 @@ BRANCH_MAP node, relaxes them to a rational LP over nonnegative variables, and a
 
   * Is the objective (default: omega) bounded above?  If not, print a recession ray —
     the direction along which *every* recorded constraint stays satisfied forever.
-    A new count inequality is progress only if it cuts that ray.
+    Compare each proposed inequality with named families as well as the solver ray.
   * Do the recorded parametric families (e.g. the 27 Nov assessment family) satisfy
     every constraint for all t >= t_min?
 
@@ -16,6 +16,8 @@ no third-party dependencies.
 Usage:
   python3 research/tools/count_lp.py --branch A1_SPF
   python3 research/tools/count_lp.py --branch A1_SPF --add "S51col <= Q13 - 5"
+  python3 research/tools/count_lp.py --branch A1_SPF --profile target-reuse
+  python3 research/tools/count_lp.py --branch A1_SPF --profile target-reuse --omit-row mod-five
   python3 research/tools/count_lp.py --branch A1_SPF --verified-only
   python3 research/tools/count_lp.py --branch A1_SPF --json
 Exit codes: 0 = bounded, 3 = unbounded (ray printed), 2 = infeasible, 1 = error.
@@ -209,22 +211,32 @@ def simplex_max(variables: list[str], cons: list[tuple[dict, str, Fraction]],
 
 # ---------------------------------------------------------------- families
 
-def eval_affine(expr: str, t: int) -> Fraction:
-    coeffs, const = parse_linear(_tokens(expr))
-    return const + sum(c * t for v, c in coeffs.items() if v == "t")
+def check_family(fam: dict, cons_raw: list[dict], parsed, variables: list[str]) -> list[str]:
+    """Check an affine integer assignment for every integer t >= t_min."""
+    if set(fam["assignment"]) != set(variables):
+        raise ValueError(f"{fam['name']}: assignment must define every model variable exactly once")
+    start = fam["t_min"]
+    base, slope = {}, {}
+    for name, expr in fam["assignment"].items():
+        coeffs, const = parse_linear(_tokens(expr))
+        if set(coeffs) - {"t"}:
+            raise ValueError(f"{name}: unknown parameter in {expr!r}")
+        slope[name] = coeffs.get("t", Fraction(0))
+        base[name] = const + start * slope[name]
+        if base[name].denominator != 1 or slope[name].denominator != 1:
+            return [f"{name} is not integer-valued for all t >= {start}"]
+        if base[name] < 0 or slope[name] < 0:
+            return [f"{name} violates nonnegativity at or after t={start}"]
 
-
-def check_family(fam: dict, cons_raw: list[dict], parsed) -> list[str]:
     failures = []
-    for t in list(range(fam["t_min"], fam["t_min"] + 50)) + [10**6, 10**12]:
-        point = {v: eval_affine(e, t) for v, e in fam["assignment"].items()}
-        for raw, (coeffs, op, b) in zip(cons_raw, parsed):
-            lhs = sum(c * point.get(v, Fraction(0)) for v, c in coeffs.items())
-            ok = (lhs <= b) if op == "<=" else (lhs == b)
-            if not ok:
-                failures.append(f"t={t}: violates {raw['expr']}")
-        if failures:
-            break
+    for raw, (coeffs, op, rhs) in zip(cons_raw, parsed):
+        lhs = sum(c * base[v] for v, c in coeffs.items())
+        delta = sum(c * slope[v] for v, c in coeffs.items())
+        if lhs > rhs or (op == "=" and lhs != rhs):
+            failures.append(f"t={start}: violates {raw['expr']}")
+        elif delta > 0 or (op == "=" and delta != 0):
+            steps = (rhs - lhs) // delta + 1 if op == "<=" else 1
+            failures.append(f"t={start + steps}: violates {raw['expr']}")
     return failures
 
 
@@ -245,6 +257,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data", default=str(DEFAULT_DATA))
     ap.add_argument("--branch", required=True)
+    ap.add_argument("--omit-row", help="omit a named row to reproduce an earlier relaxation")
+    ap.add_argument("--profile", help="add the constraints from a named research profile")
     ap.add_argument("--add", action="append", default=[], help="candidate inequality to test")
     ap.add_argument("--objective", default=None, help="variable to maximize (default from data)")
     ap.add_argument("--verified-only", action="store_true")
@@ -256,8 +270,16 @@ def main() -> int:
     if br is None:
         print(f"unknown branch {args.branch}; known: {', '.join(data['branches'])}", file=sys.stderr)
         return 1
-    cons_raw = [c for c in br["constraints"] if c.get("verified") or not args.verified_only]
+    profile = br.get("profiles", {}).get(args.profile, {})
+    if args.profile and not profile:
+        ap.error(f"unknown profile {args.profile!r} for {args.branch}")
+    rows = br["constraints"] + profile.get("constraints", [])
+    cons_raw = [c for c in rows if c.get("verified") or not args.verified_only]
     cons_raw += [{"expr": e, "source": "candidate (--add)", "verified": False} for e in args.add]
+    if args.omit_row:
+        if not any(c.get("id") == args.omit_row for c in cons_raw):
+            ap.error(f"unknown row {args.omit_row!r}")
+        cons_raw = [c for c in cons_raw if c.get("id") != args.omit_row]
     parsed = [parse_constraint(c["expr"]) for c in cons_raw]
     variables = list(br["variables"])
     for coeffs, _, _ in parsed:
@@ -266,15 +288,22 @@ def main() -> int:
                 print(f"unknown variable {v!r} in constraints", file=sys.stderr)
                 return 1
     obj_var = args.objective or br.get("objective", variables[0])
+    if obj_var not in variables:
+        ap.error(f"unknown objective {obj_var!r}")
     res = simplex_max(variables, parsed, {obj_var: Fraction(1)})
 
     fam_reports = []
     for fam in br.get("known_families", []):
-        fails = check_family(fam, cons_raw, parsed)
+        fails = check_family(fam, cons_raw, parsed, variables)
         fam_reports.append({"family": fam["name"], "survives": not fails, "first_failures": fails[:5]})
 
     out = {"branch": args.branch, "objective": obj_var, "n_constraints": len(cons_raw),
            "status": res.status, "families": fam_reports}
+    if args.omit_row:
+        out["omitted_row"] = args.omit_row
+    if args.profile:
+        out["profile"] = args.profile
+        out["profile_source"] = profile["source"]
     if res.status == "bounded":
         out["max"] = fmt(res.value)
         out["argmax"] = {k: fmt(v) for k, v in res.point.items()}
@@ -288,6 +317,10 @@ def main() -> int:
     else:
         print(f"# count_lp — branch {args.branch} — maximize {obj_var} over {len(cons_raw)} constraints"
               f"{' (verified only)' if args.verified_only else ''}")
+        if args.omit_row:
+            print(f"row omitted: {args.omit_row}")
+        if args.profile:
+            print(f"profile: {args.profile} ({profile['source']})")
         print(f"status: {res.status.upper()}")
         if res.status == "bounded":
             print(f"max {obj_var} = {out['max']}  ⇒ combined with a floor above this, the branch closes.")
@@ -297,8 +330,7 @@ def main() -> int:
             print("constraints parallel to the ray (a cut must tighten one of these or add a new one):")
             for e in out["constraints_parallel_to_ray"]:
                 print(f"  - {e}")
-            print("G2 verdict: a candidate count inequality is progress only if adding it (via --add)"
-                  " changes this ray or makes the LP bounded.")
+            print("Test both the direction and named affine families. A different solver ray alone does not establish a cut.")
         elif res.status == "infeasible":
             print("constraints are jointly infeasible ⇒ if all are proven, the branch is CLOSED. Verify sources!")
         for fr in fam_reports:

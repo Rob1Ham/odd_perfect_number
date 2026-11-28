@@ -83,8 +83,10 @@ def main() -> int:
         if c["class"] not in CLASS_ORDER:
             problems.append(f"{c['name']}: unknown class {c['class']}")
         rel = p.relative_to(REPO_ROOT).as_posix()
-        status = "audited" if (found and audited) else "**PROBLEM**"
-        row = (f"| [`{c['name']}`](../{rel}) | {c['statement']} | `{c['branch']}` | {c['class']} | "
+        status = "in public imports" if (found and audited) else "**PROBLEM**"
+        statement = c["statement"].replace("|", r"\|")
+        display_name = ".".join(filter(None, (c.get("namespace"), c["name"])))
+        row = (f"| [`{display_name}`](../{rel}) | {statement} | `{c['branch']}` | {c['class']} | "
                f"{c['literature']} | {status} |")
         rows.append((CLASS_ORDER.index(c["class"]) if c["class"] in CLASS_ORDER else 99, row))
 
@@ -102,9 +104,11 @@ def main() -> int:
         "",
         "This is the **only** list of headline results other documents may cite. Other files should link here instead of copying statements and numbers.",
         "",
+        "This tool checks names, modules and reachability. Check the linked Lean signature for hypotheses and run the kernel audit separately.",
+        "",
         "Classes:",
-        "- `REPLAY`: formalizes a published result.",
-        "- `CANDIDATE-NEW`: no prior result found yet. Do **not** call it new until the literature-checker records a search.",
+        "- `REPLAY`: formalizes a published result or a stated consequence.",
+        "- `CANDIDATE-NEW`: priority is unresolved. Check the literature before making a novelty claim.",
         "- `REDUCTION`: a conditional or bookkeeping implication.",
         "- `LIBRARY`: true, but changes no node of [BRANCH_MAP.md](BRANCH_MAP.md) and no row of [FLOOR_CEILING.md](FLOOR_CEILING.md).",
         "",

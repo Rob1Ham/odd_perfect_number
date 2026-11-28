@@ -7,7 +7,7 @@ The previous, longer handoff is archived at [archive/RESOLUTION_HANDOFF_2026-11-
 ## Start here
 
 1. [AGENTS.md](../AGENTS.md): operating rules (calibrated ambition, closure rule, gates, commit discipline).
-2. [BRANCH_MAP.md](BRANCH_MAP.md): the case tree, its node statuses and the 3 active nodes.
+2. [BRANCH_MAP.md](BRANCH_MAP.md): the case tree, its node statuses and the active nodes.
 3. [PROGRESS_DASHBOARD.md](PROGRESS_DASHBOARD.md) section 0: the generated progress metrics.
 4. [IDEAS.md](IDEAS.md): the current idea queue. [GATES.md](GATES.md): the tests an idea must pass before Lean.
 5. [NO_GO.md](NO_GO.md): methods that cannot finish. Do not repeat them.
@@ -15,7 +15,7 @@ The previous, longer handoff is archived at [archive/RESOLUTION_HANDOFF_2026-11-
 
 ## Verified checkpoint
 
-Tag `audit-20261127`: `lake build` plus `lake lean research/Audit.lean` passed, with 10,083 named theorems and 60,946 project declarations, all depending only on `propext`, `Classical.choice` and `Quot.sound`.
+Checkpoint `audit-20261128` includes the modulo-five theorem and the high-square-count exclusion. The full build and axiom audit passed for 10,090 named theorems and 60,981 project declarations across 921 reachable modules. The permitted foundations are `propext`, `Classical.choice` and `Quot.sound`.
 
 Reproduce:
 
@@ -31,16 +31,11 @@ To inspect one theorem, put `import OddPerfect` in a scratch file, then `#check 
 
 ## Assignments for the next round
 
-Take one active node and follow `.agents/skills/carbon-reevaluation-loop/SKILL.md`. Phases 2–3 (informal sketch, gates, Skeptic) come **before** any Lean.
+Start with the [strategy review](STRATEGY_REVIEW.md). Follow the [current assignments](IDEAS.md) and [roadmap](ROADMAP.md).
 
-| Node | First experiment | Done when |
-| --- | --- | --- |
-| `A1_SPF` | IDEAS #1: list the Φ₃/Φ₅ root-class and size constraints on targets. Encode any resulting linear consequence with `count_lp.py --add` | The LP ray is cut, or the idea is KILLED with a reason |
-| `IQ_PRIME_POWER_EVEN` | IDEAS #3: attempt a Dickson-type gap bound u ≤ g(p, ω(s)) on paper | A ceiling is stated and passes the Skeptic, or the node is frozen with a NO_GO entry |
-| `A1_G1` | IDEAS #4: search for a descent on u² = Wσ(h²), σ(u²) = W(2h² − 1). First test whether spoof "solutions" exist | A strictly smaller family is defined, or the idea is KILLED |
-| Background | ROADMAP §3: the Fletcher–Nielsen–Ochem least-prime replay, or Bang–Zsigmondy to Mathlib | Audited theorem or merged PR |
-
-Close every assignment with: the exact Lean statement or the KILL evidence, the gate record, the branch impact, and the axiom output. The Strategist owns `OddPerfect.lean` and the research documents.
+1. For `A1_SPF`, distinguish the public import baseline, the standalone target-reuse file, and the audited modulo-five cut. Reproduce the comparison in the review. The next experiment is IDEA 8.
+2. For `ROOT`, test the weighted budget on a large-exponent target and on a support with no selected square sources. Describe which missing estimate would rule out either configuration.
+3. Report what happens to the remaining families. Preserve a feasible assignment or a concrete counterexample when an idea fails.
 
 ## About the reported private resolution
 
@@ -53,7 +48,7 @@ The project owner reports a separate, unpublished Lean resolution that compiled 
 ## Sharing the checkpoint
 
 ```sh
-git archive --format=tar.gz -o /tmp/odd-perfect-audit-20261127.tar.gz audit-20261127
+git archive --format=tar.gz -o /tmp/odd-perfect-audit-20261128.tar.gz audit-20261128
 ```
 
-The four `*-breakout/` package directories are not yet tracked by git. Commit them separately if they should travel with the checkpoint.
+This checkpoint includes the five breakout packages. Their standalone builds have separate entry points.

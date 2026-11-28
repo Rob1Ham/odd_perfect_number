@@ -367,3 +367,12 @@ Each round appends:
 - **Branch impact**: which BRANCH_MAP nodes or FLOOR_CEILING rows changed, or "none".
 - **Gate record**: IDEAS entries processed, with G1–G4 and Skeptic outcomes, including KILLED ideas.
 - **Classification**: each new headline theorem as REPLAY / CANDIDATE-NEW / REDUCTION / LIBRARY.
+
+
+## Modulo-five target capacity and strategy review (27 November 2026)
+
+**Branch impact.** Closed `A1_SPF_HIGH_SQUARE`. If every exponent-two prime is 1 modulo 5, their number S is strictly less than twice the number Q of exponent-four primes that are 1 modulo 3. For every sixth-power-free candidate the more general inequality is 10S ≤ 19Q + 5U + 10, where U counts square sources outside 1 modulo 5. Euler form supplies all Euler-prime hypotheses. The proof combines residues of entire source outputs with exact valuations at their targets. [Proof](../OddPerfect/SquareOutputCapacity.lean)
+
+**Verification.** Public `lake build` and `lake lean research/Audit.lean` passed, checking 10,090 named theorems and 60,981 project declarations with only the three permitted axioms. The earlier public baseline also passed before the change. The count gate now checks affine families for all integer parameters in their stated ranges. The staged target-reuse profile and the public modulo-five inequality together leave an explicit integer count family of rank 6m+2 for all m ≥ 100. [Reproduction and coverage](STRATEGY_REVIEW.md)
+
+**Classification and next work.** Literature priority for the arithmetic refinement is unassessed. The parent sixth-power-free branch and both main Euler-exponent branches remain open. Current research addresses the surviving count family and the capacity contributed by arbitrary exponents. [Roadmap](ROADMAP.md)

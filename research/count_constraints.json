@@ -8,8 +8,8 @@
         "Omega": "cardFactors N",
         "S50": "squareSources N filtered (% 5 != 1)",
         "S51": "squareSources N filtered (% 5 = 1)",
-        "S51col": "S51 targets counted in collisionExcess (Wave K split)",
-        "S51rep": "S51 remainder (Wave K split)",
+        "S51col": "exact-square sources congruent to 1 mod 5 with indegAt = 2",
+        "S51rep": "exact-square sources congruent to 1 mod 5 with indegAt = 1",
         "Q13": "oneModThreeLargeSources N q",
         "Q23": "twoModThreeLargeSources N q",
         "E": "collisionExcess N q",
@@ -22,7 +22,7 @@
         {"expr": "M + E = S50 + S51 + 3*Q13 + 3*Q23", "source": "sixth_power_free_excess_and_drop_partition", "verified": true},
         {"expr": "S50 + 3*Q23 <= M", "source": "sixth_power_free_excess_and_drop_partition", "verified": true},
         {"expr": "E >= 221", "source": "sixth_power_free_excess_and_drop_partition", "verified": true},
-        {"expr": "omega <= 2*E + 3", "source": "HalfRankCollisionObstruction (omega <= 2 * collisionExcess + 3)", "verified": true},
+        {"expr": "omega <= 2*E + 2", "source": "odd_perfect_half_rank_collision_excess_bound (three-free clause)", "verified": true},
         {"expr": "S51 >= 110", "source": "sixth_power_free_square_sources_quarter_density", "verified": true},
         {"expr": "438 + Q23 <= 4*S51", "source": "sixth_power_free_square_sources_quarter_density", "verified": true},
         {"expr": "S50 + S51 <= 2*Q13 + 1", "source": "sixth_power_free_square_sources_quarter_density", "verified": true},
@@ -32,19 +32,49 @@
         {"expr": "Q13 >= 80", "source": "sixth_power_free_oneModThreeLarge_ge_80", "verified": true},
         {"expr": "omega >= 443", "source": "bounds_of_prime_factors_ge_fifty_three", "verified": true},
         {"expr": "Omega >= 1179", "source": "sixthPowerFree_total_prime_factor_count", "verified": true},
-        {"expr": "3*Q13 + 2*Q23 <= 4*S51 + 3", "source": "SixthPowerFreeBipartiteParity (Wave 8)", "verified": false},
-        {"expr": "S51 = S51col + S51rep", "source": "Wave K split definition", "verified": false},
-        {"expr": "E <= S51col + 3*Q13", "source": "Wave Q note (221 <= E <= |S51_col| + 3|Q13|)", "verified": false},
-        {"expr": "Q13 + 2*Q23 <= 2*S51col + 1", "source": "Wave O note (SixthPowerFreeRepSourceDecomposition)", "verified": false},
-        {"expr": "438 + 5*Q23 <= 6*S51col", "source": "Wave O note", "verified": false},
-        {"expr": "S50 + S51rep + Q23 <= S51col + 5*Q13 + 1", "source": "Wave K note (SixthPowerFreeQuarticCollisionPinch)", "verified": false}
+        {"expr": "3*Q13 + 2*Q23 <= 4*S51 + 3", "source": "sixth_power_free_sharpened_quartic_to_S51_bound", "verified": true},
+        {"expr": "S51 = S51col + S51rep", "source": "sixth_power_free_S51_collision_repeat_split", "verified": true},
+        {"expr": "E <= S51col + 3*Q13", "source": "sixth_power_free_half_rank_bipartite_pinch, proof of hcol_ub from the split and quartic capacity", "verified": true},
+        {"expr": "Q13 + 2*Q23 <= 2*S51col + 1", "source": "sixth_power_free_quartic_double_Q23_collision_pinch", "verified": true},
+        {"expr": "438 + 5*Q23 <= 6*S51col", "source": "sixth_power_free_quartic_double_Q23_collision_pinch", "verified": true},
+        {"expr": "S50 + S51rep + Q23 <= S51col + 5*Q13 + 1", "source": "sixth_power_free_half_rank_bipartite_pinch", "verified": true},
+        {"id": "mod-five", "expr": "10*S51 + 5*S50 <= 19*Q13 + 10", "source": "OddPerfect.SquareOutputCapacity.sixth_power_free_square_output_capacity, S = S51 + S50", "verified": true}
       ],
+      "profiles": {
+        "target-reuse": {
+          "source": "OddPerfect/SixthPowerFreeTargetReuseObstruction.lean, outside the public import graph. Rows are transcribed from the theorem statement.",
+          "constraints": [
+            {"expr": "Q13 + 2*Q23 <= 2*S51col", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "Q23 <= Q13 + 1", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "2*omega <= 7*Q13 + 6", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "Q13 >= 126", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "5*omega <= 16*S51 + 16", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "S51 >= 138", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "omega <= 6*S51col + 2", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "S51col >= 74", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "13*omega <= 20*E + 38", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "E >= 287", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "9*Q13 + 8*S51col <= 8*E + 8*S51rep + 8*Q23 + 8*S50 + 10", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true},
+            {"expr": "omega + 20*Q13 + 20*S51col <= 20*E + 20*S51rep + 20*Q23 + 20*S50 + 26", "source": "sixth_power_free_prime_target_reuse_obstruction; EQ13 = E - S51col by sixth_power_free_S51_collision_repeat_split", "verified": true}
+          ]
+        }
+      },
       "known_families": [
         {
           "name": "assessment-2026-11-27",
           "description": "Unbounded count assignment from research/ODD_PERFECT_ASSESSMENT_2026_11_27.md",
           "assignment": {"omega": "2*t + 1", "Omega": "6*t + 1", "S50": "0", "S51": "t", "S51col": "t", "S51rep": "0", "Q13": "t", "Q23": "0", "E": "2*t", "M": "2*t"},
           "t_min": 221
+        },
+        {
+          "name": "square-ramified",
+          "assignment": {"omega": "7*t+2", "Omega": "20*t+3", "S50": "0", "S51": "4*t+1", "S51col": "2*t+1", "S51rep": "2*t", "Q13": "2*t", "Q23": "t", "E": "6*t+1", "M": "7*t"},
+          "t_min": 64
+        },
+        {
+          "name": "lower-square-count",
+          "assignment": {"omega": "6*t+2", "Omega": "18*t+3", "S50": "0", "S51": "3*t+1", "S51col": "2*t+1", "S51rep": "t", "Q13": "2*t", "Q23": "t", "E": "6*t+1", "M": "6*t"},
+          "t_min": 100
         }
       ]
     }
