@@ -10,7 +10,7 @@ The earlier review estimated a **1–5% chance of independently reaching a compl
 
 Work by other contributors in this working tree also identifies the target precisely. Proving that every perfect natural number is even is equivalent to proving `¬ existsOddPerfect`. The Euclid–Euler classification of all perfect numbers in this checkout takes that negation as a premise. This gives agents two equivalent statements to compare with any shareable private lemma. [Target equivalence](../OddPerfect/Question.lean) · [Conditional classification](../OddPerfect/Even.lean)
 
-**Verified checkpoint.** The pinned build and axiom audit passed for 845 imported project modules, 9,784 named theorems and 58,550 project declarations (`OddPerfect.lean` through `OddPerfect.GlobalTier2WaveBObstruction`, importing 115 distinct Mathlib modules). The audit permits only `propext`, `Classical.choice` and `Quot.sound`. This run used the existing Mathlib and build caches. The source package also contains staged Lean files outside the public import graph (`CountBound47` and `HarmonicTauSmooth`).
+**Verified checkpoint.** The pinned build and axiom audit passed for 920 imported project modules, 10,083 named theorems and 60,946 project declarations (`OddPerfect.lean` through `OddPerfect.GlobalTier2WaveQObstruction`, importing 136 distinct Mathlib modules). The audit permits only `propext`, `Classical.choice` and `Quot.sound`. This run used the existing Mathlib and build caches. The source package also contains staged Lean files outside the public import graph (`CountBound47` and `HarmonicTauSmooth`).
 
 ## Cases retired through Wave 11
 

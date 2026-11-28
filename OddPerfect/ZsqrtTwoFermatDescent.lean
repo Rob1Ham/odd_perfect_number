@@ -151,8 +151,14 @@ instance instEuclideanDomainZsqrtTwo : EuclideanDomain (ℤ√2) :=
 /-! ## 2. Fundamental Unit & Unit Group of `ℤ√2` -/
 
 /-- The silver ratio unit `1 + √2 ∈ (ℤ√2)ˣ`. -/
-def silverUnit : (ℤ√2)ˣ :=
+@[expose] def silverUnit : (ℤ√2)ˣ :=
   ⟨⟨1, 1⟩, ⟨-1, 1⟩, by ext <;> simp, by ext <;> simp⟩
+
+/-- Underlying value of `silverUnit` in `ℤ√2`. -/
+theorem silverUnit_val : (silverUnit : ℤ√2) = ⟨1, 1⟩ := rfl
+
+/-- Underlying value of `silverUnit⁻¹` in `ℤ√2`. -/
+theorem silverUnit_inv_val : ((silverUnit⁻¹ : (ℤ√2)ˣ) : ℤ√2) = ⟨-1, 1⟩ := rfl
 
 /-- `3 + 2√2` is the fundamental Pell solution for `d = 2`. -/
 theorem pell_two_fundamental :

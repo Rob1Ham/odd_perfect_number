@@ -1,6 +1,6 @@
 # Odd Perfect Number — Continuous Progress & Reevaluation Dashboard
 
-**Snapshot UTC**: `2026-11-27T14:09:23Z` · **Hygiene (`sorry`/`axiom`)**: `0 violations`
+**Snapshot UTC**: `2026-11-27T23:28:19Z` · **Hygiene (`sorry`/`axiom`)**: `0 violations`
 
 ## 1. Macro Health & Integration Metrics
 
@@ -8,11 +8,11 @@ Module totals come from the import graph. See the [research ledger](LEDGER.md) f
 
 | Metric | Current (Δ vs prior) | Interpretation |
 | --- | --- | --- |
-| Modules reachable from `OddPerfect.lean` | `845` (+12) | Covered by the public audit when it passes |
-| Unintegrated modules in `OddPerfect/` | `516` (-4) | Staged / WIP debt awaiting harvest or pruning |
-| Structural modules vs Certificate chunks | `395` / `966` (`29.0%` structural) | Guards against brute-force tree bloat |
-| Structural declarations (`OddPerfect/`) | `4,206` (+85) | Reusable lemmas & public theorems |
-| Distinct Mathlib modules imported (structural) | `115` (+23) | Breadth of Mathlib theorem reuse |
+| Modules reachable from `OddPerfect.lean` | `920` (+5) | Covered by the public audit when it passes |
+| Unintegrated modules in `OddPerfect/` | `526` (+4) | Staged / WIP debt awaiting harvest or pruning |
+| Structural modules vs Certificate chunks | `480` / `966` (`33.2%` structural) | Guards against brute-force tree bloat |
+| Structural declarations (`OddPerfect/`) | `4,929` (+47) | Reusable lemmas & public theorems |
+| Distinct Mathlib modules imported (structural) | `136` (0) | Breadth of Mathlib theorem reuse |
 
 ## 2. Candidate-Set Contraction Frontier (`∃ N, Odd N ∧ Nat.Perfect N`)
 
@@ -31,10 +31,12 @@ Module totals come from the import graph. See the [research ledger](LEDGER.md) f
 
 | Track | Total Files | Fresh `.olean` | Stale `.olean` | Unbuilt | Compiled % | Entry Modules |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Other Unintegrated Modules | 10 | 6 | 0 | 4 | 60.0% | `ExceptionalBlockCoprimeFactorizationAndTargetRouting`, `ExceptionalEuler42And486FactorDrop`, `KummerBinomialAndCentralChooseObstruction`, `LinearEulerGcdSplitSourcePeeling` (+6) |
 | HarmonicRange (background — Cohen–Sorli odd harmonic exclusion) | 322 | 67 | 16 | 239 | 20.8% | `HarmonicTauSmooth` |
 | CountBound47 (background — Ω(N) ≥ 47) | 167 | 7 | 2 | 158 | 4.2% | `ChainArithmetic`, `ChainWitness`, `CountBound47`, `CountChain45` |
 | DeficientFour & ω(N) ≥ 6 (background — Yang–Togbé / Gradshtein) | 27 | 0 | 0 | 27 | 0.0% |  |
 
 ## 4. Carbon Strategic Signals & Recommended Next Actions
 
+- [HARVEST HIGH-ROI] Dispatch `neon-harvester` + `neon-auditor` to finish & audit nearly-built staged tracks: Other Unintegrated Modules (6/10 built).
 - See [the resolution handoff](RESOLUTION_HANDOFF.md) for the six-factor criterion, Tóth split, exceptional Fermat reduction and the global B3 cap.

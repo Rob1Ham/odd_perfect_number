@@ -1,0 +1,233 @@
+\documentclass[11pt]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\lstset{
+  language=C,
+  basicstyle=\ttfamily\footnotesize,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  frame=single,
+  breaklines=true
+}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\title[An Elementary Reduction of T\'oth's Bound and Extension to $10^{18}$]{An Elementary Reduction of T\'oth's Bound for Descartes Numbers, and an Extension to $10^{18}$}
+
+\author{Robert Hamilton}
+
+\subjclass[2020]{Primary 11A25; Secondary 11Y70, 68V20}
+\keywords{Descartes numbers, spoof odd perfect numbers, deficient-perfect numbers, sum of divisors, formal verification, Lean 4}
+
+\begin{document}
+
+\begin{abstract}
+A Descartes number is an odd integer $mw$ where $w > 1$ is composite and $\sigma(m)(w+1) = 2mw$, so that $mw$ would be an odd perfect number if $w$ were a prime coprime to $m$. T\'oth (2021) tabulated all odd $m \le 10^{12}$ satisfying $2m/\sigma(m) - 1 = 1/x$ across positive integers $x$ of either parity---a computation over $5 \times 10^{11}$ integers reported to take about eight months---and deduced as a corollary that every odd Descartes factorization other than Descartes' example $198585576189 = 3^2 \cdot 7^2 \cdot 11^2 \cdot 13^2 \cdot 22021$ satisfies $m > 10^{12}$. Restricting to odd multipliers $w > 1$, a classical Euler parity observation forces $m$ to be a perfect square, reducing T\'oth's $10^{12}$ cofactor range to $5 \times 10^5$ odd square roots $k \le 10^6$ and making the check instantaneous. Extending the square-root search to $k \le 10^9$ proves $m > 10^{18}$ for any second odd Descartes factorization and shows that $9018009$ is the unique odd deficient-perfect number up to $10^{18}$. We also report a kernel-checked Lean~4/Mathlib formalization of the $10^{12}$ theorem via rational abundancy pruning, paired with purely analytical finiteness and coprime-split theorems for unbounded cofactors.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Let $\sigma(n) = \sum_{d \mid n} d$ denote the sum of the positive divisors of $n$. Whether an odd perfect number exists remains open. Descartes observed in 1638 that
+\[
+  D = 3^2 \cdot 7^2 \cdot 11^2 \cdot 13^2 \cdot 22021 = 198585576189
+\]
+would be an odd perfect number if $22021$ were prime; in fact $22021 = 19^2 \cdot 61$. Such ``spoof'' odd perfect numbers serve as a critical barrier in odd perfect number research, since arguments relying solely on Euler's congruence and multiplicative properties of $\sigma$ apply equally to spoofs. Structural restrictions on spoofs were established by Banks, G\"ulo\u{g}lu, Nevans, and Saidak~\cite{BGNS2008}, Dittmer~\cite{Dittmer2014}, and the BYU Computational Number Theory Group~\cite{BYU2022}.
+
+\begin{definition}\label{def:descartes}
+An \emph{odd Descartes factorization} is a pair $(m, w)$ of positive integers such that $mw$ is odd, $w > 1$ is composite, and
+\begin{equation}\label{eq:balance}
+  \sigma(m)(w + 1) = 2mw.
+\end{equation}
+We say $(m, w)$ is \emph{coprime} if $\gcd(m, w) = 1$.
+\end{definition}
+
+When $\gcd(m, w) = 1$, the right-hand side of~\eqref{eq:balance} is what $\sigma(mw) = \sigma(m)\sigma(w)$ would equal if $w$ were prime. Banks et al.~\cite{BGNS2008} and T\'oth~\cite{Toth2021} omit $\gcd(m, w) = 1$ from Definition~\ref{def:descartes}, whereas the formal statement in the Google DeepMind \emph{Formal Conjectures} repository~\cite{FormalConjectures} includes $\gcd(m, w) = 1$. Because Theorem~\ref{thm:main} below requires neither $\gcd(m, w) = 1$ nor compositeness of $w$, it applies under both conventions. Descartes' example is $(m, w) = (9018009, 22021)$, where $9018009 = 3003^2$.
+
+\begin{theorem}[{T\'oth~\cite[Thm.~1]{Toth2021}}]\label{thm:toth}
+If $(m, w)$ is an odd Descartes factorization with $mw \ne 198585576189$, then $m > 10^{12}$.
+\end{theorem}
+
+In~\cite{Toth2021}, T\'oth studied the broader set $\mathcal{S}$ (\href{https://oeis.org/A222263}{OEIS A222263}) of all odd $n \ge 1$ satisfying $2n/\sigma(n) - 1 = 1/x$ for an arbitrary positive integer $x$ (even or odd) in order to investigate the empirical growth $\#(\mathcal{S} \cap [1, X]) \sim 10 \log X$. Because $\mathcal{S}$ includes even multipliers $x$---for which $n$ need not be a square---tabulating $\mathcal{S} \cap [1, 10^{12}]$ in Mathematica required testing all $5 \times 10^{11}$ odd integers up to $10^{12}$ (about eight months on an Intel i7-7800X), from which Theorem~\ref{thm:toth} followed by inspection.
+
+When one restricts attention to Theorem~\ref{thm:toth}, however, the spoof factor $w$ of an odd product $mw$ is necessarily odd. By Euler's classical parity argument, $m$ must then be an odd square. Exploiting this reduction shrinks $10^{12}$ to $5 \times 10^5$ odd roots $k \le 10^6$ and permits an immediate extension by six orders of magnitude.
+
+\begin{theorem}\label{thm:main}
+Let $m \le 10^{18}$ and $w > 1$ both be odd positive integers satisfying $\sigma(m)(w + 1) = 2mw$. Then $(m, w) = (9018009, 22021)$. In particular, every odd Descartes factorization $(m, w)$ (with or without $\gcd(m, w) = 1$) other than $(9018009, 22021)$ satisfies $m > 10^{18}$.
+\end{theorem}
+
+Recall from Tang and Feng~\cite{TangFeng2014} that a positive integer $n$ is \emph{deficient-perfect} (\href{https://oeis.org/A271816}{OEIS A271816}) if $\sigma(n) + d = 2n$ for some proper divisor $d \mid n$ ($1 \le d < n$). Prior searches on OEIS A271816 (by Giovanni Resta) verified that $9018009$ is the unique odd deficient-perfect number up to $2 \cdot 10^{12}$, while Yang and Togb\'e~\cite{YangTogbe2023} proved uniqueness of $9018009$ unconditionally among odd deficient-perfect numbers with at most four distinct prime factors. By the exact bijection in Proposition~\ref{prop:bijection} below, Theorem~\ref{thm:main} simultaneously yields a $500{,}000$-fold search extension on OEIS A271816:
+
+\begin{corollary}\label{cor:deficient}
+Among all odd positive integers $n \le 10^{18}$, the deficient-perfect equation $\sigma(n) + d = 2n$ with $d \mid n$ and $1 \le d < n$ holds if and only if $(n, d) = (9018009, 819)$.
+\end{corollary}
+
+\section{The Parity Reduction and Deficient-Perfect Bijection}
+
+\begin{lemma}\label{lem:odd-sigma}
+Let $n \ge 1$ be odd. Then $\sigma(n)$ is odd if and only if $n$ is a perfect square.
+\end{lemma}
+
+\begin{proof}
+Write $n = \prod_i p_i^{e_i}$ with distinct odd primes $p_i$. By multiplicativity, $\sigma(n) = \prod_i (1 + p_i + \dots + p_i^{e_i})$. Since each $p_i$ is odd, the $i$-th factor is a sum of $e_i + 1$ odd integers and is therefore odd if and only if $e_i$ is even. Thus $\sigma(n)$ is odd if and only if every $e_i$ is even.
+\end{proof}
+
+\begin{lemma}\label{lem:structure}
+Let $n$ and $x$ be odd positive integers satisfying $\sigma(n)(x + 1) = 2nx$. Then $n$ is a perfect square, $x \equiv 1 \pmod 4$, and $d := 2n - \sigma(n)$ is a positive integer dividing both $\sigma(n)$ and $n$, with $\sigma(n) = dx$ and $x + 1 = 2(n/d)$. Moreover, $d < n$ if and only if $x > 1$.
+\end{lemma}
+
+\begin{proof}
+Since $x$ is odd, write $x + 1 = 2y$ with $y \ge 1$. Dividing $\sigma(n)(x + 1) = 2nx$ by $2$ yields $\sigma(n) y = nx$. Because $nx$ is odd, both $\sigma(n)$ and $y$ are odd. Lemma~\ref{lem:odd-sigma} implies that $n$ is a square, and $y$ odd gives $x = 2y - 1 \equiv 1 \pmod 4$. Rearranging $\sigma(n)x + \sigma(n) = 2nx$ gives $\sigma(n) = (2n - \sigma(n))x$. Since $\sigma(n) > 0$ and $x > 0$, we have $d := 2n - \sigma(n) > 0$, $\sigma(n) = dx$, and $d \mid \sigma(n)$. Substituting $\sigma(n) = 2n - d$ into $\sigma(n) y = nx = n(2y - 1)$ gives $(2n - d)y = 2ny - n$, whence $dy = n$. Thus $d \mid n$ and $x + 1 = 2y = 2(n/d)$. Finally, since $n = dy$ and $d > 0$, we have $d < n \iff y > 1 \iff x = 2y - 1 > 1$.
+\end{proof}
+
+\begin{proposition}\label{prop:bijection}
+\begin{enumerate}
+  \item Solutions $(m, w)$ of~\eqref{eq:balance} with $m, w$ odd positive integers and $m \le B^2$ correspond bijectively to odd positive integers $k \le B$ such that $d_k := 2k^2 - \sigma(k^2) > 0$ and $d_k \mid \sigma(k^2)$, via $m = k^2$ and $w = \sigma(k^2)/d_k$. Under this bijection, $w > 1$ if and only if $k > 1$.
+  \item For every odd positive integer $n$, pairs $(n, x)$ with $x > 1$ odd and $\sigma(n)(x + 1) = 2nx$ correspond bijectively to proper positive divisors $d \mid n$ ($1 \le d < n$) satisfying $\sigma(n) + d = 2n$, via $d = 2n - \sigma(n)$ and $x = 2(n/d) - 1$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+For (1), if $(m, w)$ satisfies~\eqref{eq:balance} with $m, w$ odd and $m \le B^2$, Lemma~\ref{lem:structure} gives $m = k^2$ for a unique odd $k \le B$, with $d_k = 2k^2 - \sigma(k^2) > 0$, $d_k \mid \sigma(k^2)$, and $w = \sigma(k^2)/d_k$. Conversely, let $k \le B$ be odd with $d_k := 2k^2 - \sigma(k^2) > 0$ and $d_k \mid \sigma(k^2)$, and set $m = k^2$ and $w = \sigma(k^2)/d_k \ge 1$. Then $m \le B^2$ is odd, and by Lemma~\ref{lem:odd-sigma} the divisor sum $\sigma(k^2)$ is odd; hence its divisor $w$ is also odd, and $\sigma(k^2) = d_k w = (2k^2 - \sigma(k^2))w$ rearranges to~\eqref{eq:balance}. If $k = 1$, then $d_1 = 1$ and $w = 1$. If $k > 1$, then $1, k, k^2$ are distinct divisors of $k^2$, so $\sigma(k^2) \ge 1 + k + k^2 > k^2$, giving $d_k = 2k^2 - \sigma(k^2) < k^2 < \sigma(k^2)$ and therefore $w = \sigma(k^2)/d_k > 1$.
+
+For (2), Lemma~\ref{lem:structure} sends $(n, x)$ to $d = 2n - \sigma(n)$ with $d \mid n$, $d < n$, and $\sigma(n) + d = 2n$. Conversely, if $d \mid n$ with $d < n$ and $\sigma(n) + d = 2n$ for odd $n$, write $n = dy$. Because $n$ is odd and $d < n$, $y > 1$ is odd, so $x := 2y - 1 > 1$ is odd and $\sigma(n)(x + 1) = (2n - d)(2y) = 4ny - 2n = 2n(2y - 1) = 2nx$.
+\end{proof}
+
+\section{Computation to $10^{18}$}
+
+By Proposition~\ref{prop:bijection}(1), proving Theorem~\ref{thm:main} (and Corollary~\ref{cor:deficient}) up to $m \le B^2 = 10^{18}$ reduces to testing odd $k \le B = 10^9$. The C program in Appendix~\ref{app:code} builds a smallest-prime-factor table on odd integers up to $B$, evaluates
+\[
+  \sigma(k^2) = \prod_{p^e \parallel k} \bigl(1 + p + p^2 + \dots + p^{2e}\bigr)
+\]
+exactly in $128$-bit unsigned arithmetic, and checks whether $d_k = 2k^2 - \sigma(k^2) > 0$ divides $\sigma(k^2)$.
+
+\begin{table}[ht]
+\centering
+\caption{All odd $k \le 10^9$ with $d_k = 2k^2 - \sigma(k^2) > 0$ and $d_k \mid \sigma(k^2)$.}\label{tab:solutions}
+\begin{tabular}{rrrrr}
+\toprule
+$k$ & $m = k^2$ & $\sigma(m)$ & $d_k$ & $w = \sigma(m)/d_k$ \\
+\midrule
+$1$ & $1$ & $1$ & $1$ & $1$ \\
+$3003$ & $9018009$ & $18035199$ & $819$ & $22021$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For $B = 10^6$ (T\'oth's $10^{12}$ range) the program finishes in $0.03$~seconds on a single core; for $B = 10^8$ ($m \le 10^{16}$) about $5$~seconds; and for $B = 10^9$ ($m \le 10^{18}$) about one minute (see Remark~\ref{rem:overflow} for arithmetic exactness). Across $1 \le k \le 10^9$ odd, the only outputs are those listed in Table~\ref{tab:solutions}: $k = 1$ (giving $w = 1$, excluded by $w > 1$) and $k = 3003 = 3 \cdot 7 \cdot 11 \cdot 13$, where
+\[
+  \sigma(3003^2) = 13 \cdot 57 \cdot 133 \cdot 183 = 18035199, \quad d_{3003} = 819, \quad w = \frac{18035199}{819} = 22021.
+\]
+
+\begin{remark}[Arithmetic exactness and absence of overflow]\label{rem:overflow}
+Because the product of the first eight odd primes is $3 \cdot 5 \cdot 7 \cdot 11 \cdot 13 \cdot 17 \cdot 19 \cdot 23 = 111{,}546{,}435 \le 10^9$ whereas multiplying by $29$ gives $3{,}234{,}846{,}615 > 10^9$, every odd $k \le 10^9$ has at most eight distinct prime factors. Consequently,
+\[
+  \frac{\sigma(k^2)}{k^2} = \prod_{p^e \parallel k} \frac{1 - p^{-(2e+1)}}{1 - p^{-1}} < \prod_{i=1}^{8} \frac{p_i}{p_i - 1} = \frac{676{,}039}{221{,}184} \approx 3.05646 < 3.06
+\]
+(note that $\sigma(k^2)$ can slightly exceed $3k^2$, e.g.\ at $k = 3^2 \cdot 5 \cdot 7 \cdot 11 \cdot 13 \cdot 17 \cdot 19 \cdot 23 = 334{,}639{,}305$, where $\sigma(k^2)/k^2 \approx 3.0058$). For $k \le 10^9$ we therefore have $\sigma(k^2) < 3.06 \times 10^{18} < 2^{62}$, so all loop products `s *= term` and `pp *= p` fit with wide margin in $128$-bit unsigned integers ($2^{128} > 3.4 \times 10^{38}$). Moreover, `printf` executes only after `if (s >= 2 * n) continue`, so every printed value satisfies $s < 2k^2 \le 2 \times 10^{18} < 2^{61} < 2^{64}$, making the $64$-bit output casts exact for all $M \le 3 \times 10^9$.
+\end{remark}
+
+\section{Formal Verification in Lean 4 and Analytical Extensions}
+
+In Google DeepMind's \emph{Formal Conjectures} repository~\cite{FormalConjectures}, Theorem~\ref{thm:toth} appears as \texttt{descartes\_non\_example\_factor\_gt\_ten\_pow\_twelve} with a placeholder proof. In the standalone Lean~4 (\texttt{v4.36.0}) + Mathlib package \texttt{toth-breakout}~\cite{HamiltonRepo}, we compiled and kernel-audited both the bounded $10^{12}$ classification and its unbounded analytical counterparts ($940$ named theorems across $7{,}809$ declarations, verified by \texttt{Audit.lean} to use zero \texttt{sorry}, zero \texttt{native\_decide}, and only Lean's three standard axioms \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}):
+
+\begin{enumerate}
+  \item \textbf{Kernel-certified $10^{12}$ classification (\texttt{TothTheorem.lean}):} Building on the parity reduction and deficient-divisor equivalence formalized in \texttt{OddPerfect/TothCandidates.lean} and \texttt{OddPerfect/DeficientPerfect.lean} (Lemmas~\ref{lem:odd-sigma}--\ref{lem:structure} and Proposition~\ref{prop:bijection}), \texttt{TothTheorem.lean} proves Theorem~\ref{thm:main} and Corollary~\ref{cor:deficient} for $m \le 10^{12}$ ($k \le 10^6$) without external trust. Rather than testing $5 \times 10^5$ roots individually, \texttt{OddPerfect/TothAbundancy.lean} proves that if every remaining prime factor of an unknown suffix $m_1 > 1$ of $k = D m_1 \le B$ is at least $a$ with $D a^{\ell + 1} > B$, then $\sigma(m_1^2)/m_1^2 < (a/(a-1))^\ell$, while prefix deficiency bounds $w \ge t := \mathrm{nextMultiplier}(D, \sigma(D^2))$. Monotonicity of $w/(w+1)$ prunes entire prime-factorization subtrees whenever $\sigma(D^2)(a/(a-1))^\ell / (2D^2) \le t/(t+1)$, leaving $754$ prime-power splits and $535$ final-prime intervals ($148{,}722$ root evaluations checked inside Lean's kernel).
+  \item \textbf{Purely analytical unbounded theorems (\texttt{TothAnalytic.lean}):} Importing zero branch-certificate files, \texttt{TothAnalytic.lean} adjoins the formal linear slot $(w, 1)$ to the prime factorization of $m$ via the BYU positive-spoof product-gap bound~\cite{BYU2022} to prove unconditionally, for all odd positive integers $m$ and $w > 1$ satisfying~\eqref{eq:balance} with $\omega(m) \le r$:
+  \[
+    4(r + 1)\, w^3 \Bigl(\prod_{p \mid m} p\Bigr)^2 m \;\le\; \bigl(4(r + 1)\bigr)^{4^{\omega(m) + 1}},
+  \]
+  yielding explicit finiteness of nontrivial odd pairs $(m, w)$ (and odd deficient-perfect numbers, resolving Dutta and Saikia's Conjecture~3.2~\cite{DuttaSaikia2020}; cf.\ Adajar~\cite{Adajar2019}) at every fixed prime-factor bound $r$, alongside coprime-split factor extraction $\gcd(w, \sigma(a))$ for Euler-exponent-one odd perfect candidates $N = q m^2$.
+\end{enumerate}
+
+The extension from $10^{12}$ to $10^{18}$ in Theorem~\ref{thm:main} rests on the C computation in Section~3 rather than an expanded Lean certificate; scaling the abundancy-pruned Lean tree from $B = 10^6$ to $B = 10^8$ ($10^{16}$) or $B = 10^9$ ($10^{18}$) requires roughly $12{,}290$ and $49{,}000$ split nodes respectively, which is feasible for future kernel replay.
+
+\appendix
+\section{Search Program}\label{app:code}
+
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+typedef unsigned __int128 u128; typedef unsigned long long u64;
+int main(int c, char **v) {
+  if (c < 2) return 1;
+  u64 M = strtoull(v[1], 0, 10);
+  if (M > 3000000000ULL) return 1;
+  uint32_t *spf = calloc(M + 1, sizeof(uint32_t));
+  if (!spf) return 1;
+  for (u64 i = 3; i <= M; i += 2) if (!spf[i]) {
+    spf[i] = (uint32_t)i;
+    if (i * i <= M)
+      for (u64 j = i * i; j <= M; j += 2 * i)
+        if (!spf[j]) spf[j] = (uint32_t)i;
+  }
+  for (u64 k = 1; k <= M; k += 2) {
+    u64 t = k; u128 s = 1; /* s = sigma(k^2) */
+    while (t > 1) {
+      u64 p = spf[t]; int e = 0;
+      while (t % p == 0) { t /= p; e++; }
+      u128 term = 1, pp = 1;
+      for (int i = 0; i < 2 * e; i++) { pp *= p; term += pp; }
+      s *= term;
+    }
+    u128 n = (u128)k * k; if (s >= 2 * n) continue;
+    u128 d = 2 * n - s;
+    if (s % d == 0)
+      printf("k=%llu sigma=%llu d=%llu w=%llu\n",
+             k, (u64)s, (u64)d, (u64)(s / d));
+  }
+  free(spf);
+  return 0;
+}
+\end{lstlisting}
+
+\begin{thebibliography}{99}
+
+\bibitem{Adajar2019}
+C.~F. Adajar, \emph{On near-perfect and deficient-perfect numbers}, ZetaValue 2019 conference abstract (building on the author's 2016 M.S.\ thesis, Univ.\ of the Philippines Diliman), 2019.
+
+\bibitem{BGNS2008}
+W.~D. Banks, A.~M. G\"ulo\u{g}lu, C.~W. Nevans, and F.~Saidak, \emph{Descartes numbers}, in \emph{Anatomy of Integers}, CRM Proc.\ Lecture Notes \textbf{46}, Amer.\ Math.\ Soc., Providence, RI, 2008, pp.~167--173.
+
+\bibitem{BYU2022}
+BYU Computational Number Theory Group (N.~Andersen, S.~Durham, M.~J. Griffin, J.~Hales, P.~Jenkins, R.~Keck, H.~Ko, G.~Molnar, E.~Moss, P.~P. Nielsen, K.~Niendorf, V.~Tombs, M.~Warnick, and D.~Wu), \emph{Odd, spoof perfect factorizations}, J.\ Number Theory \textbf{234} (2022), 31--47; arXiv:2006.10697.
+
+\bibitem{Dittmer2014}
+S.~J. Dittmer, \emph{Spoof odd perfect numbers}, Math.\ Comp.\ \textbf{83} (2014), 2575--2582.
+
+\bibitem{DuttaSaikia2020}
+P.~Dutta and M.~P. Saikia, \emph{On deficient perfect numbers with four distinct prime factors}, Asian-Eur.\ J.\ Math.\ \textbf{13} (2020), 2050126; arXiv:1906.09947.
+
+\bibitem{FormalConjectures}
+The Formal Conjectures Authors, \emph{Formal Conjectures}, \url{https://github.com/google-deepmind/formal-conjectures}, file \texttt{FormalConjectures/Wikipedia/DescartesNumber.lean}.
+
+\bibitem{HamiltonRepo}
+R.~Hamilton, \emph{odd\_perfect\_number} (Lean~4 formalization, directory \texttt{toth-breakout}), \url{https://github.com/Rob1Ham/odd_perfect_number/tree/master/toth-breakout}.
+
+\bibitem{TangFeng2014}
+M.~Tang and M.~Feng, \emph{On deficient-perfect numbers}, Bull.\ Aust.\ Math.\ Soc.\ \textbf{90} (2014), 186--194.
+
+\bibitem{Toth2021}
+L.~T\'oth, \emph{On the density of spoof odd perfect numbers}, Comput.\ Methods Sci.\ Technol.\ \textbf{27}(1) (2021), 25--28; arXiv:2101.09718.
+
+\bibitem{YangTogbe2023}
+S.~Yang and A.~Togb\'e, \emph{Odd deficient-perfect numbers with four distinct prime factors}, Integers \textbf{23} (2023), \#A5.
+
+\end{thebibliography}
+
+\end{document}

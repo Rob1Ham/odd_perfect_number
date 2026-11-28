@@ -1,21 +1,41 @@
 {
-  "timestamp": "2026-11-27T14:09:23Z",
+  "timestamp": "2026-11-27T23:28:19Z",
   "counts": {
-    "total_lean_modules": 1361,
-    "audited_reached_modules": 845,
-    "unintegrated_modules": 516,
-    "root_direct_imports": 230,
-    "structural_modules": 395,
+    "total_lean_modules": 1446,
+    "audited_reached_modules": 920,
+    "unintegrated_modules": 526,
+    "root_direct_imports": 305,
+    "structural_modules": 480,
     "certificate_chunk_modules": 966,
-    "structural_share_pct": 29.0,
-    "distinct_mathlib_imports_in_structural": 115,
+    "structural_share_pct": 33.2,
+    "distinct_mathlib_imports_in_structural": 136,
     "hygiene_violations": 0,
     "mathlib_declarations": 230753,
-    "project_structural_declarations": 4206,
+    "project_structural_declarations": 4929,
     "project_certificate_declarations": 41648
   },
   "hygiene_violations": [],
   "unintegrated_tracks": [
+    {
+      "track": "Other Unintegrated Modules",
+      "total_modules": 10,
+      "top_level_modules": [
+        "OddPerfect.ExceptionalBlockCoprimeFactorizationAndTargetRouting",
+        "OddPerfect.ExceptionalEuler42And486FactorDrop",
+        "OddPerfect.KummerBinomialAndCentralChooseObstruction",
+        "OddPerfect.LinearEulerGcdSplitSourcePeeling",
+        "OddPerfect.LinearEulerSixthPowerFreeRightSourcePeeling",
+        "OddPerfect.PadicPade47321SixthOrderContraction",
+        "OddPerfect.QuarticChainBaselineAndReuse",
+        "OddPerfect.SixthPowerFreeMirrorDichotomy74Pinch",
+        "OddPerfect.SixthPowerFreePureCollisionRankCap",
+        "OddPerfect.SixthPowerFreeTargetReuseObstruction"
+      ],
+      "fresh_olean": 6,
+      "stale_olean": 0,
+      "unbuilt": 4,
+      "ready_pct": 60.0
+    },
     {
       "track": "HarmonicRange (background \u2014 Cohen\u2013Sorli odd harmonic exclusion)",
       "total_modules": 322,
@@ -142,6 +162,7 @@
     }
   ],
   "recommendations": [
+    "[HARVEST HIGH-ROI] Dispatch `neon-harvester` + `neon-auditor` to finish & audit nearly-built staged tracks: Other Unintegrated Modules (6/10 built).",
     "See [the resolution handoff](RESOLUTION_HANDOFF.md) for the six-factor criterion, T\u00f3th split, exceptional Fermat reduction and the global B3 cap."
   ]
 }
