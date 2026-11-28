@@ -1,0 +1,7 @@
+/.lake/
+**/__pycache__/
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz

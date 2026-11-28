@@ -1,0 +1,131 @@
+\documentclass[11pt]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\title[Lower Bounds, Non-Fermat Support, and $\mathbb{Z}[\sqrt{2}]$ Descent]{Lower Bounds, Non-Fermat Support, and $\mathbb{Z}[\sqrt{2}]$ Descent for the Euler Index of an Odd Perfect Number}
+
+\author{Robert Hamilton}
+
+\subjclass[2020]{Primary 11A25; Secondary 11D41, 11R11, 68V20}
+\keywords{Odd perfect numbers, Euler component index, Fermat primes, Pell equations, Euclidean quadratic rings, generalized Fermat equation, Lean 4}
+
+\begin{document}
+
+\begin{abstract}
+Let $N = q^a m^2$ be a hypothetical odd perfect number in Euler form ($q$ prime, $q \equiv a \equiv 1 \pmod 4$, $q \nmid m$), and let $I := \sigma(m^2)/q^a = 2 m^2 / \sigma(q^a)$ denote its Euler component index. Broughan, Delbourgo, and Zhou (2013) proved $I \ge 315$, while Hirakawa (2024) proved that $I$ is never a square when $a > 1$ and reduced the prime-times-square shape $I = \ell t^2$ ($\ell$ prime, $a > 1$) to $q + 1 = 2 d w^2$ and $q^d + 1 = 2 y^2$ with prime half-length $d = (a + 1)/2 \equiv 1 \pmod 8$. In this paper we establish four unconditional results on $I$, all formalized and kernel-verified in Lean~4/Mathlib: (1) a two-base cyclotomic residual GCD sieve lifts the general lower bound $7.5$-fold to $I \ge 2{,}379$ ($2{,}379 q^a < 2 m^2$); (2) across all $a \ge 1$ and arbitrary prime multiplicities, $I$ has at least one non-Fermat prime divisor $p$ ($p - 1 \ne 2^k$ for all $k \ge 0$), and when $a > 1$ some prime with odd valuation in $I$ does not divide $q - 1$; (3) on Hirakawa's branch $I = \ell t^2$ ($a > 1$), we prove $N > 10^{740}$ unconditionally (closing the borderline $d = 17$ case via $15 \mid w$), verify fundamental Pell minimality for $(q^d + 1)/(q + 1) = d z^2$, exclude $148$ prime-modulus residue classes (including $q \equiv 2, 4 \pmod 7$ and $q \equiv 3 \pmod 5$), and force $d \ge 241$ ($a \ge 481$) whenever $3 \nmid N$ and $5 \nmid N$; and (4) using unique factorization in $\mathbb{Z}[\sqrt{2}]$ and classification of its unit group $\pm(1 + \sqrt{2})^{\mathbb{Z}}$, we prove the reduced $d$-th power Frobenius descent $1 + y\sqrt{2} = (1 + \sqrt{2})^k \alpha^d$ with $1 \le |k| \le \frac{d - 1}{2}$, $\mathrm{Norm}(\alpha) = (-1)^{k + 1} q$, and $\alpha \equiv (1 + \sqrt{2})^{-k} \pmod{d\mathbb{Z}[\sqrt{2}]}$.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+If $N = q^a m^2$ is an odd perfect number in Euler form ($q$ prime, $q \equiv a \equiv 1 \pmod 4$, $\gcd(q, m) = 1$), then $\gcd(q^a, \sigma(q^a)) = 1$ and $\sigma(q^a)\sigma(m^2) = 2 q^a m^2$ define the odd integer
+\[
+  I := \frac{\sigma(m^2)}{q^a} = \frac{2 m^2}{\sigma(q^a)} = \gcd\bigl(m^2, \sigma(m^2)\bigr),
+\]
+known as the \emph{Euler component index} (since $I$ is odd and $\sigma(q^a)I = 2m^2$, $I \mid m^2$ and $\gcd(q^a, m^2) = 1$ give $\gcd(m^2, \sigma(m^2)) = \gcd(m^2, q^a I) = I$ across all $a \ge 1$). Dris~\cite{Dris2012} and Dris and Luca~\cite{DrisLuca2016} showed $I \ge 3$ and $I > 5$, and Broughan, Delbourgo, and Zhou~\cite[Thm.~10, Cor.~11]{BDZ2013} proved $I \ge 315$ ($2 m^2 > 315 q^a$) by ruling out eleven small symbolic factorizations, extended to thirty symbolic shapes by Chen and Chen~\cite{ChenChen2014}. Recently, Hirakawa~\cite{Hirakawa2024} proved via Ljunggren's alternating-repunit theorem~\cite{Ljunggren1943} that for $a > 1$, $I$ can never be a square, and that if $I = \ell t^2$ with $\ell$ prime, then $d := (a + 1)/2$ is a prime satisfying $d \equiv 1 \pmod 8$, $q \equiv 1 \pmod{16}$, $(q + 1)/2 = d w^2$, and $(q^d + 1)/2 = y^2$.
+
+We establish four unconditional theorems advancing each of these fronts:
+
+\begin{theorem}[Euler index threshold $2{,}379$]\label{thm:2379}
+Every odd perfect number $N = q^a m^2$ in Euler form satisfies
+\[
+  I = \frac{\sigma(m^2)}{q^a} \;\ge\; 2{,}379 \qquad \text{and} \qquad 2{,}379\, q^a < 2 m^2.
+\]
+\end{theorem}
+
+\begin{theorem}[Non-Fermat support and predecessor escape]\label{thm:nonfermat}
+Let $N = q^a m^2$ be an odd perfect number in Euler form with Euler index $I = \sigma(m^2)/q^a$.
+\begin{enumerate}
+  \item There exists a prime $p \mid I$ such that $p - 1 \ne 2^k$ for every $k \in \mathbb{N}$. In particular, no product of powers of Fermat primes can equal $I$.
+  \item If $a > 1$, there exists a prime $p \mid I$ with $v_p(I)$ odd such that $p \nmid (q - 1)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}[Size, Pell minimality, and $148$-class modular sieve on $I = \ell t^2$]\label{thm:hirakawa-sieve}
+Suppose $N = q^a m^2$ is an odd perfect number with $a > 1$ and $I = \ell t^2$ ($\ell$ prime), and put $d := (a + 1)/2$.
+\begin{enumerate}
+  \item \emph{(Exact second-block square and fundamental Pell profile):} There exist odd coprime integers $w, z \ge 1$ with $d \nmid z$ such that $q + 1 = 2 d w^2$, $\frac{q^d + 1}{q + 1} = d z^2$, $y = d w z$, and the associated second-block Pell solution $(2 q^d + 1,\, 2 d w z\, q^{(d-1)/2})$ of $X^2 - 2 q Y^2 = 1$ in $\mathbb{Z}[\sqrt{2 q}]$ (as well as $(2q + 1, 2)$ in $\mathbb{Z}[\sqrt{q(q + 1)}]$) is fundamental; in particular $d \ge 17$ and $a \ge 33$.
+  \item \emph{(Unconditional $10^{740}$ size bound across all $a > 1$):} At the minimal exponent $d = 17$, congruences modulo $3$ and $5$ on $(q^{17} + 1)/(q + 1) = 17 z^2$ force $15 \mid w$, and small-prime quadratic-residue obstructions force $w \ge 65{,}760$, yielding $N > 10^{740}$ unconditionally for every $a > 1$.
+  \item \emph{(Higher modular Fermat sieve):} Across prime moduli $r \equiv 1 \pmod m$ ($m \in \{3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 24, 40\}$), $q$ avoids $148$ explicit residue classes (including $q \equiv 2, 4 \pmod 7$ and $q \equiv 3 \pmod 5$). If $3 \nmid N$, then $q \equiv 1 \pmod{48}$, $d \equiv 1 \pmod{24}$, and $d \ge 73$; if both $3 \nmid N$ and $5 \nmid N$, then $q \equiv 1 \text{ or } 2 \pmod 5$, $d \equiv 1 \text{ or } 49 \pmod{120}$, $d \ge 241$, and $a \ge 481$.
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}[$\mathbb{Z}[\sqrt{2}]$ Euclidean and Frobenius descent]\label{thm:zsqrt2}
+The ring $\mathbb{Z}[\sqrt{2}]$ is a Euclidean domain under rational-rounding division with unit group $\{\pm(1 + \sqrt{2})^n : n \in \mathbb{Z}\}$. Under the hypotheses of Theorem~\ref{thm:hirakawa-sieve}, let $q^d + 1 = 2 y^2$ ($d \mid y$). Then there exist $k \in \mathbb{Z}$ and $\alpha \in \mathbb{Z}[\sqrt{2}]$ such that:
+\begin{enumerate}
+  \item $1 \le |k| \le \frac{d - 1}{2}$ (in particular $k = 0$ is impossible: $1 + y\sqrt{2}$ is never a pure $d$-th power in $\mathbb{Z}[\sqrt{2}]$);
+  \item $1 + y\sqrt{2} = (1 + \sqrt{2})^k \alpha^d$ with $\mathrm{Norm}_{\mathbb{Q}(\sqrt{2})/\mathbb{Q}}(\alpha) = (-1)^{k + 1} q$;
+  \item $\alpha \equiv (1 + \sqrt{2})^{-k} \pmod{d\mathbb{Z}[\sqrt{2}]}$ componentwise modulo $d$.
+\end{enumerate}
+\end{theorem}
+
+\section{Two-Base Residual Sieve and Non-Fermat Support}
+
+\begin{proof}[Proof sketch of Theorem~\ref{thm:2379}]
+At $a = 1$, $\omega(N) \ge 5$ supplies at least four primes dividing $m$, of which at most one has $q \mid \sigma(r^{2 v_r(m)})$; the remaining three distinct odd primes are at least $3, 5, 7$ and contribute $(3^2 + 3 + 1)(5^2 + 5 + 1)(7^2 + 7 + 1) = 13 \cdot 31 \cdot 57 = 22{,}971 \le I$ (\texttt{OddPerfect/ExponentOneIndex.lean}). Hence assume $a > 1$ and fix a candidate odd integer $i < 2{,}379$ ($105 \nmid i$, $i$ nonsquare by~\cite{Hirakawa2024}). Set $B = \omega(i) + \Omega(i)$; for $i < 2{,}379$ one has $4 + B < 16$, and primitive cyclotomic order bounds give $\tau(a + 1) \le 3 + B$. Put $H = \lfloor (3 + B)/2 \rfloor$.
+
+For any prime $p \mid i$, let $e = 2 v_p(m) \ge 2$, so $\sigma(p^e) \mid q^a i$. Either $\sigma(p^e)$ is a pure power of $q$---in which case Dris--Luca reciprocity $p^{e - v_p(i) - 1} \mid (a + 1)$ and $2 \mid (a + 1)$ bound $e \le v_p(i) + H$---or some prime $r \mid i$ divides $\sigma(p^e)$, giving an odd block length $d \mid (e + 1)$ ($d = r$ if $p \equiv 1 \pmod r$, else $d = \mathrm{ord}_r(p)$) such that $S = \sum_{j=0}^{d-1} p^j \mid q^a i$. Thus at least one finite candidate sum $S$ has residual $R := S / \gcd(S, i)$ equal to a power of $q$ (hence $\gcd(R, i) = 1$, $R \equiv 1 \pmod 4$, and $R \equiv 1 \pmod{16}$ when $i = \ell t^2$ since $q \equiv 1 \pmod{16}$). Whenever two distinct prime divisors $p_1, p_2 \mid i$ leave only nontrivial admissible residuals $R_1, R_2 > 1$ with $\gcd(R_1, R_2) = 1$ across all pairs, $i$ is excluded. A certified table covering every nonsquare odd $i \in [165, 2379)$ with $105 \nmid i$ completes the proof (\texttt{OddPerfect/IndexBound2379.lean}).
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:nonfermat}]
+For (1), suppose every prime $p \mid I$ satisfies $p - 1 = 2^{k_p}$. If $a = 1$, then for each prime $r \mid m$, any odd prime $\ell \mid (2 v_r(m) + 1)$ forces a prime divisor $p \mid \sigma(r^{2 v_r(m)}) \mid q I$ with $p \equiv 1 \pmod \ell$ (since $2 v_r(m) + 1 \ge 3$, $r$ cannot be ramified at $\ell$ with $p - 1 = 2^k$). Because $p - 1 = 2^{k_p}$ has no odd prime divisor $\ell$, every component must send $q$ into $\sigma(r^{2 v_r(m)})$, bounding $\omega(m) \le v_q(\sigma(m^2)) = 1$ and $\omega(N) \le 2$, contradicting $\omega(N) \ge 5$. If $a > 1$, choose an odd prime $\ell \mid d = (a + 1)/2$; the half-block $A = (q^d - 1)/(q - 1)$ or $B = (q^d + 1)/2$ supplies an odd-valuation prime $p \mid I$ with $\ell \mid (p - 1)$, so $p - 1 \ne 2^k$.
+
+For (2), factor $\sigma(q^a)/2 = A B$ with $A = \frac{q^d - 1}{q - 1}$, $B = \frac{q^d + 1}{2}$, $\gcd(A, B) = 1$, and $m^2 = A B I$. Any odd-valuation prime of $A$ or $B$ has odd valuation in $I$. Since $A$ is nonsquare~\cite{Ljunggren1943}, pick $r \in \mathrm{oddVal}(A)$. If $r \nmid (q - 1)$, take $p = r$. Otherwise $r \mid (q - 1)$ gives $A \equiv d \pmod r$, so $r \mid \gcd(d, q - 1)$. If $B$ were a square, then $q \equiv 1 \pmod 8$ and $B = y^2$ would force $\gcd(d, q - 1) = 1$ (since $x = q^{d/r} \equiv 1 \pmod r$ makes $(x^r + 1)/(x + 1)$ coprime to $x + 1$ and nonsquare), contradicting $r \mid \gcd(d, q - 1)$. Thus $B$ is nonsquare; any $p \in \mathrm{oddVal}(B)$ divides $q^d + 1$ and is odd, hence cannot divide $q - 1$ (\texttt{OddPerfect/FermatIndexObstruction.lean}).
+\end{proof}
+
+\section{Hirakawa's Branch and $\mathbb{Z}[\sqrt{2}]$ Frobenius Descent}
+
+\begin{proof}[Proof sketch of Theorems~\ref{thm:hirakawa-sieve} and~\ref{thm:zsqrt2}]
+On $I = \ell t^2$ ($a > 1$), $(q + 1)/2 = d w^2$ and $(q^d + 1)/2 = y^2$ give $\frac{q^d + 1}{q + 1} = \frac{y^2}{d w^2}$. Since $v_r(q^d + 1) = v_r(q + 1) + v_r(d)$ for every odd prime $r \mid (q + 1)$, $d w \mid y$; writing $y = d w z$ gives $\frac{q^d + 1}{q + 1} = d z^2$. Because $d \equiv 1 \pmod 8$ is prime and $q \ge 193$, for $d > 17$ one has $d \in \{41, 73, 89\}$ or $d \ge 97$: primality of $q = 2 d w^2 - 1$ forces $w \ge 21$ ($q \ge 36{,}161$) at $d = 41$ and $w \ge 3$ ($q \ge 1{,}313$) at $d \in \{73, 89\}$, so $2N > 2{,}379\, q^{2a} > 2 \cdot 10^{740}$ across all $d > 17$. At the minimal exponent $d = 17$ ($a = 33$), reducing $q + 1 = 34 w^2$ and $(q^{17} + 1)/(q + 1) = 17 z^2$ modulo $3$ and $5$ forces $3 \mid w$ and $5 \mid w$, and small-prime quadratic-residue obstructions eliminate odd multiples of $15$ below $65{,}760$, giving $w \ge 65{,}760$, $q \ge 147 \times 10^9$, and $2N > 2{,}379\, q^{66} > 2 \cdot 10^{740}$ (\texttt{ExceptionalBranchClosure.lean}).
+
+For the modular sieve, if $r$ is a prime with $q^m \equiv 1 \pmod r$, $\gcd(d, m) = 1$ (or $\gcd(d, m) \mid g \mid 8$ using $d \equiv 1 \pmod 8$), and $\frac{q^k + 1}{2}$ is a quadratic nonresidue mod $r$ for every $k \bmod m$ with $k \equiv 1 \pmod g$, then $q^d + 1 = 2 y^2$ is impossible (\texttt{ExceptionalFermatHigherSieve.lean}). At $(r, m, g) = (5, 4, 4)$, $q \equiv 3 \pmod 5$ and $d \equiv 1 \pmod 4$ give $q^d + 1 \equiv 4 \pmod 5$, whereas $2 y^2 \in \{0, 2, 3\} \pmod 5$, excluding $q \equiv 3 \pmod 5$ unconditionally. When $3, 5 \nmid N$, combining $q \equiv 1 \pmod{48}$, $d \equiv 1 \pmod{24}$ with $5 \nmid \sigma(q^a)$ forces $d \equiv 1 \text{ or } 49 \pmod{120}$, whose smallest prime $\ge 73$ is $d = 241$ ($a = 481$).
+
+Finally, in $\mathbb{Z}[\sqrt{2}]$, rounding both rational coordinates $(x \bar{\beta})_{\mathrm{re}} / \mathrm{Norm}(\beta)$ and $(x \bar{\beta})_{\mathrm{im}} / \mathrm{Norm}(\beta)$ to nearest integers leaves remainder of absolute norm $\le \frac{1}{2} < 1$, establishing a Euclidean domain, hence a UFD. Every norm-$1$ unit comes from Pell's equation $u^2 - 2 v^2 = 1$ with fundamental solution $3 + 2\sqrt{2} = (1 + \sqrt{2})^2$, so $(\mathbb{Z}[\sqrt{2}])^\times = \{\pm(1 + \sqrt{2})^n : n \in \mathbb{Z}\}$. Factoring
+\[
+  q^d = 2 y^2 - 1 = -(1 + y\sqrt{2})(1 - y\sqrt{2})
+\]
+with $\gcd_{\mathbb{Z}[\sqrt{2}]}(1 + y\sqrt{2},\, 1 - y\sqrt{2}) = 1$ (since $(1 + y\sqrt{2}) + (1 - y\sqrt{2}) = 2 = (\sqrt{2})^2$ and $\sqrt{2} \nmid (1 + y\sqrt{2})$), UFD descent gives $1 + y\sqrt{2} = \varepsilon \beta^d$ for a unit $\varepsilon = \pm(1 + \sqrt{2})^n$; absorbing $-1 = (-1)^d$ into $\beta^d$ and reducing $n = d q_0 + k$ with $|k| \le (d - 1)/2$ gives $1 + y\sqrt{2} = (1 + \sqrt{2})^k \alpha^d$. If $k = 0$, expanding $(u + v\sqrt{2})^d$ shows $u \mid 1 \implies u = \pm 1$, forcing $(\pm 1 + v\sqrt{2})^d$ to have real part $\ne 1$ for $d \ge 3$ and $v \ne 0$ (\texttt{one\_add\_mul\_sqrtd\_ne\_pow}), so $1 \le |k| \le (d - 1)/2$. Lastly, since $d \equiv 1 \pmod 8$ is prime, $\left(\frac{2}{d}\right) = +1$, so the Frobenius $d$-th power map in $\mathbb{Z}[\sqrt{2}]/(d)$ fixes both $1$ and $\sqrt{2}$: $\alpha^d \equiv \alpha \pmod{d\mathbb{Z}[\sqrt{2}]}$. Because $d \mid y$, reducing $1 + y\sqrt{2} = (1 + \sqrt{2})^k \alpha^d$ modulo $d$ gives $1 \equiv (1 + \sqrt{2})^k \alpha \pmod{d\mathbb{Z}[\sqrt{2}]}$, i.e.\ $\alpha \equiv (1 + \sqrt{2})^{-k} \pmod{d\mathbb{Z}[\sqrt{2}]}$.
+\end{proof}
+
+\section{Lean 4 Formalization}
+
+Every theorem and helper in this paper is formalized and kernel-audited in the standalone Lean~4 (\texttt{v4.36.0}) + Mathlib package \texttt{euler-index-breakout}~\cite{HamiltonEuler} ($156$ modules; $629$ named theorems across $4{,}454$ declarations, zero size-tree certificates), verified by \texttt{Audit.lean} to use only \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.
+
+\begin{thebibliography}{99}
+
+\bibitem{BDZ2013}
+K.~A. Broughan, D.~Delbourgo, and Q.~Zhou, \emph{Improving the Chen and Chen result for odd perfect numbers}, Integers \textbf{13} (2013), \#A39.
+
+\bibitem{ChenChen2014}
+F.-J. Chen and Y.-G. Chen, \emph{On the index of an odd perfect number}, Colloq.\ Math.\ \textbf{136} (2014), 41--49.
+
+\bibitem{Dris2012}
+J.~A.~B. Dris, \emph{The abundancy index of divisors of odd perfect numbers}, J.\ Integer Seq.\ \textbf{15} (2012), Article 12.4.4.
+
+\bibitem{DrisLuca2016}
+J.~A.~B. Dris and F.~Luca, \emph{A note on odd perfect numbers}, Fibonacci Quart.\ \textbf{54} (2016), 291--295.
+
+\bibitem{HamiltonEuler}
+R.~Hamilton, \emph{odd\_perfect\_number} (Lean~4 formalization, directory \texttt{euler-index-breakout}), \url{https://github.com/Rob1Ham/odd_perfect_number}.
+
+\bibitem{Hirakawa2024}
+Y.~Hirakawa, \emph{On the index of an odd perfect number}, Indag.\ Math.\ (N.S.) \textbf{35} (2024), 473--483; arXiv:2309.17084.
+
+\bibitem{Ljunggren1943}
+W.~Ljunggren, \emph{Noen setninger om ubestemte likninger av formen $\frac{x^n - 1}{x - 1} = y^q$}, Norsk Mat.\ Tidsskr.\ \textbf{25} (1943), 17--20.
+
+\end{thebibliography}
+
+\end{document}

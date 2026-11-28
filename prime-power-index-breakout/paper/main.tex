@@ -1,0 +1,159 @@
+\documentclass[11pt]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\title[Unconditional $p$-adic Obstructions to Prime-Power Component Indices]{Unconditional $p$-adic and Goormaghtigh-Repunit Obstructions to Prime-Power Component Indices of Odd Perfect Numbers}
+
+\author{Robert Hamilton}
+
+\subjclass[2020]{Primary 11A25; Secondary 11D61, 11S85, 68V20}
+\keywords{Odd perfect numbers, component index, Nagell--Ljunggren equation, Goormaghtigh conjecture, $p$-adic Hensel lifting, Gauss sums, Lean 4}
+
+\begin{document}
+
+\begin{abstract}
+For an odd perfect number $N$ and an exact prime-power divisor $r^e \parallel N$, let $i_r := \sigma(N/r^e)/r^e$ denote its component index. Chen and Chen (2014) and Broughan, Delbourgo, and Zhou (2013) showed that an even prime-power index $i_r = p^{2u}$ ($p$ prime, $u \ge 1$) forces $N = q(p^u s)^2$ with $q = \sigma(p^{2u})$ prime, $q + 1 = 2s^2$, and $\sigma(s^2) = p^{2u}$, reducing further exclusion to the open Nagell--Ljunggren and Goormaghtigh conjectures on prime repunits. In this paper we introduce unconditional $p$-adic and divisor-power congruences that bypass those open Diophantine conjectures across bounded repunit multiplicities. First, we prove the global $2$-adic valuation dichotomy $v_2(i_q) = 0$ versus $v_2(i_r) = 1$ ($r \ne q$), eliminating all non-Euler prime-power component indices $i_r = p^j$ ($r \ne q$, $j \ge 1$) and excluding all Fermat-prime bases $p = 2^k + 1$. Second, raising $2s^2 = q + 1 \equiv 2 + p \pmod{p^2}$ to $T = \tau(s^2)$ modulo $p^2$ and lifting to $\mathbb{Z}_p$, we prove the harmonic congruence $\sum_{r \in S_1} \frac{4 e_r (r - 1)}{2 e_r + 1} \equiv 1 \pmod p$, the universal fourth-order congruence $128(s - 1) \equiv 32p + 28p^2 + 25p^3 \pmod{p^4}$, and exact $p$-adic distance $\|s - \sigma_p\|_p = p^{-(2u+1)}$ to the Hensel root $\sigma_p \in \mathbb{Z}_p$ of $2(p-1)X^2 = p - 2$. These congruences unconditionally eliminate the pure Nagell--Ljunggren branch ($S_1 = \emptyset$) and every cardinality $|S_1| \le 12$, forcing $p$ to admit at least $13$ simultaneous odd-prime Goormaghtigh repunit representations $\frac{r_m^{\ell_m} - 1}{r_m - 1} = p$ with $\min S_1 \in \{3, 5, 7, 11, 13\}$, $\left(\frac{(-1)^{\lfloor \ell_m/2 \rfloor}\ell_m}{p}\right) = +1$, $2u \ge 13{,}082{,}761{,}331{,}670{,}028$, and $N > 10^{353{,}234{,}555{,}955{,}090{,}756}$. All results are formalized and kernel-verified in Lean~4/Mathlib.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Let $N$ be an odd perfect number in Euler's form $N = q^a m^2$, where $q$ is prime, $q \equiv a \equiv 1 \pmod 4$, and $\gcd(q, m) = 1$. For any prime $r \mid N$ with exact exponent $e = v_r(N) \ge 1$, write $N = r^e b_r$ with $r \nmid b_r$. Because $\gcd(r^e, \sigma(r^e)) = 1$ and $\sigma(r^e)\sigma(b_r) = \sigma(N) = 2N = 2 r^e b_r$, the integer
+\[
+  i_r := \frac{\sigma(b_r)}{r^e} = \frac{2 b_r}{\sigma(r^e)} = \frac{2N}{r^e \sigma(r^e)}
+\]
+is a positive divisor of $2 b_r$, called the \emph{component index} of $N$ at $r$. Dris and Luca~\cite{DrisLuca2016} proved $i_r > 5$ for every $r \mid N$ and established finiteness of odd perfect numbers having a component index below any fixed bound. Broughan, Delbourgo, and Zhou~\cite{BDZ2013} and Chen and Chen~\cite{ChenChen2014} investigated the extremal structural question: \emph{can a component index $i_r$ ever be a prime power $p^j$ ($j \ge 1$)?}
+
+Chen and Chen~\cite[Thm.~1.1]{ChenChen2014} proved that if $i_r = p^{2u}$ ($u \ge 1$), then $a = 1$, $q = \sigma(p^{2u})$ and $2u + 1$ are prime, and $N = q(p^u s)^2$ where the odd integer $s \ge 3$ satisfies the coupled Diophantine system
+\begin{equation}\label{eq:coupled}
+  q = \frac{p^{2u+1} - 1}{p - 1}, \qquad q + 1 = 2 s^2, \qquad \sigma(s^2) = p^{2u}.
+\end{equation}
+For each prime $r \mid s$ with $e_r := v_r(s) \ge 1$, multiplicativity gives $\sigma(r^{2 e_r}) = p^{\beta_r}$ for an odd integer $\beta_r \ge 1$ with $\sum_{r \mid s} \beta_r = 2u$ and $2 e_r + 1$ prime. Partition the prime factors of $s$ into single-copy repunit primes and higher-power Nagell--Ljunggren primes:
+\[
+  S_1 := \{r \mid s : \beta_r = 1\} = \Bigl\{r \mid s : \frac{r^{2 e_r + 1} - 1}{r - 1} = p\Bigr\}, \qquad S_{\ge 3} := \{r \mid s : \beta_r \ge 3\}.
+\]
+Whenever $S_{\ge 3} \ne \emptyset$, some prime $r \in S_{\ge 3}$ yields a positive solution to the Nagell--Ljunggren equation $\frac{r^{\ell} - 1}{r - 1} = p^{\beta_r}$ ($\ell, p, r$ odd primes, $\beta_r \ge 3$ odd), conjectured not to exist~\cite{BennettLevin2015,BugeaudMihailescu2007}; meanwhile $|S_1| \ge 2$ produces simultaneous prime-length Goormaghtigh representations $\frac{r_1^{\ell_1} - 1}{r_1 - 1} = \frac{r_2^{\ell_2} - 1}{r_2 - 1} = p$, conjectured to have no odd-prime solutions at all. Because both Diophantine conjectures remain open, unconditional exclusion of $i_r = p^j$ appeared out of reach of elementary methods.
+
+In this paper we prove three unconditional theorems that eliminate all non-Euler components, all Fermat-prime bases, the entire pure Nagell--Ljunggren regime $S_1 = \emptyset$, and all repunit multiplicities $|S_1| \le 12$:
+
+\begin{theorem}[Euler-only confinement and Fermat-base exclusion]\label{thm:euler-only}
+Let $N = q^a m^2$ be an odd perfect number in Euler form.
+\begin{enumerate}
+  \item Every prime $r \mid N$ satisfies $v_2(i_q) = 0$ (for $r = q$) and $v_2(i_r) = 1$ (so $2 \parallel i_r$ and $4 \nmid i_r$) for $r \ne q$.
+  \item If $i_r = p^j$ for some prime $p$ and integer $j \ge 1$, then $r = q$, $p$ is odd, $p \ne q$, $p - 1$ is not a power of $2$, $j \ge 30{,}028$, and $N > i_q > 10^{17{,}240}$.
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}[$p$-adic Hensel root and divisor-power congruences]\label{thm:padic}
+Suppose $(q, p, s, u)$ satisfies~\eqref{eq:coupled} with $p, q$ odd primes, $s$ odd, and $u \ge 1$.
+\begin{enumerate}
+  \item \emph{(Mod-$p$ harmonic congruence):} For every $r \mid s$, $p \nmid (2 e_r + 1)$, and
+  \begin{equation}\label{eq:harmonic-mod-p}
+    \sum_{r \in S_1} \frac{4 e_r (r - 1)}{2 e_r + 1} \;\equiv\; 1 \pmod p.
+  \end{equation}
+  \item \emph{(Fourth-order cofactor congruence):} Clearing denominators in~\eqref{eq:coupled} yields $2(p - 1) s^2 = (p - 2) + p^{2u + 1}$ with $p \parallel (s - 1)$ and
+  \begin{align}
+    32(s - 1) &\equiv 8p + 7p^2 \pmod{p^3}, \label{eq:mod-p3}\\
+    128(s - 1) &\equiv 32p + 28p^2 + 25p^3 \pmod{p^4}. \label{eq:mod-p4}
+  \end{align}
+  \item \emph{($p$-adic Hensel distance):} There exists a unique $\sigma_p \in \mathbb{Z}_p$ such that $2(p - 1)\sigma_p^2 = p - 2$ and $\|\sigma_p - 1\|_p < 1$; moreover $v_p(s - \sigma_p) = 2u + 1$, i.e.\ $\|s - \sigma_p\|_p = p^{-(2u + 1)}$.
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}[Tridecuple Goormaghtigh forcing and primorial confinement]\label{thm:tridecuple}
+If an odd perfect number $N$ has an even prime-power component index $i_r = p^{2u}$ ($u \ge 1$), then:
+\begin{enumerate}
+  \item $|S_1| \ge 13$ (in particular $S_1 \ne \emptyset$, unconditionally ruling out the pure Nagell--Ljunggren case $\beta_r \ge 3$ $\forall r \mid s$), so $p$ admits at least $13$ distinct odd-prime repunit representations $p = \frac{r_m^{\ell_m} - 1}{r_m - 1}$ ($m = 1, \dots, 13$) with $\ell_m = 2 e_{r_m} + 1$ prime, $\ell_m \mid \frac{p - 1}{2}$, $\left(\frac{(-1)^{\lfloor \ell_m/2 \rfloor}\ell_m}{p}\right) = +1$, and $r_m \parallel (u + 1)$, forcing $\omega(N) \ge 16$.
+  \item For all $|S_1|$ symbolically, $\min S_1 \in \{3, 5, 7, 11, 13\}$: some prime $r \in \{3, 5, 7, 11, 13\}$ satisfies $r^2 \mid N$ and $\frac{r^\ell - 1}{r - 1} = p$ ($\ell > 2$ prime).
+  \item $p \le 8(u + 1) \cdot 128^{\lfloor \sqrt{2u} \rfloor}$, $2u \ge 13{,}082{,}761{,}331{,}670{,}028$, $p > 10^{27}$, and $N > i_q > 10^{353{,}234{,}555{,}955{,}090{,}756}$.
+\end{enumerate}
+\end{theorem}
+
+\section{Proofs of Theorems~\ref{thm:euler-only} and~\ref{thm:padic}}
+
+\begin{proof}[Proof of Theorem~\ref{thm:euler-only}]
+From $i_r \cdot r^e \cdot \sigma(r^e) = 2N$ and $v_2(2N) = 1$, taking $2$-adic valuations yields $v_2(i_r) + v_2(\sigma(r^e)) = 1$. For $r = q$, $q \equiv e \equiv 1 \pmod 4$ implies $\sigma(q^e) \equiv e + 1 \equiv 2 \pmod 4$, so $v_2(\sigma(q^e)) = 1$ and $v_2(i_q) = 0$. For $r \ne q$, $e = v_r(N)$ is even, so $\sigma(r^e)$ is odd and $v_2(i_r) = 1$ ($2 \parallel i_r$, $4 \nmid i_r$).
+
+Now suppose $i_r = p^j$ with $p$ prime and $j \ge 1$. Since $i_r > 5$~\cite{DrisLuca2016}, if $r \ne q$ then $2 \parallel p^j$ forces $p = 2$ and $j = 1$, contradicting $i_r > 5$. Thus $r = q$, $i_q$ is odd so $p$ is odd, and $p \mid i_q$ while $\gcd(i_q, q^a) = 1$ gives $p \nmid q^a$, hence $p \ne q$. For the exponent and size bounds, if $j = 2u$ is even then eliminating $|S_1| \le 4$ together with $r_m \mid (u + 1)$ gives $j \ge 30{,}028$ (\texttt{OddPerfect/PrimePowerHigherObstruction.lean}), while if $j$ is odd then prime-order screening on $\sigma(m^2)/q^a = p^j$ gives $j \ge 36{,}207 > 30{,}028$ (\texttt{OddPerfect/OddIndexExponentScreen.lean}); since $p \ge 5$ is non-Fermat, $N > i_q = p^j \ge 5^{30{,}028} > 10^{17{,}240}$. Finally, if $p - 1 = 2^k$, then $j \ge 2$ ($i_q$ cannot be prime~\cite{ChenChen2014}); for even $j = 2u$, $\ell_r = 2 e_r + 1 \mid p - 1 = 2^k$ is impossible since $\ell_r \ge 3$ is odd; for odd $j$, Fermat-supported index counting bounds $\omega(N) \le a + 1$ against $\omega(N) \ge 5$ to force $a \ge 5$ and $d := (a + 1)/2 \ge 3$, whereupon any odd prime $\ell \mid d$ divides $p - 1 = 2^k$ via $\sigma(q^a)$'s half-length matching, again impossible (\texttt{OddPerfect/FermatIndexObstruction.lean}).
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:padic}]
+First, suppose $p \mid 2 e_r + 1$ for some $r \mid s$. Because $\sigma(r^{2 e_r}) = p^{\beta_r}$, the length $\ell_r = 2 e_r + 1$ is prime, forcing $\ell_r = p$. Then $(r - 1) p^{\beta_r} = r^p - 1 \equiv r - 1 \pmod p$ by Fermat's little theorem, forcing $r \equiv 1 \pmod p$. Because $r$ and $p$ are odd, $r \ge 2p + 1 > p$; writing $r = 1 + kp$ gives $\sigma(r^{p - 1}) = \sum_{m=0}^{p-1} r^m \equiv p + kp\frac{p(p-1)}{2} \equiv p \pmod{p^2}$ since $p$ is odd, so $v_p(\sigma(r^{p-1})) = 1$ and $p^{\beta_r} = \sigma(r^{p-1}) = p$, impossible since $\sigma(r^{p-1}) > r > p$. Hence $p \nmid \ell_r$ for every $r \mid s$, so $T := \tau(s^2) = \prod_{r \mid s} (2 e_r + 1)$ is invertible modulo $p$.
+
+For each $r \mid s$, $(r - 1) p^{\beta_r} = r^{\ell_r} - 1$, so $r^{\ell_r} \equiv 1 + (r - 1)p \pmod{p^2}$ if $r \in S_1$ ($\beta_r = 1$) and $r^{\ell_r} \equiv 1 \pmod{p^3}$ if $r \in S_{\ge 3}$ ($\beta_r \ge 3$). Raising $s^2 = \prod_{r \mid s} r^{2 e_r}$ to $T$ modulo $p^2$:
+\[
+  (s^2)^T = \prod_{r \mid s} \bigl(r^{\ell_r}\bigr)^{\frac{2 e_r T}{\ell_r}} \;\equiv\; 1 + p T \sum_{r \in S_1} \frac{2 e_r (r - 1)}{2 e_r + 1} \pmod{p^2}.
+\]
+On the other hand, $2 s^2 = q + 1 = 2 + p + p^2 + \dots + p^{2u} \equiv 2 + p \pmod{p^2}$ (since $u \ge 1$), so
+\[
+  2^T (s^2)^T = (2 s^2)^T \equiv (2 + p)^T \equiv 2^T + 2^{T - 1} T p \pmod{p^2}.
+\]
+Equating the two expansions modulo $p^2$, cancelling $2^{T - 1} p$, and dividing by $T \not\equiv 0 \pmod p$ yields~\eqref{eq:harmonic-mod-p}.
+
+Next, multiplying $2 s^2 = 1 + \frac{p^{2u + 1} - 1}{p - 1}$ by $p - 1$ gives $2(p - 1) s^2 = (p - 2) + p^{2u + 1}$, and subtracting $2(p - 1)$ gives $2(s - 1)(s + 1) = p\,\sigma(p^{2u - 1})$. In particular $s^2 \equiv 1 \pmod p$, while $\sigma(s^2) = p^{2u}$ implies $\operatorname{ord}_p(s) \mid \tau(s^2) = T$ (\texttt{OddPerfect/PureSigmaOrder.lean}); because $T$ is odd and $\operatorname{ord}_p(s) \mid 2$, we obtain $\operatorname{ord}_p(s) = 1$, i.e.\ $s \equiv 1 \pmod p$, and expanding $(2 s^2)^T \equiv (2 + p)^T \pmod{p^2}$ gives $4\frac{s - 1}{p} \equiv 1 \pmod p$. Since $2u + 1 \ge 5$ (indeed $2u \ge 30{,}028$), reducing $2(p - 1)s^2 \equiv p - 2 \pmod{p^4}$ and completing the square on $A = 128 s$ against $B = 128 + 32p + 28p^2 + 25p^3$ (which satisfies $2(p - 1)B^2 \equiv 16384(p - 2) \pmod{p^4}$ identically in $\mathbb{Z}[p]$) yields $p^4 \mid (A - B)(A + B)$. Because $A + B \equiv 256 \not\equiv 0 \pmod p$ for odd $p$, $\gcd(p^4, A + B) = 1$, forcing $A \equiv B \pmod{p^4}$, which is~\eqref{eq:mod-p4} (and~\eqref{eq:mod-p3} mod $p^3$).
+
+Finally, in $\mathbb{Z}_p$ ($p$ odd prime), let $f(X) = 2(p - 1)X^2 - (p - 2) \in \mathbb{Z}_p[X]$. We have $\|f(1)\|_p = \|p\|_p = p^{-1} < 1$ while $\|f'(1)\|_p = \|4(p - 1)\|_p = 1$. By Hensel's lemma (\texttt{Mathlib.NumberTheory.Padics.Hensel}), there is a unique $\sigma_p \in \mathbb{Z}_p$ with $f(\sigma_p) = 0$ and $\|\sigma_p - 1\|_p < 1$. Subtracting $2(p - 1)\sigma_p^2 = p - 2$ from $2(p - 1)s^2 = (p - 2) + p^{2u + 1}$ gives
+\[
+  2(p - 1)(s - \sigma_p)(s + \sigma_p) = p^{2u + 1}.
+\]
+Because $s \equiv 1 \equiv \sigma_p \pmod{p\mathbb{Z}_p}$ and $p$ is odd, $2(p - 1)$ and $s + \sigma_p \equiv 2 \pmod{p\mathbb{Z}_p}$ are $p$-adic units, so $v_p(s - \sigma_p) = 2u + 1$ and $\|s - \sigma_p\|_p = p^{-(2u + 1)}$.
+\end{proof}
+
+\section{Elimination of $|S_1| \le 12$ and Primorial Confinement}
+
+\begin{proof}[Proof sketch of Theorem~\ref{thm:tridecuple}]
+Equation~\eqref{eq:harmonic-mod-p} immediately refutes $|S_1| = 0$ ($0 \equiv 1 \pmod p$, eliminating the pure Nagell--Ljunggren branch unconditionally) and $|S_1| = 1$ (if $S_1 = \{r_1\}$, then $4 e_1(r_1 - 1) \equiv 2 e_1 + 1 \pmod p$, impossible since $0 < 2 e_1 + 1 < 4 e_1(r_1 - 1) < 1 + r_1 + \dots + r_1^{2 e_1} = p$).
+
+Generally, write $|S_1| = k \ge 2$, $P_L := \prod_{r \in S_1} (2 e_r + 1)$, and clear denominators in~\eqref{eq:harmonic-mod-p}:
+\[
+  \mathrm{SumCoef} := \sum_{r \in S_1} 4 e_r (r - 1) \frac{P_L}{2 e_r + 1} \;\equiv\; P_L \pmod p,
+\]
+so $\mathrm{SumCoef} = P_L + m p$ for an integer $m \ge 1$ (positivity and parity exclude $m = 0$). Using $r^{2 e_r} < p$, one bounds $r - 1 < p^{1/(2 e_r)}$; when the largest base $r_{\max} \in S_1$ has $e_{r_{\max}} = 1$ ($p = r_{\max}^2 + r_{\max} + 1$) vs.\ $e_{r_{\max}} \ge 2$, the sharpened symbolic-$k$ dichotomy (\texttt{OddPerfect/SharpenedSymbolicRepunit.lean}) proves
+\[
+  p < 4 P_L^2 \qquad \text{or} \qquad p^3 < (2 k P_L)^4
+\]
+(strengthening to $p^{11} < (2 k P_L)^{12}$ when $\min_{r \in S_1} e_r \ge 6$). Meanwhile, for every $r \in S_1$, $p = \frac{r^{2 e_r + 1} - 1}{r - 1} > r^{2 e_r}$ grows exponentially in $e_r$ while $P_L = \prod (2 e_r + 1)$ grows only polynomially. Combining these opposing growth rates with second-order mod-$p^2$ congruences and divisor-multiplicity exclusions of prime repunits eliminates every $2 \le k \le 12$ (\texttt{OddPerfect/TridecupleRepunitObstruction.lean}), forcing $k = |S_1| \ge 13$.
+
+Ordering $S_1$ as $r_0 < \dots < r_{k-1}$ gives $e_{r_0} > \dots > e_{r_{k-1}} \ge 1$ with $2 e_{r_i} + 1$ prime. Across \emph{all} $k \ge 13$ symbolically, if $r_0 = \min S_1 \ge 17$, the primorial bound $P_L \le 2 \cdot 16^{e_{r_0}}$ collides against $(17^2)^{e_{r_0}} \le r_0^{2 e_{r_0}} < p$ on both branches ($p < 4 P_L^2$ when $e_{r_{k-1}} = 1$ and $p^3 < (2 k P_L)^4$ when $e_{r_{k-1}} \ge 2$), confining $\min S_1 \in \{3, 5, 7, 11, 13\}$ (\texttt{OddPerfect/EvenIndexPrimorialObstruction.lean}). Since $p \mid \Phi_{\ell_m}(r_m)$ for odd prime $\ell_m = 2 e_{r_m} + 1 < p$, $r_m$ has multiplicative order $\ell_m \mid (p - 1)/2$ modulo $p$, so quadratic reciprocity (alongside the characteristic-zero Gauss-sum identity in \texttt{OddPerfect/GaussSumCyclotomicForms.lean}) yields $\left(\frac{(-1)^{\lfloor \ell_m / 2 \rfloor}\ell_m}{p}\right) = +1$. Partitioning $2u = \sum_{r \mid s} \beta_r$ at threshold $\sqrt{2u}$ further yields the unconditional subexponential base cap $p \le 8(u + 1)\cdot 128^{\lfloor \sqrt{2u} \rfloor}$ (\texttt{OddPerfect/EvenIndexSubexponential.lean}). Finally, since $r_m \parallel (u + 1)$ for all $13$ distinct odd primes $r_m \in S_1$, $u + 1 \ge \prod_{m=1}^{13} p_m = 3 \cdot 5 \cdots 43 = 6{,}541{,}380{,}665{,}835{,}015$, giving $2u \ge 13{,}082{,}761{,}331{,}670{,}028$; because only $12$ integers $1 \le e \le 20$ have $2e + 1$ prime, $e_{r_0} \ge 21$, and since $\sigma(3^{2 e_{r_0}})$ is composite for $21 \le e_{r_0} \le 28$, either $r_0 \ge 5$ ($p > 5^{42} > 10^{27}$) or $r_0 = 3, e_{r_0} \ge 29$ ($p > 3^{58} > 10^{27}$), yielding $N > i_q = p^{2u} > (10^{27})^{13{,}082{,}761{,}331{,}670{,}028} = 10^{353{,}234{,}555{,}955{,}090{,}756}$.
+\end{proof}
+
+\section{Lean 4 Formalization}
+
+All results in Theorems~\ref{thm:euler-only}, \ref{thm:padic}, and~\ref{thm:tridecuple} are formalized and kernel-audited in the standalone Lean~4 (\texttt{v4.36.0}) + Mathlib package \texttt{prime-power-index-breakout}~\cite{HamiltonPrimePower} ($172$ structural modules; $723$ named theorems across $6{,}271$ declarations, zero brute-force size-tree certificates), verified by \texttt{Audit.lean} to use only \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.
+
+\begin{thebibliography}{99}
+
+\bibitem{BennettLevin2015}
+M.~A. Bennett and A.~Levin, \emph{The Nagell--Ljunggren equation via Runge's method}, Monatsh.\ Math.\ \textbf{177} (2015), 15--31; arXiv:1312.4037.
+
+\bibitem{BDZ2013}
+K.~A. Broughan, D.~Delbourgo, and Q.~Zhou, \emph{Improving the Chen and Chen result for odd perfect numbers}, Integers \textbf{13} (2013), \#A39.
+
+\bibitem{BugeaudMihailescu2007}
+Y.~Bugeaud and P.~Mih\u{a}ilescu, \emph{On the Nagell--Ljunggren equation $\frac{x^n - 1}{x - 1} = y^q$}, Math.\ Scand.\ \textbf{101} (2007), 177--183.
+
+\bibitem{ChenChen2014}
+F.-J. Chen and Y.-G. Chen, \emph{On the index of an odd perfect number}, Colloq.\ Math.\ \textbf{136} (2014), 41--49.
+
+\bibitem{DrisLuca2016}
+J.~A.~B. Dris and F.~Luca, \emph{A note on odd perfect numbers}, Fibonacci Quart.\ \textbf{54} (2016), 291--295.
+
+\bibitem{HamiltonPrimePower}
+R.~Hamilton, \emph{odd\_perfect\_number} (Lean~4 formalization, directory \texttt{prime-power-index-breakout}), \url{https://github.com/Rob1Ham/odd_perfect_number}.
+
+\end{thebibliography}
+
+\end{document}

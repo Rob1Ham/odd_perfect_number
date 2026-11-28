@@ -1,0 +1,172 @@
+\documentclass[11pt]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\title[Exclusion of Three-Free Restrained Odd Perfect Numbers]{An Elementary Exclusion of Three-Free Restrained Odd Perfect Numbers and Extensions to Two Large Exponents}
+
+\author{Robert Hamilton}
+
+\subjclass[2020]{Primary 11A25; Secondary 11D61, 68V20}
+\keywords{Odd perfect numbers, restrained exponents, smooth cyclotomic values, Steuerwald's theorem, formal verification, Lean 4}
+
+\begin{document}
+
+\begin{abstract}
+Write a hypothetical odd perfect number in Euler form as $N = q^a m^2$, where $q \equiv a \equiv 1 \pmod 4$ is prime and $q \nmid m$, and let $L(N) = \{r \mid m : r \text{ prime},\; v_r(N) \ge 4\}$ be the set of non-Euler prime factors of $N$ with exponent at least four (with $3$-free counterpart $L^\circ(N) := L(N) \setminus \{3\}$). Steuerwald (1937) proved $L(N) \ne \emptyset$; candidates with $|L(N)| \le 1$ are called \emph{restrained}. Using an elementary pigeonhole-median inequality on $\{q, r_0\}$-smooth values of $\Phi_3(u) = u^2 + u + 1$ for primes $u \equiv 2 \pmod 3$ ($5 u_0 + 3 \le 2 u_2$), we give a short, computation-free proof that every odd perfect number with $3 \nmid N$ satisfies $|L(N)| \ge 2$---so every restrained odd perfect number is divisible by $3$. Extending the same smooth-quadratic growth engine to $|L(N)| = 2$ with $3 \nmid N$, we prove that both primes in $L(N)$ must satisfy $r \equiv 1 \pmod 3$, and that if no prime in $L(N)$ is congruent to $1 \pmod 3$ then $|L(N)| \ge 7$. When $3 \mid N$, we further prove $3^8 \mid N$ whenever $L^\circ(N) = \emptyset$, $3^4 \mid N$ whenever $|L^\circ(N)| \le 1$ and $q \equiv 2 \pmod 3$, and $1 \le |\{u \mid m : u \ne 3,\; v_u(N) = 2,\; u \equiv 1 \pmod 3\}| \le 2$ whenever $|L^\circ(N)| \le 1$ and $v_3(N) = 2$. All proofs are formalized and kernel-audited in Lean~4/Mathlib.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+By Euler's theorem, any odd perfect number $N$ has the form $N = q^a m^2$, where $q$ is a prime with $q \equiv a \equiv 1 \pmod 4$ and $\gcd(q, m) = 1$. Writing $e_r = v_r(N)$ for each prime $r \mid m$, every $e_r \ge 2$ is even. Partition the non-Euler prime support of $N$ into exact-square primes and higher-power primes, together with their non-$3$ subsets:
+\[
+  S(N) := \{r \mid m : v_r(N) = 2\}, \qquad L(N) := \{r \mid m : v_r(N) \ge 4\},
+\]
+\[
+  S^\circ(N) := S(N) \setminus \{3\}, \qquad L^\circ(N) := L(N) \setminus \{3\},
+\]
+and refine modulo $3$ ($i \in \{1, 2\}$):
+\[
+  S_i(N) := \{u \in S^\circ(N) : u \equiv i \pmod 3\}, \quad L_i(N) := \{r \in L^\circ(N) : r \equiv i \pmod 3\}.
+\]
+Note that whenever $3 \nmid N$ (or $v_3(N) = 2$ for $L$), one has $L(N) = L^\circ(N)$.
+
+Steuerwald~\cite{Steuerwald1937} proved $L(N) \ne \emptyset$: not all non-Euler exponents can equal $2$. Subsequent lower bounds on the total prime-factor multiplicity $\Omega(N)$ and exponent structure were established by Iannucci and Sorli~\cite{IannucciSorli2003}, Ochem and Rao~\cite{OchemRao2014}, and Zelinsky~\cite{Zelinsky2021}. Following Ochem and Zelinsky~\cite{OchemZelinsky2026}, an odd perfect number with $|L(N)| \le 1$ is called \emph{restrained}. In~\cite{OchemZelinsky2026}, computer-assisted factor-chain searches were deployed to force $3 \mid N$ and large $3$-adic exponents on restrained candidates.
+
+The purpose of this paper is to show that the entire $3 \nmid N$ restrained regime collapses by a remarkably short, purely elementary Diophantine inequality on $\{q, r_0\}$-smooth values of $u^2 + u + 1$, and that the same mechanism extends unconditionally to $|L(N)| = 2$ as well as to small powers of $3$ when $3 \mid N$.
+
+\begin{theorem}[Exclusion of three-free restrained candidates]\label{thm:three-free-restrained}
+Let $N = q^a m^2$ be an odd perfect number in Euler form. If $3 \nmid N$, then $|L(N)| = |L^\circ(N)| \ge 2$. Equivalently, $|L^\circ(N)| \le 1$ (and in particular $|L(N)| \le 1$) implies $3 \mid N$.
+\end{theorem}
+
+\begin{theorem}[Two-large-sources congruence and seven-source jump]\label{thm:two-sources}
+Let $N = q^a m^2$ be an odd perfect number with $3 \nmid N$.
+\begin{enumerate}
+  \item Either $|L_1(N)| \ge 2$ or $|L(N)| \ge 3$. In particular, if $|L(N)| = 2$, then $L_2(N) = \emptyset$ and both primes in $L(N)$ are congruent to $1 \pmod 3$.
+  \item If $L_1(N) = \emptyset$ (every prime in $L(N)$ is congruent to $2 \pmod 3$), then $|L(N)| \ge 7$.
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}[$3$-adic structure when $|L^\circ(N)| \le 1$]\label{thm:three-present}
+Let $N = q^a m^2$ be an odd perfect number in Euler form.
+\begin{enumerate}
+  \item \emph{(Sharp $3$-adic exponent when $L^\circ(N) = \emptyset$):} If $L^\circ(N) = \emptyset$ (every prime $r \mid m$ with $r \ne 3$ has $v_r(N) = 2$), then $3 \mid N$, $v_3(N) \ge 8$, and $\Omega(\sigma(N/3^{v_3(N)})/3^{v_3(N)}) + 8 \le \Omega(N)$.
+  \item \emph{(Exclusion of $9 \parallel N$ for $q \equiv 2 \pmod 3$):} If $|L^\circ(N)| \le 1$ (in particular if $|L(N)| \le 1$) and $q \equiv 2 \pmod 3$ (hence $q \equiv 5 \pmod{12}$, including $q = 5$), then $v_3(N) \ge 4$, i.e.\ $81 \mid N$.
+  \item \emph{(Confinement at $9 \parallel N$):} If $|L^\circ(N)| \le 1$ and $v_3(N) = 2$ (where $L(N) = L^\circ(N)$), then $q \equiv 1 \pmod{12}$, $q \ge 13$, and $1 \le |S_1(N)| \le 2$.
+\end{enumerate}
+\end{theorem}
+
+\section{Smooth Quadratic Divisor Sums and Growth Inequalities}
+
+Recall a classical fact for odd integers $a$ with $3 \nmid a$: every prime divisor $p$ of $a^2 + a + 1$ satisfies $p = 3$ (which occurs iff $a \equiv 1 \pmod 3$, and then $v_3(a^2 + a + 1) = 1$) or $p \equiv 1 \pmod 6$. In particular, if $3 \nmid N$, then $S_1(N) = \emptyset$ (since $u \in S_1(N) \implies 3 \mid \sigma(u^2) \mid 2N$), so every $u \in S(N) = S^\circ(N)$ satisfies $u \equiv 2 \pmod 3$ and $u \ge 5$. Moreover, since $a$ is odd, $(q + 1) \mid \sigma(q^a) \mid 2N$; thus $3 \nmid N$ forces $q \not\equiv 2 \pmod 3$, hence $q \equiv 1 \pmod{12}$ and $q \ge 13$.
+
+\begin{lemma}[Common prime-power divisor of quadratic blocks; cf.\ Zelinsky~\cite{Zelinsky2021}]\label{lem:common-pow}
+Let $a \ne b$ be odd integers with $a, b \ge 5$ and $a \equiv b \equiv 2 \pmod 3$. If $P$ is a prime and $P^c \mid \gcd(a^2 + a + 1,\, b^2 + b + 1)$ with $c \ge 1$, then
+\[
+  5 P^c \;\le\; a + b + 1.
+\]
+\end{lemma}
+
+\begin{proof}
+Without loss of generality assume $a < b$. Every prime $P \mid a^2 + a + 1$ with $a \equiv 2 \pmod 3$ satisfies $P \equiv 1 \pmod 6$, so $P \ge 7$ is odd and $\gcd(6, P) = 1$. In $\mathbb{Z}/P^c\mathbb{Z}$, both $a$ and $b$ are roots of $X^2 + X + 1 \equiv 0 \pmod{P^c}$; completing the square gives $(2X + 1)^2 \equiv -3 \pmod{P^c}$. Since $P$ is odd and $P \nmid (2a + 1)$, Hensel's lemma implies that $X^2 + X + 1 \equiv 0 \pmod{P^c}$ has exactly two residue solutions modulo $P^c$, namely $a$ and $-1 - a$.
+\begin{itemize}
+  \item If $b \equiv a \pmod{P^c}$, then $P^c \mid b - a$. Since $b - a > 0$ is even ($a, b$ odd) and $b - a \equiv 0 \pmod 3$ ($a \equiv b \equiv 2 \pmod 3$), we have $6 P^c \mid b - a$, so $6 P^c \le b - a < a + b + 1$, giving $5 P^c < a + b + 1$.
+  \item If $b \equiv -1 - a \pmod{P^c}$, then $P^c \mid a + b + 1$. Because $a, b$ are odd, $a + b + 1$ is odd; and since $a \equiv b \equiv 2 \pmod 3$, we have $a + b + 1 \equiv 5 \equiv 2 \pmod 3$, whereas $P^c \equiv 1 \pmod 3$. Thus the odd quotient $m := (a + b + 1)/P^c \ge 1$ satisfies $m \equiv 2 \pmod 3$. An odd positive integer congruent to $2 \pmod 3$ is at least $5$, hence $5 P^c \le a + b + 1$. \qedhere
+\end{itemize}
+\end{proof}
+
+Lemma~\ref{lem:common-pow} immediately yields both a doubly-exponential single-prime gap and a linear-exponential two-prime gap:
+
+\begin{corollary}[Single-prime $5u^2 < v$ gap]\label{cor:single-prime}
+If $P \equiv 1 \pmod 3$ is prime and $5 \le u < v$ are odd integers with $u \equiv v \equiv 2 \pmod 3$ such that $u^2 + u + 1 = P^\alpha$ and $v^2 + v + 1 = P^\beta$, then $5 u^2 < v$.
+\end{corollary}
+
+\begin{proof}
+Since $u < v$, we have $\alpha < \beta$, so $P^\alpha = u^2 + u + 1$ divides $\gcd(u^2 + u + 1,\, v^2 + v + 1)$. Lemma~\ref{lem:common-pow} gives $5(u^2 + u + 1) \le u + v + 1$, which simplifies to $5u^2 + 4u + 4 \le v$, so $5u^2 < v$.
+\end{proof}
+
+\begin{lemma}[Two-prime smooth $3$-step growth]\label{lem:two-prime-step}
+Let $q, r_0 \equiv 1 \pmod 3$ be odd primes, and let $5 \le u_0 < u_1 < u_2$ be odd integers with $u_i \equiv 2 \pmod 3$ such that $u_i^2 + u_i + 1 = q^{\alpha_i} r_0^{\beta_i}$ for $i \in \{0, 1, 2\}$. Then
+\[
+  25(u_0^2 + u_0 + 1) \;\le\; (u_1 + u_2 + 1)^2 \qquad \text{and} \qquad 5 u_0 + 3 \;\le\; 2 u_2.
+\]
+\end{lemma}
+
+\begin{proof}
+Note that for every pair of distinct indices $\{i, j\} \subset \{0, 1, 2\}$, $u_0 < u_1 < u_2$ implies $u_i + u_j + 1 \le u_1 + u_2 + 1$. Among the three indices $\{0, 1, 2\}$, at most one index $i$ satisfies $\alpha_i > \max_{j \ne i} \alpha_j$ (a strict unique maximum of $\alpha$), and at most one index $i$ satisfies $\beta_i > \max_{j \ne i} \beta_j$ (a strict unique maximum of $\beta$). By the pigeonhole principle on three indices, there exists at least one index $m \in \{0, 1, 2\}$ such that $\alpha_m \le \alpha_j$ for some $j \ne m$ and $\beta_m \le \beta_k$ for some $k \ne m$.
+
+Then $q^{\alpha_m} \mid \gcd(u_m^2 + u_m + 1,\, u_j^2 + u_j + 1)$ and $r_0^{\beta_m} \mid \gcd(u_m^2 + u_m + 1,\, u_k^2 + u_k + 1)$. Applying Lemma~\ref{lem:common-pow} (or $5 \cdot 1 < u_1 + u_2 + 1$ when an exponent is $0$) yields
+\[
+  5 q^{\alpha_m} \le u_m + u_j + 1 \le u_1 + u_2 + 1 \quad \text{and} \quad 5 r_0^{\beta_m} \le u_m + u_k + 1 \le u_1 + u_2 + 1.
+\]
+Since $u_0 \le u_m$, multiplying the two bounds gives
+\[
+  25(u_0^2 + u_0 + 1) \le 25(u_m^2 + u_m + 1) = (5 q^{\alpha_m})(5 r_0^{\beta_m}) \le (u_1 + u_2 + 1)^2.
+\]
+Finally, since $u_1$ and $u_2$ are odd with $u_1 < u_2$, we have $u_1 \le u_2 - 2$ and $u_1 + u_2 + 1 \le 2 u_2 - 1$, while $25(u_0^2 + u_0 + 1) = (5 u_0 + 2)^2 + 5 u_0 + 21 > (5 u_0 + 2)^2$; hence $5 u_0 + 2 < 2 u_2 - 1$, i.e.\ $5 u_0 + 3 \le 2 u_2$.
+\end{proof}
+
+\section{Proofs of the Main Theorems}
+
+\begin{proof}[Proof sketch of Theorem~\ref{thm:three-free-restrained}]
+Suppose $N = q^a m^2$ is odd perfect with $3 \nmid N$ and $|L(N)| \le 1$. By Steuerwald's theorem $|L(N)| = 1$, say $L(N) = \{r_0\}$. Every remaining prime factor $u \in S(N)$ has $v_u(N) = 2$, $u \equiv 2 \pmod 3$, and $u \ge 5$. Since $3 \nmid N$, we have $q \equiv 1 \pmod{12}$ ($q \ge 13$).
+
+First, if $r_0 \not\equiv 1 \pmod 3$, then no prime in $S(N) \cup \{r_0\}$ is $1 \pmod 3$, so for every $u \in S(N)$ all prime divisors of $u^2 + u + 1 \mid 2N$ must equal $q$. Corollary~\ref{cor:single-prime} then forces $5 u^2 < v$ across $S(N)$, bounding $\prod_{u \in S(N)} \frac{u^2 + u + 1}{u^2} < 1 + \frac{4}{3 u_{\min}}$ and contradicting $\sigma(N)/N = 2$ (\texttt{OddPerfect/RestrainedThreeFreeObstruction.lean}). Thus $r_0 \equiv 1 \pmod 3$ ($r_0 \ge 7$).
+
+Now every $u \in S(N)$ has $u^2 + u + 1$ divisible only by primes $\equiv 1 \pmod 3$ dividing $N$, which are confined to $\{q, r_0\}$. Along any chain $M$ of integers $\ge y_0 \ge 5$ satisfying $5 x + 3 \le 2 y$, induction proves the telescoping product bound (\texttt{prod\_sq\_abundancy\_le\_of\_five\_halves\_step}):
+\[
+  \prod_{x \in M} \frac{x^2 + x + 1}{x^2} \;\le\; \frac{2 y_0 + 5}{2 y_0}.
+\]
+Splitting the sorted list $S(N)$ into its even-indexed and odd-indexed subsequences, Lemma~\ref{lem:two-prime-step} ensures both subsequences satisfy $5 x + 3 \le 2 y$, yielding
+\[
+  \prod_{u \in S(N)} \frac{u^2 + u + 1}{u^2} \;\le\; \Bigl(\frac{2 y_0 + 5}{2 y_0}\Bigr) \Bigl(\frac{2 y_1 + 5}{2 y_1}\Bigr)
+\]
+for any lower bounds $y_0, y_1 \ge 5$ on the respective subsequence heads (valid also when a subsequence is empty). Because $\sigma(11^2) = 7 \cdot 19$ and $\sigma(23^2) = 7 \cdot 79$ each have two distinct $1 \pmod 3$ prime factors, $\{q, r_0\}$-smoothness together with $a \ge 17$ (\texttt{OddPerfect/RestrainedLinearElimination.lean}) excludes $11, 23 \in S(N)$: if $5 \in S(N)$ ($\sigma(5^2) = 31$), then $r_0 = 31$ (or $q = 31$) and $17 \notin S(N)$ ($\sigma(17^2) = 307$), giving $(y_0, y_1) = (5, 29)$, whereas if $5 \notin S(N)$ then $(y_0, y_1) = (17, 29)$; in every subcase $\frac{q}{q - 1}\frac{r_0}{r_0 - 1}\frac{2 y_0 + 5}{2 y_0}\frac{2 y_1 + 5}{2 y_1} \le 2$, contradicting $\sigma(N)/N = 2$ (\texttt{OddPerfect/ThreeFreeRestrainedClosure.lean}).
+\end{proof}
+
+\begin{proof}[Proof sketch of Theorems~\ref{thm:two-sources} and~\ref{thm:three-present}]
+For Theorem~\ref{thm:two-sources}, if $3 \nmid N$ and $|L_1(N)| \le 1$, then at most two primes of $N$ are $\equiv 1 \pmod 3$ (namely $q$ and at most one prime $r_0 \in L_1(N)$). Consequently, every $u \in S(N)$ still has $u^2 + u + 1$ $\{q, r_0\}$-smooth, so the exact same $5 u_j + 3 \le 2 u_{j+2}$ product bound applies to $S(N)$. When $L_1(N) = \emptyset$, $u^2 + u + 1$ is a pure power of $q$ ($5 u^2 < v$ gap), and abundancy deficiency forces $|L_2(N)| \ge 7$; when $|L_1(N)| = 1$, abundancy deficiency rules out $|L_2(N)| = 1$, forcing $|L(N)| \ge 3$ (\texttt{OddPerfect/ThreeFreeTwoLargeSources.lean}).
+
+For Theorem~\ref{thm:three-present}, when $L^\circ(N) = \emptyset$, Steuerwald's theorem forces $3 \in L(N)$ ($v_3(N) \ge 4$), and eliminating $v_3(N) \in \{4, 6\}$ via cyclotomic divisor collisions gives $v_3(N) \ge 8$ (\texttt{OddPerfect/RestrainedExponents.lean}). When $|L^\circ(N)| \le 1$ and $v_3(N) = 2$ ($9 \parallel N$), $\sigma(3^2) = 13 \mid N$ and $3$-adic valuation conservation $\sum_{p \ne 3} v_3(\sigma(p^{e_p})) = v_3(N) = 2$ bounds $|S_1(N)| \le 2$. If $q \equiv 2 \pmod 3$ ($q \ge 5$), analyzing both $S_1(N) = \emptyset$ ($\{13, r_0\}$-smooth quadratic sums) and $|S_1(N)| = 1$ ($s_1 = 13 \implies r_0 = 61$, or $s_1 \ne 13 \implies r_0 = 13$ and $\{13, s_1\}$-smooth sums) eliminates $v_3(N) = 2$, forcing $v_3(N) \ge 4$ (\texttt{OddPerfect/RestrainedThreeSquareObstruction.lean}). Finally, on the surviving $v_3(N) = 2$ branch, $q \equiv 1 \pmod{12}$ ($q \ge 13$) and eliminating $S_1(N) = \emptyset$ forces $1 \le |S_1(N)| \le 2$ (\texttt{OddPerfect/RestrainedSquareSourcesOneObstruction.lean}).
+\end{proof}
+
+\section{Lean 4 Formalization}
+
+Every theorem and intermediate lemma in this paper has been formalized and kernel-audited in the standalone Lean~4 (\texttt{v4.36.0}) + Mathlib package \texttt{restrained-opn-breakout}~\cite{HamiltonRestrained} ($108$ modules; $507$ named theorems across $4{,}193$ declarations, zero size-tree certificates), verified by \texttt{Audit.lean} to depend solely on \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.
+
+\begin{thebibliography}{99}
+
+\bibitem{HamiltonRestrained}
+R.~Hamilton, \emph{odd\_perfect\_number} (Lean~4 formalization, directory \texttt{restrained-opn-breakout}), \url{https://github.com/Rob1Ham/odd_perfect_number}.
+
+\bibitem{IannucciSorli2003}
+D.~E. Iannucci and R.~M. Sorli, \emph{On the total number of prime factors of an odd perfect number}, Math.\ Comp.\ \textbf{72} (2003), 2077--2084.
+
+\bibitem{OchemRao2014}
+P.~Ochem and M.~Rao, \emph{On the number of prime factors of an odd perfect number}, Math.\ Comp.\ \textbf{83} (2014), 2435--2439.
+
+\bibitem{OchemZelinsky2026}
+P.~Ochem and J.~Zelinsky, \emph{On restrained odd perfect numbers}, arXiv:2607.19746v1, 2026.
+
+\bibitem{Steuerwald1937}
+R.~Steuerwald, \emph{Versch\"arfung einer notwendigen Bedingung f\"ur die Existenz einer ungeraden vollkommenen Zahl}, Sitzungsber.\ Math.-Naturwiss.\ Abt.\ Bayer.\ Akad.\ Wiss.\ M\"unchen (1937), 69--72.
+
+\bibitem{Zelinsky2021}
+J.~Zelinsky, \emph{On the total number of prime factors of an odd perfect number}, Integers \textbf{21} (2021), \#A76.
+
+\end{thebibliography}
+
+\end{document}

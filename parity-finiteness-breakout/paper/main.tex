@@ -1,0 +1,236 @@
+\documentclass[11pt]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\title[Parity Dichotomy and Fixed-Rank Finiteness]{On the Parity Dichotomy and Fixed-Rank Finiteness of Deficient-Perfect and Near-Perfect Numbers}
+
+\author{Robert Hamilton}
+
+\subjclass[2020]{Primary 11A25; Secondary 11D61, 68V20}
+\keywords{Deficient-perfect numbers, near-perfect numbers, sum of divisors, fixed prime support rank, $2$-adic valuation, Lean 4}
+
+\begin{document}
+
+\begin{abstract}
+A positive integer $n$ is \emph{deficient-perfect} if $\sigma(n) + d = 2n$ for some proper divisor $d \mid n$, and \emph{near-perfect} if $\sigma(n) = 2n + d$ for some proper divisor $d \mid n$. Dutta and Saikia (2020, Conjecture~3.2) conjectured that for every $k \ge 3$ there are only finitely many odd deficient-perfect numbers with $k$ distinct prime factors, while Yang and Togb\'e (2023, \S 6) raised the corresponding fixed-$k$ finiteness question without restricting parity. Whereas unrestricted fixed-$k$ finiteness fails for $k = 1$ ($n = 2^a$) and conditionally fails for $k = 2$ via Thabit and Mersenne prime families, we establish a sharp parity dichotomy valid across all ranks $k \ge 1$: for every pair $(k, A) \in \mathbb{N}^2$, there are only finitely many deficient-perfect pairs $(n, d)$ and only finitely many near-perfect pairs $(n, d)$ satisfying $\omega(n) \le k$ and $v_2(n) \le A$, with explicit computable upper bounds. In particular, setting $A = 0$ yields elementary, effective proofs of finiteness for both odd deficient-perfect numbers ($n \le (4(k+1))^{4^{k+1}}$) and odd near-perfect numbers at bounded prime-factor count. Every theorem and explicit bound in this paper has been formalized and kernel-verified in Lean~4/Mathlib using only standard foundations.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Let $\sigma(n) = \sum_{c \mid n} c$ denote the sum of the positive divisors of $n$, $\omega(n)$ the number of distinct prime divisors of $n$, and $v_2(n)$ the $2$-adic valuation of $n$. Two natural one-divisor perturbations of the classical perfect-number equation $\sigma(n) = 2n$ have been studied extensively over the past decade:
+
+\begin{definition}\label{def:classes}
+Let $n \ge 1$ be an integer and let $d$ be a proper positive divisor of $n$ ($d \mid n$ and $1 \le d < n$).
+\begin{enumerate}
+  \item Following Tang and Feng~\cite{TangFeng2014}, $(n, d)$ is a \emph{deficient-perfect pair} (and $n$ is \emph{deficient-perfect}, \href{https://oeis.org/A271816}{OEIS A271816}) if $\sigma(n) + d = 2n$.
+  \item Following Pollack and Shevelev~\cite{PollackShevelev2012}, $(n, d)$ is a \emph{near-perfect pair} (and $n$ is \emph{near-perfect}, \href{https://oeis.org/A181595}{OEIS A181595}) if $\sigma(n) = 2n + d$.
+\end{enumerate}
+\end{definition}
+
+For odd inputs, both classes force $n$ to be a square greater than $1$. On the deficient-perfect side, Tang and Feng~\cite{TangFeng2014} proved $\omega(n) \ge 4$ for every odd deficient-perfect number, with Descartes' cofactor $n = 9018009 = 3^2 \cdot 7^2 \cdot 11^2 \cdot 13^2$ ($d = 819$) attaining equality; Yang and Togb\'e~\cite{YangTogbe2023} (see also Sun and He~\cite{SunHe2019}) proved that $(9018009, 819)$ is the unique odd deficient-perfect pair with $\omega(n) \le 4$. On the near-perfect side, Tang, Ma, and Feng~\cite{TangMaFeng2016} proved that Johnson's example $n = 173369889 = 3^4 \cdot 7^2 \cdot 11^2 \cdot 19^2$ ($d = 2751903$) is the unique odd near-perfect number with $\omega(n) \le 4$.
+
+Beyond four prime factors, Dutta and Saikia~\cite[Conj.~3.2]{DuttaSaikia2020} conjectured that for each $k \ge 3$ there are only finitely many odd deficient-perfect numbers with $\omega(n) = k$ (permitting also $d = n$, which adds only $n = 1$). In the concluding section of~\cite{YangTogbe2023}, Yang and Togb\'e posed fixed-$k$ finiteness for $k \ge 5$ without an oddness qualifier. Earlier, Carlo Francisco Adajar studied both odd finiteness questions in his 2016 master's thesis at the University of the Philippines Diliman and stated both odd finiteness theorems in his 2019 conference abstract~\cite{Adajar2019} (attributed also in~\cite[Thm.~3.4.1]{Gumaru2018}), though an effective self-contained journal proof and the unrestricted-parity regime remained unaddressed.
+
+Without restricting $v_2(n)$, fixed-$k$ finiteness fails for small $k$ because the $2$-primary component $\sigma(2^a)/2^a = 2 - 2^{-a}$ approaches the target abundancy $2$ on a single prime:
+
+\begin{proposition}[Even infinite and conditional families]\label{prop:even-families}
+\begin{enumerate}
+  \item For every $a \ge 1$, $(2^a, 1)$ is a deficient-perfect pair with $\omega(2^a) = 1$.
+  \item Whenever $a \ge 1$ and $q = 3 \cdot 2^a - 1$ is a Thabit prime, $(2^a q, 2^a)$ is a deficient-perfect pair with $\omega(2^a q) = 2$.
+  \item Whenever $M_{k+1} = 2^{k+1} - 1$ is a Mersenne prime ($k \ge 1$), both $(2^{k+1} M_{k+1}, 2^{k+1})$ and $(2^k M_{k+1}^2, M_{k+1})$ are near-perfect pairs with $\omega(n) = 2$.
+  \item No multiple of a perfect number is deficient-perfect: if $\sigma(P) = 2P$ and $P \mid n$, then $\sigma(n) + d = 2n$ has no solution with $d \ge 1$.
+\end{enumerate}
+\end{proposition}
+
+Our main theorem shows that unbounded $2$-adic valuation $v_2(n) \to \infty$ is the \emph{unique} mechanism capable of producing infinitely many deficient-perfect or near-perfect numbers at bounded prime-factor count $\omega(n) \le k$:
+
+\begin{theorem}[Bounded-$(k, v_2)$ finiteness dichotomy]\label{thm:main}
+Define the elementary recurrence $W_{m, M}(0, t) = t$ and
+\[
+  W_{m, M}(r + 1, t) = W_{m, M}\bigl(r,\, \max(t,\, m M t^m)\bigr).
+\]
+For all integers $k, A \ge 0$, set
+\[
+  B(k, A) := 2^A \Bigl(\max\bigl(1,\, W_{2k+1,\, 2^{A+1}}(2k + 1, 1)\bigr)\Bigr)^k.
+\]
+Then every deficient-perfect pair $(n, d)$ and every near-perfect pair $(n, d)$ satisfying $\omega(n) \le k$ and $v_2(n) \le A$ obeys $d < n \le B(k, A)$. Consequently, for every $(k, A) \in \mathbb{N}^2$, the sets
+\begin{align*}
+  \mathcal{D}(k, A) &= \{(n, d) \in \mathbb{N}^2 : \omega(n) \le k,\; v_2(n) \le A,\; d \mid n,\; 1 \le d < n,\; \sigma(n) + d = 2n\}, \\
+  \mathcal{N}(k, A) &= \{(n, d) \in \mathbb{N}^2 : \omega(n) \le k,\; v_2(n) \le A,\; d \mid n,\; 1 \le d < n,\; \sigma(n) = 2n + d\}
+\end{align*}
+are finite.
+\end{theorem}
+
+For odd inputs ($A = 0$), adjoining a single formal linear slot to the BYU positive-spoof product bound~\cite{BYU2022} yields a cleaner closed-form tower bound on the deficient-perfect side:
+
+\begin{theorem}[Explicit odd deficient-perfect bound; Conjecture~3.2 of~\cite{DuttaSaikia2020}]\label{thm:odd-explicit}
+Let $n$ be odd with $\omega(n) \le k$.
+\begin{enumerate}
+  \item If $x > 1$ is odd and $\sigma(n)(x + 1) = 2nx$, then
+  \[
+    4(k + 1)\, x^3 \Bigl(\prod_{p \mid n} p\Bigr)^2 n \;\le\; \bigl(4(k + 1)\bigr)^{4^{\omega(n) + 1}}.
+  \]
+  \item Every odd deficient-perfect pair $(n, d)$ with $\omega(n) \le k$ satisfies $d < n \le (4(k + 1))^{4^{k+1}}$. Allowing $d = n$ adds only $(n, d) = (1, 1)$.
+\end{enumerate}
+\end{theorem}
+
+\section{Proof of Proposition~\ref{prop:even-families}}
+
+\begin{proof}[Proof of Proposition~\ref{prop:even-families}]
+For (1), if $a \ge 1$, then $1 < 2^a$ is a proper divisor and $\sigma(2^a) + 1 = (2^{a+1} - 1) + 1 = 2 \cdot 2^a$.
+
+For (2), let $q = 3 \cdot 2^a - 1$ be prime ($a \ge 1$). Then $q \ge 5$ is odd, so $\gcd(2^a, q) = 1$, $2^a < 2^a q$ is a proper divisor, and
+\[
+  \sigma(2^a q) + 2^a = (2^{a+1} - 1)(q + 1) + 2^a = (2^{a+1} - 1)(3 \cdot 2^a) + 2^a = 6 \cdot 4^a - 2 \cdot 2^a = 2(2^a q).
+\]
+
+For (3), let $q = M_{k+1} = 2^{k+1} - 1$ be prime ($k \ge 1$). Since $q \ge 3$ is odd, $\gcd(2^{k+1}, q) = \gcd(2^k, q^2) = 1$, and $q + 1 = 2^{k+1}$. First,
+\[
+  \sigma(2^{k+1} q) = (2^{k+2} - 1)(q + 1) = (2q + 1) \cdot 2^{k+1} = 2(2^{k+1} q) + 2^{k+1}.
+\]
+Second, since $2^{k+1} - 1 = q$ and $1 + q + q^2 = q(q + 1) + 1$,
+\[
+  \sigma(2^k q^2) = (2^{k+1} - 1)(1 + q + q^2) = q\bigl(2^{k+1} q + 1\bigr) = 2(2^k q^2) + q.
+\]
+
+For (4), if $\sigma(P) = 2P$ and $P \mid n$ with $n \ge 1$, monotonicity of the abundancy index $\sigma(m)/m$ under divisibility yields $\sigma(n)/n \ge \sigma(P)/P = 2$, so $\sigma(n) \ge 2n$ and $\sigma(n) + d > 2n$ for every $d \ge 1$.
+\end{proof}
+
+\section{The Weighted Prefix Product-Gap Engine}
+
+Our unified proof of Theorem~\ref{thm:main} generalizes Dickson's 1913 finiteness method~\cite{Dickson1913} (in the parity-prefix formulation of~\cite{BYU2022,Dittmer2014}) to weighted products $U \prod_{i \in S} a_i = V \prod_{i \in S} b_i$.
+
+\begin{lemma}[Minimum-label step]\label{lem:small-label}
+Let $R$ be a finite index set, and suppose functions $\ell, a, b : R \to \mathbb{N}$ satisfy $\ell_i > 1$ and $\{a_i, b_i\} = \{\ell_i, \ell_i - 1\}$ for each $i \in R$. If $A_0, B_0 \in \mathbb{N}$ satisfy $A_0 \ne B_0$ and
+\[
+  A_0 \prod_{i \in R} a_i = B_0 \prod_{i \in R} b_i,
+\]
+then there exists $i \in R$ such that $\ell_i \le |R| \max(A_0, B_0)$.
+\end{lemma}
+
+\begin{proof}
+Because $A_0 \prod_{i \in R} a_i = B_0 \prod_{i \in R} b_i$ and $A_0 \ne B_0$, we have $R \ne \emptyset$ and $\max(A_0, B_0) \ge 1$. By symmetry assume $A_0 < B_0$, so $A_0 + 1 \le B_0$. Let $L = \min_{i \in R} \ell_i > 1$, and put $R_+ = \{i \in R : a_i = \ell_i,\, b_i = \ell_i - 1\}$ of cardinality $r := |R_+| \le |R|$. Because $a_i = \ell_i - 1 < \ell_i = b_i$ for $i \in R \setminus R_+$, cancelling or bounding those factors by $1$ gives
+\[
+  (A_0 + 1) \prod_{i \in R_+} (\ell_i - 1) \;\le\; B_0 \prod_{i \in R_+} (\ell_i - 1) \;\le\; A_0 \prod_{i \in R_+} \ell_i.
+\]
+In particular $r \ge 1$. Since $\ell_i \ge L > 1$, we have $\ell_i(L - 1) \le L(\ell_i - 1)$ for each $i \in R_+$; multiplying over $R_+$ yields $(L - 1)^r \prod_{i \in R_+} \ell_i \le L^r \prod_{i \in R_+} (\ell_i - 1)$, so
+\[
+  (A_0 + 1)(L - 1)^r \;\le\; A_0 L^r.
+\]
+If $L \le r$, then $L \le |R| \le |R| B_0$. Otherwise $L > r \ge 1$, and Bernoulli's inequality $(1 - 1/L)^r \ge 1 - r/L$ multiplies through by $L^r$ to give $(L - 1)^r \ge L^{r - 1}(L - r)$. Substituting into $(A_0 + 1)(L - 1)^r \le A_0 L^r$ and dividing by $L^{r - 1} > 0$ yields $(A_0 + 1)(L - r) \le A_0 L$, whence $L \le r(A_0 + 1) \le |R| B_0 = |R| \max(A_0, B_0)$.
+\end{proof}
+
+\begin{proposition}[Weighted prefix-gap bound]\label{prop:weighted-gap}
+Let $S$ be a finite set with $|S| \le m$, and let $\ell, a, b : S \to \mathbb{N}$ satisfy $\ell_i > 1$ and $\{a_i, b_i\} = \{\ell_i, \ell_i - 1\}$ for all $i \in S$. Suppose $U, V \in \mathbb{N}$ satisfy $U \prod_{i \in S} a_i = V \prod_{i \in S} b_i$, and for every threshold $T \in \mathbb{N}$ such that $S_{>T} := \{i \in S : \ell_i > T\} \ne \emptyset$, the prefix $S_{\le T} := \{i \in S : \ell_i \le T\}$ satisfies
+\[
+  U \prod_{i \in S_{\le T}} a_i \;\ne\; V \prod_{i \in S_{\le T}} b_i.
+\]
+Then $\ell_i \le W_{m, \max(U, V)}(m, 1)$ for every $i \in S$.
+\end{proposition}
+
+\begin{proof}
+Put $M = \max(U, V)$. We prove by induction on $r \ge 0$ that for any $t \ge 1$ with $|S_{>t}| \le r$, every $i \in S$ satisfies $\ell_i \le W_{m, M}(r, t)$. For $r = 0$, $S_{>t} = \emptyset$ and the claim is immediate. For the inductive step from $r$ to $r + 1$, put $t' = \max(t, m M t^m)$. If $S_{>t} = \emptyset$, then $S_{>t'} = \emptyset$ and we conclude by the $r$-case. Otherwise $S_{>t} \ne \emptyset$, so $A_0 := U \prod_{i \in S_{\le t}} a_i \ne V \prod_{i \in S_{\le t}} b_i =: B_0$, while $A_0 \prod_{i \in S_{>t}} a_i = B_0 \prod_{i \in S_{>t}} b_i$. Since $a_i, b_i \le \ell_i \le t$ on $S_{\le t}$ and $|S_{\le t}| \le m$, we have $\max(A_0, B_0) \le M t^m$. Lemma~\ref{lem:small-label} applied to $R = S_{>t}$ ($|R| \le m$) produces $i_0 \in S_{>t}$ with $\ell_{i_0} \le m \max(A_0, B_0) \le m M t^m \le t'$. Hence $i_0 \notin S_{>t'}$, giving $|S_{>t'}| \le |S_{>t}| - 1 \le r$, and the induction hypothesis at $t'$ finishes the proof. Taking $r = m$ and $t = 1$ yields the proposition.
+\end{proof}
+
+\section{Proofs of Theorems~\ref{thm:main} and~\ref{thm:odd-explicit}}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Let $(n, d)$ be either a deficient-perfect pair ($\sigma(n) = 2n - d$) or a near-perfect pair ($\sigma(n) = 2n + d$) in the sense of Definition~\ref{def:classes}, with $\omega(n) \le k$ and $a := v_2(n) \le A$. Since $d$ is a proper divisor of $n$, write $n = d t$ with $t \ge 2$, and decompose $n = 2^a m$ with $m \ge 1$ odd and $\omega(m) \le \omega(n) \le k$. Because $\gcd(2^a, m) = 1$, $\sigma(n) = (2^{a+1} - 1)\sigma(m)$. Multiplying $\sigma(n) = 2n \mp d$ by $2t$ and using $2dt = 2n = 2^{a+1} m$ gives
+\begin{equation}\label{eq:odd-part-balance}
+  (2^{a+1} - 1)\,\sigma(m)\,(2t) \;=\; 2^{a+1}\, m\, x,
+\end{equation}
+where $x := 2t - 1$ in the deficient-perfect case and $x := 2t + 1$ in the near-perfect case. In both cases $x \ge 3$ is odd, $\ell_\star := \max(2t, x) > 1$, and $\{2t, x\} = \{\ell_\star, \ell_\star - 1\}$.
+
+Let $P$ be the set of prime factors of $m$ ($|P| \le k$). For each $p \in P$, set $e_p = v_p(m) \ge 1$, $f_p = p^{e_p}$, $g_p = \sigma(p^{e_p})$, and $L_p = p^{e_p + 1}$, so $L_p - 1 = (p - 1) g_p$ and $L_p = p f_p$. Index $S = \{\star\} \sqcup P_{\mathrm{in}} \sqcup P_{\mathrm{out}}$ ($|S| = 2|P| + 1 \le 2k + 1$) with labels and factors:
+\begin{itemize}
+  \item at $\star$: $\ell_\star = \max(2t, x)$, $a_\star = 2t$, $b_\star = x$;
+  \item at $p \in P_{\mathrm{in}}$: $\ell = p$, $a = p$, $b = p - 1$;
+  \item at $p \in P_{\mathrm{out}}$: $\ell = L_p$, $a = L_p - 1$, $b = L_p$.
+\end{itemize}
+Putting $U = 2^{a+1} - 1$ and $V = 2^{a+1}$, multiplying~\eqref{eq:odd-part-balance} by $\prod_{p \in P} p(p - 1)$ yields $U \prod_{i \in S} a_i = V \prod_{i \in S} b_i$.
+
+We verify the prefix-gap condition of Proposition~\ref{prop:weighted-gap}. Suppose for contradiction that for some $T \in \mathbb{N}$ with $S_{>T} \ne \emptyset$, the prefix $S_{\le T}$ satisfies $U \prod_{S_{\le T}} a_i = V \prod_{S_{\le T}} b_i$. Cancelling this nonzero product from $U \prod_S a_i = V \prod_S b_i$ gives $\prod_{S_{>T}} a_i = \prod_{S_{>T}} b_i$. Let $P_1 = \{p \in P : p > T\}$ and $P_2 = \{p \in P : L_p > T\}$; since $p < L_p$, we have $P_1 \subseteq P_2$. Put $O = P_2 \setminus P_1$. On $P_1$, $(L_p - 1) p = p(p - 1) g_p$ and $L_p(p - 1) = p(p - 1) f_p$; cancelling $\prod_{p \in P_1} p(p - 1) > 0$ from $\prod_{S_{>T}} a_i = \prod_{S_{>T}} b_i$ yields
+\begin{equation}\label{eq:tail-cancel}
+  \alpha \Bigl(\prod_{p \in O} (L_p - 1)\Bigr) \Bigl(\prod_{p \in P_1} g_p\Bigr) \;=\; \beta \Bigl(\prod_{p \in O} L_p\Bigr) \Bigl(\prod_{p \in P_1} f_p\Bigr),
+\end{equation}
+where $(\alpha, \beta) = (2t, x)$ if $\ell_\star > T$ and $(1, 1)$ otherwise. Because every $p \in P$ is odd, the right-hand side of~\eqref{eq:tail-cancel} is odd (since $\beta \in \{1, x\}$, $L_p$, and $f_p$ are all odd).
+\begin{itemize}
+  \item If $\ell_\star > T$, then $\alpha = 2t$ is even, contradicting oddness of the right-hand side.
+  \item If $\ell_\star \le T$ and $O \ne \emptyset$, choose $p \in O$; then $L_p - 1$ is even, again making the left-hand side of~\eqref{eq:tail-cancel} even and the right-hand side odd.
+  \item If $\ell_\star \le T$ and $O = \emptyset$, then $S_{>T} \ne \emptyset$ forces $P_1 \ne \emptyset$;~\eqref{eq:tail-cancel} becomes $\prod_{p \in P_1} \sigma(p^{e_p}) = \prod_{p \in P_1} p^{e_p}$, impossible since $\sigma(p^{e_p}) > p^{e_p}$ for each $p \in P_1$.
+\end{itemize}
+
+Hence Proposition~\ref{prop:weighted-gap} applies with $|S| \le 2k + 1$ and $\max(U, V) = 2^{a+1} \le 2^{A+1}$: by monotonicity of $W$ in $M$, every $p \in P$ satisfies
+\[
+  p^{e_p} < L_p \le W_{2k+1, 2^{a+1}}(2k + 1, 1) \le W_{2k+1, 2^{A+1}}(2k + 1, 1).
+\]
+Multiplying over the $|P| \le k$ odd prime-power components of $m$ and multiplying by $2^a \le 2^A$ gives $d < n = 2^a m \le B(k, A)$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:odd-explicit}]
+For odd $n$ and odd $x > 1$ with $\sigma(n)(x + 1) = 2nx$, adjoin the single formal component $(x, 1)$ to the $\omega(n)$ prime-power components $(p, v_p(n))$ of $n$ on the disjoint index set $P \sqcup \{\star\}$ of size $r := \omega(n) + 1 \le k + 1$. All bases are odd integers $> 1$, and the formal divisor sum equals $\sigma(n)(x + 1) = 2nx$. Applying the positive odd spoof label-product inequality~\cite[Prop.~4.2, Cor.~4.3]{BYU2022} (formalized in \texttt{OddPerfect/SpoofFiniteness.lean}) yields
+\[
+  4(k + 1) \prod_{i \in P \sqcup \{\star\}} b_i^{e_i + 2} \;\le\; \bigl(4(k + 1)\bigr)^{4^{\omega(n) + 1}}.
+\]
+Expanding $\prod b_i^{e_i + 2} = x^3 (\prod_{p \mid n} p)^2 n$ proves (1). For (2), any odd deficient-perfect pair $(n, d)$ gives $n = dt$ with $t > 1$ odd and $x = 2t - 1 > 1$ odd satisfying $\sigma(n)(x + 1) = 2nx$, so $d < n \le 4(k + 1) x^3 (\prod_{p \mid n} p)^2 n \le (4(k + 1))^{4^{k+1}}$. Finally, if $d = n$, then $\sigma(n) + n = 2n$ forces $\sigma(n) = n$, hence $n = 1$.
+\end{proof}
+
+\section{Lean 4 Formalization}
+
+All declarations in Proposition~\ref{prop:even-families}, Lemma~\ref{lem:small-label}, Proposition~\ref{prop:weighted-gap}, Theorem~\ref{thm:main}, and Theorem~\ref{thm:odd-explicit} have been formalized and kernel-audited in the standalone Lean~4 (\texttt{v4.36.0}) + Mathlib package \texttt{parity-finiteness-breakout}~\cite{HamiltonParity}, importing $28$ structural modules ($158$ named theorems across $446$ audited declarations) and zero brute-force certificate files. Running \texttt{lake build \&\& lake lean Audit.lean} verifies that every theorem depends solely on \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.
+
+\begin{thebibliography}{99}
+
+\bibitem{Adajar2019}
+C.~F. Adajar, \emph{On near-perfect and deficient-perfect numbers}, ZetaValue 2019 conference abstract (based on the author's July 2016 M.S.\ thesis, Univ.\ of the Philippines Diliman), 2019.
+
+\bibitem{BYU2022}
+BYU Computational Number Theory Group (N.~Andersen, S.~Durham, M.~J. Griffin, J.~Hales, P.~Jenkins, R.~Keck, H.~Ko, G.~Molnar, E.~Moss, P.~P. Nielsen, K.~Niendorf, V.~Tombs, M.~Warnick, and D.~Wu), \emph{Odd, spoof perfect factorizations}, J.\ Number Theory \textbf{234} (2022), 31--47; arXiv:2006.10697.
+
+\bibitem{Dickson1913}
+L.~E. Dickson, \emph{Finiteness of the odd perfect and primitive abundant numbers with $n$ distinct prime factors}, Amer.\ J.\ Math.\ \textbf{35} (1913), 413--422.
+
+\bibitem{Dittmer2014}
+S.~J. Dittmer, \emph{Spoof odd perfect numbers}, Math.\ Comp.\ \textbf{83} (2014), 2575--2582.
+
+\bibitem{DuttaSaikia2020}
+P.~Dutta and M.~P. Saikia, \emph{On deficient perfect numbers with four distinct prime factors}, Asian-Eur.\ J.\ Math.\ \textbf{13} (2020), 2050126; arXiv:1906.09947.
+
+\bibitem{Gumaru2018}
+R.~Gumaru, K.~Casuco, and J.~Bernal, \emph{On deficient-perfect numbers}, Pure Appl.\ Math.\ J.\ \textbf{7}(5) (2018), 70--74.
+
+\bibitem{HamiltonParity}
+R.~Hamilton, \emph{odd\_perfect\_number} (Lean~4 formalization, directory \texttt{parity-finiteness-breakout}), \url{https://github.com/Rob1Ham/odd_perfect_number}.
+
+\bibitem{PollackShevelev2012}
+P.~Pollack and V.~Shevelev, \emph{On perfect and near-perfect numbers}, J.\ Number Theory \textbf{132} (2012), 3037--3046.
+
+\bibitem{SunHe2019}
+C.-F. Sun and Z.~He, \emph{On odd deficient-perfect numbers with four distinct prime divisors}, arXiv:1908.04932, 2019.
+
+\bibitem{TangFeng2014}
+M.~Tang and M.~Feng, \emph{On deficient-perfect numbers}, Bull.\ Aust.\ Math.\ Soc.\ \textbf{90} (2014), 186--194.
+
+\bibitem{TangMaFeng2016}
+M.~Tang, X.~Ma, and M.~Feng, \emph{On near-perfect numbers}, Colloq.\ Math.\ \textbf{144} (2016), 157--188.
+
+\bibitem{YangTogbe2023}
+S.~Yang and A.~Togb\'e, \emph{Odd deficient-perfect numbers with four distinct prime factors}, Integers \textbf{23} (2023), \#A5.
+
+\end{thebibliography}
+
+\end{document}
