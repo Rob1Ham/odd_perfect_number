@@ -326,3 +326,44 @@ Five newly proved structural modules (`OddPerfect/PadicPadeApproximantObstructio
 - **Priority Wave O — Acquaah–Konyagin `(q + 1) / 2 < i_q` & Canonical Coprime `m = gcd(m, L) * gcd(m, R)` Split, Fifth-Order `47321 / 8119` Padé `(10 ^ 1000) ^ 6` Contraction, `PellMatiyasevic` & First-Block Legendre/Jacobi Reciprocity (`legendreSym q l = 1`, `jacobiSym q v = 1`), & `S₅₁_rep` Source Decomposition (`|Q₁₃| + 2|Q₂₃| ≤ 2|S₅₁_col| + 1`) (`OddPerfect/FactorizationLCMSplitCoprimeBalance.lean`, `OddPerfect/PadicPade8119HigherContraction.lean`, `OddPerfect/PellMatiyasevicAndFirstBlockReciprocity.lean`, `OddPerfect/SixthPowerFreeRepSourceDecomposition.lean`, `OddPerfect/GlobalTier2WaveOObstruction.lean`)**: Audited (`5/5 PASS`) and integrated (`910` imported modules, `10,063` named theorems, `60,751` project declarations, `133` Mathlib modules (`+2` via `Mathlib.NumberTheory.PellMatiyasevic` and `QuadraticReciprocity`), `0` custom axioms). Proves unconditional **`q ^ 2 < 3 * m ^ 2`**, **`(q + 1) / 2 < componentIndex N q`**, **`h₀ + 2 ≤ u₀`** (`3 ≤ u₀`, strictly separating genuine `N = q * m ^ 2` from Descartes's spoof `198585576189` where `A = 11011 > 819 = I` and `h₀ = 11 > 3 = u₀`), and canonical coprime `m = m_L * m_R` (`2 * m_L ≤ q + 1`, `3 ≤ m_R < R`, `σ(m_L ^ 2) * σ(m_R ^ 2) = q * I`); proves `8119 ^ (u - 5) * (p * k_pade.natAbs) < 8119 * 47321 ^ (u - 5)`, **`(10 ^ 1000) ^ 6 * p * k_pade.natAbs < 6 ^ u`**, and sharpened repunit slopes `10l ≤ 11u + 10` (`r ≥ 5`), `32l ≤ 29u + 35` (`r ≥ 7`), `19l ≤ 14u + 20` (`r ≥ 11`), `13l ≤ 9u + 13` (`r = 13`); connects `Pell.xn`/`Pell.yn` (`a = 3`) with `silverUnit ^ (2 * n)` and proves **`¬ d ∣ geometricBlock q d`**, **`l ≠ d`**, **`legendreSym q l = 1`**, and **`jacobiSym q v = 1`** on `σ(m ^ 2) / q ^ a = l * t ^ 2` (`a > 1`); and decomposes `S₅₁_rep = S₅₁_rep_q ∪ S₅₁_rep_src` to cancel `2 * |S₅₁_rep|` completely and prove **`|Q₁₃| + 2 * |Q₂₃| ≤ 2 * |S₅₁_col| + 1`**, `146 + |Q₂₃| ≤ 2 * |S₅₁_col|`, and `438 + 5 * |Q₂₃| ≤ 6 * |S₅₁_col|` (`Q₂₃.Nonempty → 74 ≤ |S₅₁_col|`).
 - **Priority Wave P — `m_L = 1 ↔ L = 1` & Unique `q`-Source `r₀` Split Dichotomy across `m_L * m_R`, `LucasLehmer` / Mersenne Parity Bridge (`100%` Curated Mathlib Domain Coverage), Möbius Inversion & Cyclotomic `expand` Laws, & `Q₁₃_comp_free` / `110 ≤ |S₅₁_col|` Pinch (`OddPerfect/LinearEulerLCMGcdTothObstruction.lean`, `OddPerfect/LucasLehmerMersenneParityBridge.lean`, `OddPerfect/MoebiusInversionAndCyclotomicExpandLaws.lean`, `OddPerfect/SixthPowerFreeQ13CompCollisionPinch.lean`, `OddPerfect/GlobalTier2WavePObstruction.lean`)**: Audited (`5/5 PASS`) and integrated (`915` imported modules, `10,073` named theorems, `60,814` project declarations, `136` Mathlib modules (`+3` via `Mathlib.NumberTheory.LucasLehmer` — achieving `100%` nonzero coverage across all curated 7-domain Mathlib modules — plus `ArithmeticFunction.Moebius` and `Polynomial.Cyclotomic.Expand`), `32.8%` structural share, `0` custom axioms). Proves `m_L = 1 ↔ L = 1` and the exact `r₀` split dichotomy across `m = m_L * m_R` (`r₀ ∣ m_L → 2 ≤ e₀ ∧ r₀ ^ 4 ∣ N ∧ 2 * r₀ ∣ q + 1 ∧ σ(m_R ^ 2) ∣ I` vs. `r₀ ∣ m_R → σ(m_L ^ 2) ∣ I`, with sixth-power-free `53 ≤ m_R`, `2863 ≤ σ(m_R ^ 2)`, `61 ≤ r₀`); bridges `LucasLehmerTest p ↔ (mersenne p).Prime` (`3 ≤ p`) with even perfect/near-perfect families and proves `mersenne p % 4 = 3` (`2 ≤ p`) so any Mersenne prime dividing `N` satisfies `Even (N.factorization (mersenne p)) ∧ (mersenne p) ^ 2 ∣ N`; proves `∑ μ(d) ^ 2 = 2 ^ ω(N)`, `∑ μ(d) * σ(N / d) = N`, and `Φ_{np}` integer evaluation & `ZMod p` power laws; and partitions `Q₁₃_comp = Q₁₃_comp_free ∪ Q₁₃_comp_rep` to prove **`|Q₁₃| + 2 * |Q₁₃_comp_free| + 2 * |Q₂₃| ≤ 2 * |S₅₁_col| + 1`**, `219 ≤ 2 * |S₅₁_col| + |S₅₁_rep_src|`, and `S₅₁_rep_src = ∅ → 110 ≤ |S₅₁_col|`.
 - **Priority Wave Q — Noncoprime `g = g_L * g_R` Half-Successor Quotient Duality (`g_L = 1 → r₀ ∣ m_R`, `61 ≤ g_L`), Carmichael LCM & Totient `2 ^ (ω + 1)` Obstructions, `multiplicity` Conservation & Legendre Factorial Bound (`3 * 2 ^ (2 * ω - s₂(ω)) < rad(N)`), & Combined First/Second-Block `ℤ√2` Sieve (`OddPerfect/LinearEulerNoncoprimeHalfSuccQuotientDuality.lean`, `OddPerfect/CarmichaelExponentAndTotientTwoPowObstruction.lean`, `OddPerfect/PadicValuationConservationAndLegendreFactorial.lean`, `OddPerfect/ZsqrtTwoCombinedFirstSecondBlockSieve.lean`, `OddPerfect/GlobalTier2WaveQObstruction.lean`)**: Audited (`5/5 PASS`) and integrated (`920` imported modules, `10,083` named theorems, `60,946` project declarations, `136` Mathlib modules, `33.2%` structural share (`480` structural modules, `4,929` structural declarations), `0` custom axioms). Refines `g = gcd((q + 1) / 2, i_q) = g_L * g_R` with `m_L = g_L * h₀` and `m_R = g_R * u₀`, proving `r₀ ∣ m_L → g_R * W_L < g_L ∧ 3 ≤ g_L`, unconditional **`g_L = 1 → r₀ ∣ m_R`**, and sixth-power-free **`r₀ ∣ g_L * h₀ → 61 ≤ g_L ∧ 3783 ≤ σ((g_L * h₀) ^ 2)`**; proves `4 * q ^ (a - 1) * m ∣ carmichael N` (`16 * N ≤ q * (carmichael N) ^ 2`, `1 < a → 16 * N < (carmichael N) ^ 2`) and `2 ^ (ω + 1) * q ^ (a - 1) * m ∣ N.totient` (`2 ^ 150 ∣ N.totient` on sixth-power-free `N`); proves `multiplicity` conservation across `p = 2` and odd primes plus Legendre's base-`2` factorial bound **`3 * 2 ^ (2 * ω - (Nat.digits 2 ω).sum) < rad(N)`**; and proves `geometricBlock q d % 8 = 1`, `8 * d ∣ l - 1`, `Coprime (geometricBlock q d) (2 * d * w * z)`, `¬ 3 ∣ N → 1553 ≤ l ∧ 293 ≤ r`, and `¬ 3 ∣ N ∧ ¬ 5 ∣ N → 9817 ≤ l ∧ (d = 241 → 26993 ≤ l) ∧ 1447 ≤ r`.
+
+
+## Orchestration redesign and audited checkpoint (27 Nov 2026, tag `audit-20261127`)
+
+**Audit.** `lake build OddPerfect` (8,822 jobs) and `lake lean research/Audit.lean` passed: 10,083 named theorems and 60,946 project declarations, all depending only on `[propext, Classical.choice, Quot.sound]`. The working tree, including Waves C–Q, which had been untracked, was committed (`7c4fc76`) and tagged `audit-20261127`.
+
+**Review findings.** See the external review summarized in [NO_GO.md](NO_GO.md):
+- the finite-residual bridges B1–B3 imply finitely many OPNs, and their remainder cannot be checked by computation;
+- residue sieves on `q^d + 1 = 2y²` cannot finish, because (1, 1) survives every modulus;
+- the floor-raising series have no ceilings;
+- the sixth-power-free count polyhedron is unbounded.
+
+**Changes.**
+- New operating rules in [AGENTS.md](../AGENTS.md) §0–§2: calibrated ambition, closure rule, ideas before Lean, honesty rule, at most 3 active nodes, commit discipline, single source of truth.
+- New files:
+  - [BRANCH_MAP.md](BRANCH_MAP.md): case tree; machine-readable.
+  - [GATES.md](GATES.md): G1 spoof, G2 count-LP, G3 local solvability, G4 floor/ceiling.
+  - [NO_GO.md](NO_GO.md), [FLOOR_CEILING.md](FLOOR_CEILING.md), [IDEAS.md](IDEAS.md).
+  - [CLAIMS.md](CLAIMS.md), generated from [claims_registry.json](claims_registry.json).
+  - [count_constraints.json](count_constraints.json).
+- New tools:
+  - `research/tools/count_lp.py`: exact rational simplex; reports recession rays.
+  - `research/tools/claims.py`: validates Lean names and audit reachability.
+  - `research/tools/evaluate_progress.py`: new section 0 progress metrics; `--strict` untracked-import check; volume metrics demoted to "library health".
+- Rewritten: `.agents/skills/carbon-reevaluation-loop/SKILL.md` (six-phase loop with gates and pivot rule). New agents `skeptic` and `literature-checker`. Utility, generic-truth and claim-hygiene checks added to `neon-auditor`; closure-argument and naming rules to `neon-prover`; a critical-path rule to `neon-harvester`; a relevance rule to `neon-mathlib-scout`.
+- Shrunk: ROADMAP, WHITEBOARD, RESOLUTION_HANDOFF, OVERNIGHT, RESEARCH_GOAL, README. Previous versions are in [archive/](archive/).
+
+**Branch impact.** Statuses recorded for the first time:
+- CLOSED: `IQ_SQUARE`, `IQ_PRIME_POWER_NONEULER`, `RESTRAINED_3FREE`.
+- CONDITIONAL on `ExceptionalFermatObstruction`: `IQ_PRIME_SQUARE`, `IQ_PRIME_POWER_ODD`.
+- Active: `A1_SPF`, `A1_G1`, `IQ_PRIME_POWER_EVEN`.
+
+**Count-LP baseline** (`A1_SPF`, 21 constraints): UNBOUNDED, ray ω=1, Ω=28/9, S₅₁=S₅₁_col=4/9, Q₁₃=2/9, Q₂₃=1/3, E=10/9, M=1. The 27 Nov assessment family also survives.
+
+### Ledger entry format from now on
+
+Each round appends:
+- **Audit**: build and audit output, plus the commit/tag.
+- **Branch impact**: which BRANCH_MAP nodes or FLOOR_CEILING rows changed, or "none".
+- **Gate record**: IDEAS entries processed, with G1–G4 and Skeptic outcomes, including KILLED ideas.
+- **Classification**: each new headline theorem as REPLAY / CANDIDATE-NEW / REDUCTION / LIBRARY.

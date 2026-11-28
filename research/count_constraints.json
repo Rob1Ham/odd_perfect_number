@@ -1,0 +1,52 @@
+{
+  "_doc": "Linear count constraints proven (or transcribed) per BRANCH_MAP node. Consumed by research/tools/count_lp.py (gate G2). 'verified': true means the inequality was checked against the cited Lean statement text; false means transcribed from research notes and must be re-checked before relying on it. All variables are nonnegative integers (relaxed to rationals in the LP).",
+  "branches": {
+    "A1_SPF": {
+      "description": "Sixth-power-free odd perfect N (Euler exponent 1, every other exponent 2 or 4, least prime >= 53).",
+      "variables": {
+        "omega": "N.primeFactors.card",
+        "Omega": "cardFactors N",
+        "S50": "squareSources N filtered (% 5 != 1)",
+        "S51": "squareSources N filtered (% 5 = 1)",
+        "S51col": "S51 targets counted in collisionExcess (Wave K split)",
+        "S51rep": "S51 remainder (Wave K split)",
+        "Q13": "oneModThreeLargeSources N q",
+        "Q23": "twoModThreeLargeSources N q",
+        "E": "collisionExcess N q",
+        "M": "localRepeatExcess N q"
+      },
+      "objective": "omega",
+      "constraints": [
+        {"expr": "omega = 1 + S51 + S50 + Q13 + Q23", "source": "sixth_power_free_omega_and_total_identities", "verified": true},
+        {"expr": "Omega = 1 + 2*S50 + 2*S51 + 4*Q13 + 4*Q23", "source": "exponents in {1,2,4}: sixth_power_free_euler_exponent_one + Euler form", "verified": true},
+        {"expr": "M + E = S50 + S51 + 3*Q13 + 3*Q23", "source": "sixth_power_free_excess_and_drop_partition", "verified": true},
+        {"expr": "S50 + 3*Q23 <= M", "source": "sixth_power_free_excess_and_drop_partition", "verified": true},
+        {"expr": "E >= 221", "source": "sixth_power_free_excess_and_drop_partition", "verified": true},
+        {"expr": "omega <= 2*E + 3", "source": "HalfRankCollisionObstruction (omega <= 2 * collisionExcess + 3)", "verified": true},
+        {"expr": "S51 >= 110", "source": "sixth_power_free_square_sources_quarter_density", "verified": true},
+        {"expr": "438 + Q23 <= 4*S51", "source": "sixth_power_free_square_sources_quarter_density", "verified": true},
+        {"expr": "S50 + S51 <= 2*Q13 + 1", "source": "sixth_power_free_square_sources_quarter_density", "verified": true},
+        {"expr": "omega <= 4*S51 + 5", "source": "sixth_power_free_square_sources_quarter_density", "verified": true},
+        {"expr": "2*Q23 <= 5*Q13 + 7", "source": "sixth_power_free_oneModThreeLarge_ge_80", "verified": true},
+        {"expr": "2*omega <= 11*Q13 + 11", "source": "sixth_power_free_oneModThreeLarge_ge_80", "verified": true},
+        {"expr": "Q13 >= 80", "source": "sixth_power_free_oneModThreeLarge_ge_80", "verified": true},
+        {"expr": "omega >= 443", "source": "bounds_of_prime_factors_ge_fifty_three", "verified": true},
+        {"expr": "Omega >= 1179", "source": "sixthPowerFree_total_prime_factor_count", "verified": true},
+        {"expr": "3*Q13 + 2*Q23 <= 4*S51 + 3", "source": "SixthPowerFreeBipartiteParity (Wave 8)", "verified": false},
+        {"expr": "S51 = S51col + S51rep", "source": "Wave K split definition", "verified": false},
+        {"expr": "E <= S51col + 3*Q13", "source": "Wave Q note (221 <= E <= |S51_col| + 3|Q13|)", "verified": false},
+        {"expr": "Q13 + 2*Q23 <= 2*S51col + 1", "source": "Wave O note (SixthPowerFreeRepSourceDecomposition)", "verified": false},
+        {"expr": "438 + 5*Q23 <= 6*S51col", "source": "Wave O note", "verified": false},
+        {"expr": "S50 + S51rep + Q23 <= S51col + 5*Q13 + 1", "source": "Wave K note (SixthPowerFreeQuarticCollisionPinch)", "verified": false}
+      ],
+      "known_families": [
+        {
+          "name": "assessment-2026-11-27",
+          "description": "Unbounded count assignment from research/ODD_PERFECT_ASSESSMENT_2026_11_27.md",
+          "assignment": {"omega": "2*t + 1", "Omega": "6*t + 1", "S50": "0", "S51": "t", "S51col": "t", "S51rep": "0", "Q13": "t", "Q23": "0", "E": "2*t", "M": "2*t"},
+          "t_min": 221
+        }
+      ]
+    }
+  }
+}

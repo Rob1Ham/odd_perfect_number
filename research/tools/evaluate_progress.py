@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
-"""Continuous Progress & Strategic Reevaluation Engine for OddPerfect.
+"""Progress dashboard for OddPerfect.
 
-Used by the Carbon Coordinator session on every reevaluation cycle to:
-1. Measure verified proof coverage reachable from `OddPerfect.lean` vs unintegrated WIP tracks.
-2. Check `.olean` compilation status and proof hygiene (`sorry`, `admit`, `axiom`, `unsafe`).
-3. Track the 8-axis mathematical candidate-set contraction frontier (Audited vs Staged vs Published).
-4. Compute structural-vs-certificate balance and Mathlib leverage metrics.
-5. Compare against prior snapshots (`research/state/progress_history.jsonl`) to detect real
-   progress vs stagnation/certificate bloat, and recommend the next Neon subagent cohort.
+Progress metrics (section 0 of the dashboard) are the only numbers that count as progress:
+  * BRANCH_MAP node statuses (CLOSED / CONDITIONAL / OPEN) and the active nodes' missing ingredients;
+  * count-LP status per branch (research/tools/count_lp.py, gate G2);
+  * IDEAS.md pipeline (proposed / gated / survived / killed);
+  * CLAIMS registry classes (REPLAY / CANDIDATE-NEW / REDUCTION / LIBRARY);
+  * repository integrity: modules imported by OddPerfect.lean that git does not track (must be 0).
+
+Library-health numbers (modules, declarations, certificate share, Mathlib imports) are still
+reported, but explicitly as *not progress*. Unintegrated modules are reported as a liability.
 
 Usage:
   python3 research/tools/evaluate_progress.py --dashboard research/PROGRESS_DASHBOARD.md --record
   python3 research/tools/evaluate_progress.py --json
+  python3 research/tools/evaluate_progress.py --strict   # exit 1 on hygiene or untracked imports
 """
 
 from __future__ import annotations
@@ -21,9 +24,10 @@ import json
 import pathlib
 import re
 import sqlite3
+import subprocess
 import sys
 import time
-from collections import deque
+from collections import Counter, deque
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PROJECT_DIR = REPO_ROOT / "OddPerfect"
@@ -106,10 +110,10 @@ FRONTIER_AXES = [
     },
     {
         "axis": "Prime-Power Component Index i = p^j",
-        "audited_claim": "j ≥ 30028 (≥ 36207 odd); 5 repunits |S₁|≥5; i,N > 10^17240 (> 10^300280 even)",
-        "audited_mod": "OddPerfect.PrimePowerHigherObstruction",
-        "audited_thm": "component_prime_power_index_exponent_ge_30028",
-        "staged_claim": "Unconditional elimination of i = p^(2u) via higher p-adic congruences",
+        "audited_claim": "Only at the Euler prime; even j: ≥ 13 repunit bases, 2u ≥ 1.3·10^16 (floor without ceiling, see FLOOR_CEILING.md)",
+        "audited_mod": "OddPerfect.TridecupleRepunitObstruction",
+        "audited_thm": "even_prime_power_component_size_gt_ten_pow_353234555955090756",
+        "staged_claim": "Ceiling u ≤ g(p) (IDEAS #3); floor-raising frozen (NO_GO §3)",
         "staged_mod": None,
         "published_best": "Conditional exclusion via Nagell–Ljunggren / Goormaghtigh",
     },
@@ -156,6 +160,92 @@ def olean_status(mod: str) -> str:
     if not op.exists():
         return "unbuilt"
     return "fresh" if op.stat().st_mtime >= lp.stat().st_mtime else "stale"
+
+
+RESEARCH_DIR = REPO_ROOT / "research"
+IDEA_STATUSES = ["PROPOSED", "GATED", "SURVIVES", "FORMALIZING", "DONE", "KILLED"]
+
+
+def _branch_nodes() -> list[dict]:
+    path = RESEARCH_DIR / "BRANCH_MAP.md"
+    if not path.exists():
+        return []
+    m = re.search(r"```json\s*(\{.*?\})\s*```", path.read_text(encoding="utf-8"), re.S)
+    return json.loads(m.group(1))["nodes"] if m else []
+
+
+def _idea_counts() -> dict[str, int]:
+    path = RESEARCH_DIR / "IDEAS.md"
+    if not path.exists():
+        return {}
+    counts: Counter = Counter()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) >= 4 and cells[0].isdigit() and cells[3] in IDEA_STATUSES:
+            counts[cells[3]] += 1
+    return dict(counts)
+
+
+def _claim_counts() -> dict[str, int]:
+    path = RESEARCH_DIR / "claims_registry.json"
+    if not path.exists():
+        return {}
+    return dict(Counter(c["class"] for c in json.loads(path.read_text(encoding="utf-8"))["claims"]))
+
+
+def _count_lp_status() -> dict[str, dict]:
+    data_path = RESEARCH_DIR / "count_constraints.json"
+    if not data_path.exists():
+        return {}
+    sys.path.insert(0, str(RESEARCH_DIR / "tools"))
+    try:
+        import count_lp  # type: ignore
+    finally:
+        sys.path.pop(0)
+    out = {}
+    data = json.loads(data_path.read_text(encoding="utf-8"))
+    for bid, br in data["branches"].items():
+        parsed = [count_lp.parse_constraint(c["expr"]) for c in br["constraints"]]
+        obj = br.get("objective", next(iter(br["variables"])))
+        res = count_lp.simplex_max(list(br["variables"]), parsed, {obj: count_lp.Fraction(1)})
+        entry = {"status": res.status, "objective": obj, "n_constraints": len(parsed)}
+        if res.ray:
+            entry["ray"] = {k: count_lp.fmt(v) for k, v in res.ray.items() if v != 0}
+        if res.value is not None:
+            entry["max"] = count_lp.fmt(res.value)
+        out[bid] = entry
+    return out
+
+
+def _untracked_imported(reached: set[str]) -> list[str]:
+    try:
+        res = subprocess.run(
+            ["git", "ls-files", "--others", "--exclude-standard", "--", "OddPerfect", "OddPerfect.lean"],
+            cwd=REPO_ROOT, capture_output=True, text=True, check=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return ["<git unavailable>"]
+    untracked = {
+        ".".join(pathlib.Path(p).with_suffix("").parts)
+        for p in res.stdout.splitlines() if p.endswith(".lean")
+    }
+    hits = sorted(m for m in untracked if m in reached)
+    if "OddPerfect" in untracked:
+        hits.insert(0, "OddPerfect (root file)")
+    return hits
+
+
+def research_frontier(reached: set[str]) -> dict:
+    nodes = _branch_nodes()
+    return {
+        "branch_status": dict(Counter(n["status"] for n in nodes if n.get("parent") is not None or n["id"] == "ROOT")),
+        "nodes": [{k: n.get(k) for k in ("id", "kind", "status", "active", "missing", "hypothesis")} for n in nodes],
+        "active_nodes": [n for n in nodes if n.get("active")],
+        "ideas": _idea_counts(),
+        "claims": _claim_counts(),
+        "count_lp": _count_lp_status(),
+        "untracked_imported": _untracked_imported(reached),
+    }
 
 
 def analyze_repo() -> dict:
@@ -283,20 +373,25 @@ def analyze_repo() -> dict:
             f"[BLOCKER] Eliminate {len(hygiene_violations)} proof-hygiene violation(s) (`sorry`/`axiom`/`admit`) before any integration."
         )
 
-    ready_tracks = [t for t in tracks if t["fresh_olean"] > 0 and t["unbuilt"] <= 10]
-    if ready_tracks:
-        names = ", ".join(f"{t['track']} ({t['fresh_olean']}/{t['total_modules']} built)" for t in ready_tracks[:3])
+    frontier = research_frontier(reached)
+    if frontier["untracked_imported"]:
         recommendations.append(
-            f"[HARVEST HIGH-ROI] Dispatch `neon-harvester` + `neon-auditor` to finish & audit nearly-built staged tracks: {names}."
+            f"[BLOCKER] {len(frontier['untracked_imported'])} module(s) reachable from `OddPerfect.lean` are not tracked by git. Commit and tag before the next round."
         )
-
-    if len(unreached) > len(reached):
+    for node in frontier["active_nodes"]:
         recommendations.append(
-            f"[INTEGRATION DEBT] Unintegrated modules ({len(unreached)}) exceed audited modules ({len(reached)}). Freeze new large certificate-tree generation until top staged theorems are wired into `OddPerfect.lean` and pass `research/Audit.lean`."
+            f"[ACTIVE {node['id']}] Missing ingredient: {node.get('missing', '(not stated — fill in BRANCH_MAP.md)')}"
         )
-
+    if frontier["ideas"].get("PROPOSED", 0) and not frontier["ideas"].get("GATED", 0):
+        recommendations.append(
+            "[GATES] Ideas are waiting in IDEAS.md without gate records. Run research/GATES.md G1–G4 and the Skeptic before dispatching any prover."
+        )
+    if unreached:
+        recommendations.append(
+            f"[LIABILITY] {len(unreached)} unintegrated modules. Harvest only those on an active branch's critical path; archive the rest."
+        )
     recommendations.append(
-        "See [the resolution handoff](RESOLUTION_HANDOFF.md) for the six-factor criterion, Tóth split, exceptional Fermat reduction and the global B3 cap."
+        "Policy: harvesting, floor-raising and count tightening are not progress unless they change BRANCH_MAP, FLOOR_CEILING or the count-LP status (see NO_GO.md)."
     )
 
     return {
@@ -314,6 +409,7 @@ def analyze_repo() -> dict:
             **kb_stats,
         },
         "hygiene_violations": hygiene_violations,
+        "research_frontier": frontier,
         "unintegrated_tracks": tracks,
         "frontier": frontier_report,
         "recommendations": recommendations,
@@ -343,26 +439,69 @@ def render_dashboard(report: dict, prev: dict | None) -> str:
         sign = "+" if diff > 0 else ""
         return f"`{val:,}` ({sign}{diff:,})"
 
+    rf = report.get("research_frontier", {})
     lines = [
-        "# Odd Perfect Number — Continuous Progress & Reevaluation Dashboard",
+        "# Odd Perfect Number — Progress Dashboard",
         "",
-        f"**Snapshot UTC**: `{report['timestamp']}` · **Hygiene (`sorry`/`axiom`)**: `{c['hygiene_violations']} violations`",
+        f"**Snapshot UTC**: `{report['timestamp']}` · **Hygiene (`sorry`/`axiom`)**: `{c['hygiene_violations']} violations`"
+        f" · **Untracked modules imported by `OddPerfect.lean`**: `{len(rf.get('untracked_imported', []))}`",
         "",
-        "## 1. Macro Health & Integration Metrics",
+        "Generated by `python3 research/tools/evaluate_progress.py`. Do not edit by hand.",
         "",
-        "Module totals come from the import graph. See the [research ledger](LEDGER.md) for the last completed Lean build and axiom audit.",
+        "## 0. Progress metrics",
+        "",
+        "Only this section measures progress toward `¬ existsOddPerfect`. See [BRANCH_MAP.md](BRANCH_MAP.md), [FLOOR_CEILING.md](FLOOR_CEILING.md), [IDEAS.md](IDEAS.md), [CLAIMS.md](CLAIMS.md) and [NO_GO.md](NO_GO.md).",
+        "",
+        "### Case-tree nodes",
+        "",
+        "| Node | Kind | Status | Active | Missing ingredient / hypothesis |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for n in rf.get("nodes", []):
+        extra = (n.get("missing") or n.get("hypothesis") or "").replace("|", r"\|")
+        lines.append(f"| `{n['id']}` | {n['kind']} | **{n['status']}** | {'yes' if n.get('active') else ''} | {extra} |")
+    bs = rf.get("branch_status", {})
+    lines += [
+        "",
+        f"Totals: CLOSED {bs.get('CLOSED', 0)} · CONDITIONAL {bs.get('CONDITIONAL', 0)} · OPEN {bs.get('OPEN', 0)}.",
+        "",
+        "### Count-LP gate (G2)",
+        "",
+        "| Branch | Constraints | Status | Recession ray / max |",
+        "| --- | ---: | --- | --- |",
+    ]
+    for bid, e in rf.get("count_lp", {}).items():
+        detail = ", ".join(f"{k}={v}" for k, v in e.get("ray", {}).items()) or (f"max {e['objective']} = {e['max']}" if "max" in e else "")
+        lines.append(f"| `{bid}` | {e['n_constraints']} | **{e['status'].upper()}** | {detail} |")
+    ideas = rf.get("ideas", {})
+    claims = rf.get("claims", {})
+    lines += [
+        "",
+        "### Idea pipeline and claims",
+        "",
+        "| Metric | Value |",
+        "| --- | --- |",
+        "| Ideas (" + " / ".join(IDEA_STATUSES) + ") | " + " / ".join(str(ideas.get(s, 0)) for s in IDEA_STATUSES) + " |",
+        "| Claims (REPLAY / CANDIDATE-NEW / REDUCTION / LIBRARY) | "
+        + " / ".join(str(claims.get(k, 0)) for k in ("REPLAY", "CANDIDATE-NEW", "REDUCTION", "LIBRARY")) + " |",
+        "",
+    ]
+    lines += [
+        "## 1. Library health (not progress)",
+        "",
+        "These numbers measure the size of the verified library. They do not measure closeness to the goal. See the [research ledger](LEDGER.md) for the last completed Lean build and axiom audit.",
         "",
         "| Metric | Current (Δ vs prior) | Interpretation |",
         "| --- | --- | --- |",
         f"| Modules reachable from `OddPerfect.lean` | {fmt_delta('audited_reached_modules')} | Covered by the public audit when it passes |",
-        f"| Unintegrated modules in `OddPerfect/` | {fmt_delta('unintegrated_modules')} | Staged / WIP debt awaiting harvest or pruning |",
-        f"| Structural modules vs Certificate chunks | `{c['structural_modules']:,}` / `{c['certificate_chunk_modules']:,}` (`{c['structural_share_pct']}%` structural) | Guards against brute-force tree bloat |",
-        f"| Structural declarations (`OddPerfect/`) | {fmt_delta('project_structural_declarations')} | Reusable lemmas & public theorems |",
-        f"| Distinct Mathlib modules imported (structural) | {fmt_delta('distinct_mathlib_imports_in_structural')} | Breadth of Mathlib theorem reuse |",
+        f"| Unintegrated modules in `OddPerfect/` | {fmt_delta('unintegrated_modules')} | **Liability**: harvest only when on an active node's critical path |",
+        f"| Structural modules vs Certificate chunks | `{c['structural_modules']:,}` / `{c['certificate_chunk_modules']:,}` (`{c['structural_share_pct']}%` structural) | Size only |",
+        f"| Structural declarations (`OddPerfect/`) | {fmt_delta('project_structural_declarations')} | Size only |",
+        f"| Distinct Mathlib modules imported (structural) | {fmt_delta('distinct_mathlib_imports_in_structural')} | Size only |",
         "",
-        "## 2. Candidate-Set Contraction Frontier (`∃ N, Odd N ∧ Nat.Perfect N`)",
+        "## 2. Candidate-set restrictions (`∃ N, Odd N ∧ Nat.Perfect N`)",
         "",
-        "| Axis | Imported by `OddPerfect.lean` | Staged in Workspace | Published Frontier |",
+        "| Axis | Imported by `OddPerfect.lean` | Staged / next | Published Frontier |",
         "| --- | --- | --- | --- |",
     ]
 
@@ -375,7 +514,7 @@ def render_dashboard(report: dict, prev: dict | None) -> str:
     lines.extend(
         [
             "",
-            "## 3. Unintegrated Work Tracks (Harvest Queue)",
+            "## 3. Unintegrated modules (liability)",
             "",
             "| Track | Total Files | Fresh `.olean` | Stale `.olean` | Unbuilt | Compiled % | Entry Modules |",
             "| --- | ---: | ---: | ---: | ---: | ---: | --- |",
@@ -392,7 +531,7 @@ def render_dashboard(report: dict, prev: dict | None) -> str:
     lines.extend(
         [
             "",
-            "## 4. Carbon Strategic Signals & Recommended Next Actions",
+            "## 4. Signals and next actions",
             "",
         ]
     )
@@ -407,6 +546,8 @@ def main() -> int:
     parser.add_argument("--dashboard", default=str(REPO_ROOT / "research" / "PROGRESS_DASHBOARD.md"))
     parser.add_argument("--record", action="store_true", help="Append snapshot to progress_history.jsonl")
     parser.add_argument("--json", action="store_true", help="Print JSON report to stdout")
+    parser.add_argument("--strict", action="store_true",
+                        help="Exit 1 if hygiene violations exist or OddPerfect.lean imports untracked files")
     args = parser.parse_args()
 
     STATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -425,6 +566,9 @@ def main() -> int:
         print(json.dumps(report, indent=2))
     else:
         print(dash_text)
+    if args.strict and (report["counts"]["hygiene_violations"] or report["research_frontier"]["untracked_imported"]):
+        print("STRICT FAILURE: hygiene violations or untracked imported modules", file=sys.stderr)
+        return 1
     return 0
 
 

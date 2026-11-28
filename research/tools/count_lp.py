@@ -1,0 +1,313 @@
+#!/usr/bin/env python3
+"""Count-polyhedron gate (G2) for OddPerfect research.
+
+Collects the linear count constraints recorded in research/count_constraints.json for a
+BRANCH_MAP node, relaxes them to a rational LP over nonnegative variables, and answers:
+
+  * Is the objective (default: omega) bounded above?  If not, print a recession ray —
+    the direction along which *every* recorded constraint stays satisfied forever.
+    A new count inequality is progress only if it cuts that ray.
+  * Do the recorded parametric families (e.g. the 27 Nov assessment family) satisfy
+    every constraint for all t >= t_min?
+
+Exact rational arithmetic (fractions.Fraction), two-phase simplex with Bland's rule,
+no third-party dependencies.
+
+Usage:
+  python3 research/tools/count_lp.py --branch A1_SPF
+  python3 research/tools/count_lp.py --branch A1_SPF --add "S51col <= Q13 - 5"
+  python3 research/tools/count_lp.py --branch A1_SPF --verified-only
+  python3 research/tools/count_lp.py --branch A1_SPF --json
+Exit codes: 0 = bounded, 3 = unbounded (ray printed), 2 = infeasible, 1 = error.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import pathlib
+import re
+import sys
+from fractions import Fraction
+
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+DEFAULT_DATA = REPO_ROOT / "research" / "count_constraints.json"
+
+TOKEN_RE = re.compile(r"\s*(?:(\d+(?:/\d+)?)|([A-Za-z_][A-Za-z0-9_]*)|(<=|>=|=|\+|-|\*))")
+
+
+# ---------------------------------------------------------------- parsing
+
+def _tokens(s: str) -> list[str]:
+    out, pos = [], 0
+    s = s.strip()
+    while pos < len(s):
+        m = TOKEN_RE.match(s, pos)
+        if not m or m.end() == pos:
+            raise ValueError(f"cannot parse near {s[pos:]!r}")
+        out.append(next(g for g in m.groups() if g is not None))
+        pos = m.end()
+    return out
+
+
+def parse_linear(side: list[str]) -> tuple[dict[str, Fraction], Fraction]:
+    """Parse 'a*X + b - c*Y' into ({X: a, Y: -c}, b)."""
+    coeffs: dict[str, Fraction] = {}
+    const = Fraction(0)
+    sign, i = 1, 0
+    if not side:
+        raise ValueError("empty expression side")
+    while i < len(side):
+        tok = side[i]
+        if tok in "+-":
+            sign = 1 if tok == "+" else -1
+            i += 1
+            continue
+        coef = Fraction(1)
+        if re.fullmatch(r"\d+(?:/\d+)?", tok):
+            coef = Fraction(tok)
+            i += 1
+            if i < len(side) and side[i] == "*":
+                i += 1
+                var = side[i]
+                i += 1
+                coeffs[var] = coeffs.get(var, Fraction(0)) + sign * coef
+            else:
+                const += sign * coef
+        else:
+            var = tok
+            i += 1
+            coeffs[var] = coeffs.get(var, Fraction(0)) + sign * coef
+        sign = 1
+    return coeffs, const
+
+
+def parse_constraint(expr: str) -> tuple[dict[str, Fraction], str, Fraction]:
+    """Return (coeffs, op, rhs) meaning sum coeffs*x  op  rhs with op in {'<=','='}."""
+    toks = _tokens(expr)
+    ops = [i for i, t in enumerate(toks) if t in ("<=", ">=", "=")]
+    if len(ops) != 1:
+        raise ValueError(f"need exactly one comparison in {expr!r}")
+    k = ops[0]
+    lc, lk = parse_linear(toks[:k])
+    rc, rk = parse_linear(toks[k + 1:])
+    coeffs = dict(lc)
+    for v, c in rc.items():
+        coeffs[v] = coeffs.get(v, Fraction(0)) - c
+    rhs = rk - lk
+    op = toks[k]
+    if op == ">=":
+        coeffs = {v: -c for v, c in coeffs.items()}
+        rhs = -rhs
+        op = "<="
+    return {v: c for v, c in coeffs.items() if c != 0}, op, rhs
+
+
+# ---------------------------------------------------------------- simplex
+
+class LPResult:
+    def __init__(self, status: str, value=None, point=None, ray=None):
+        self.status, self.value, self.point, self.ray = status, value, point, ray
+
+
+def simplex_max(variables: list[str], cons: list[tuple[dict, str, Fraction]],
+                objective: dict[str, Fraction]) -> LPResult:
+    n = len(variables)
+    idx = {v: i for i, v in enumerate(variables)}
+    rows, rhs, kinds = [], [], []
+    for coeffs, op, b in cons:
+        row = [Fraction(0)] * n
+        for v, c in coeffs.items():
+            row[idx[v]] = c
+        rows.append(row)
+        rhs.append(b)
+        kinds.append(op)
+    m = len(rows)
+    n_slack = sum(1 for k in kinds if k == "<=")
+    total = n + n_slack + m  # originals, slacks, artificials
+    A = []
+    s_col = n
+    for i in range(m):
+        row = rows[i] + [Fraction(0)] * (n_slack + m)
+        if kinds[i] == "<=":
+            row[s_col] = Fraction(1)
+            s_col += 1
+        b = rhs[i]
+        if b < 0:
+            row = [-x for x in row]
+            b = -b
+        row[n + n_slack + i] = Fraction(1)
+        A.append(row + [b])
+    basis = [n + n_slack + i for i in range(m)]
+    art = set(basis)
+
+    def pivot(r: int, c: int) -> None:
+        pv = A[r][c]
+        A[r] = [x / pv for x in A[r]]
+        for i in range(m):
+            if i != r and A[i][c] != 0:
+                f = A[i][c]
+                A[i] = [a - f * b for a, b in zip(A[i], A[r])]
+        basis[r] = c
+
+    def run(cost: list[Fraction], allowed: set[int]):
+        while True:
+            # reduced costs for maximization: cost_j - c_B B^-1 A_j
+            enter = None
+            for j in sorted(allowed):
+                if j in basis:
+                    continue
+                red = cost[j] - sum(cost[basis[i]] * A[i][j] for i in range(m))
+                if red > 0:
+                    enter = j
+                    break  # Bland
+            if enter is None:
+                return "optimal", None
+            best, leave = None, None
+            for i in range(m):
+                if A[i][enter] > 0:
+                    ratio = A[i][-1] / A[i][enter]
+                    if best is None or ratio < best or (ratio == best and basis[i] < basis[leave]):
+                        best, leave = ratio, i
+            if leave is None:
+                return "unbounded", enter
+            pivot(leave, enter)
+
+    # Phase 1: maximize -sum(artificials)
+    cost1 = [Fraction(0)] * total
+    for j in art:
+        cost1[j] = Fraction(-1)
+    run(cost1, set(range(total)))
+    if sum(A[i][-1] for i in range(m) if basis[i] in art) != 0:
+        return LPResult("infeasible")
+    # drive remaining zero-level artificials out of the basis where possible
+    for i in range(m):
+        if basis[i] in art:
+            for j in range(n + n_slack):
+                if A[i][j] != 0:
+                    pivot(i, j)
+                    break
+    allowed = set(range(n + n_slack))
+    cost2 = [Fraction(0)] * total
+    for v, c in objective.items():
+        cost2[idx[v]] = c
+    status, enter = run(cost2, allowed)
+    point = [Fraction(0)] * total
+    for i in range(m):
+        point[basis[i]] = A[i][-1]
+    orig = {variables[j]: point[j] for j in range(n)}
+    if status == "unbounded":
+        direction = [Fraction(0)] * total
+        direction[enter] = Fraction(1)
+        for i in range(m):
+            direction[basis[i]] = -A[i][enter]
+        ray = {variables[j]: direction[j] for j in range(n)}
+        return LPResult("unbounded", point=orig, ray=ray)
+    value = sum(c * orig[v] for v, c in objective.items())
+    return LPResult("bounded", value=value, point=orig)
+
+
+# ---------------------------------------------------------------- families
+
+def eval_affine(expr: str, t: int) -> Fraction:
+    coeffs, const = parse_linear(_tokens(expr))
+    return const + sum(c * t for v, c in coeffs.items() if v == "t")
+
+
+def check_family(fam: dict, cons_raw: list[dict], parsed) -> list[str]:
+    failures = []
+    for t in list(range(fam["t_min"], fam["t_min"] + 50)) + [10**6, 10**12]:
+        point = {v: eval_affine(e, t) for v, e in fam["assignment"].items()}
+        for raw, (coeffs, op, b) in zip(cons_raw, parsed):
+            lhs = sum(c * point.get(v, Fraction(0)) for v, c in coeffs.items())
+            ok = (lhs <= b) if op == "<=" else (lhs == b)
+            if not ok:
+                failures.append(f"t={t}: violates {raw['expr']}")
+        if failures:
+            break
+    return failures
+
+
+def ray_tight(ray: dict, parsed, cons_raw) -> list[str]:
+    tight = []
+    for raw, (coeffs, op, _b) in zip(cons_raw, parsed):
+        d = sum(c * ray.get(v, Fraction(0)) for v, c in coeffs.items())
+        if d == 0 and any(ray.get(v, 0) != 0 for v in coeffs):
+            tight.append(raw["expr"])
+    return tight
+
+
+def fmt(x: Fraction) -> str:
+    return str(x.numerator) if x.denominator == 1 else f"{x.numerator}/{x.denominator}"
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--data", default=str(DEFAULT_DATA))
+    ap.add_argument("--branch", required=True)
+    ap.add_argument("--add", action="append", default=[], help="candidate inequality to test")
+    ap.add_argument("--objective", default=None, help="variable to maximize (default from data)")
+    ap.add_argument("--verified-only", action="store_true")
+    ap.add_argument("--json", action="store_true")
+    args = ap.parse_args()
+
+    data = json.loads(pathlib.Path(args.data).read_text(encoding="utf-8"))
+    br = data["branches"].get(args.branch)
+    if br is None:
+        print(f"unknown branch {args.branch}; known: {', '.join(data['branches'])}", file=sys.stderr)
+        return 1
+    cons_raw = [c for c in br["constraints"] if c.get("verified") or not args.verified_only]
+    cons_raw += [{"expr": e, "source": "candidate (--add)", "verified": False} for e in args.add]
+    parsed = [parse_constraint(c["expr"]) for c in cons_raw]
+    variables = list(br["variables"])
+    for coeffs, _, _ in parsed:
+        for v in coeffs:
+            if v not in variables:
+                print(f"unknown variable {v!r} in constraints", file=sys.stderr)
+                return 1
+    obj_var = args.objective or br.get("objective", variables[0])
+    res = simplex_max(variables, parsed, {obj_var: Fraction(1)})
+
+    fam_reports = []
+    for fam in br.get("known_families", []):
+        fails = check_family(fam, cons_raw, parsed)
+        fam_reports.append({"family": fam["name"], "survives": not fails, "first_failures": fails[:5]})
+
+    out = {"branch": args.branch, "objective": obj_var, "n_constraints": len(cons_raw),
+           "status": res.status, "families": fam_reports}
+    if res.status == "bounded":
+        out["max"] = fmt(res.value)
+        out["argmax"] = {k: fmt(v) for k, v in res.point.items()}
+    if res.status == "unbounded":
+        out["ray"] = {k: fmt(v) for k, v in res.ray.items() if v != 0}
+        out["base_point"] = {k: fmt(v) for k, v in res.point.items() if v != 0}
+        out["constraints_parallel_to_ray"] = ray_tight(res.ray, parsed, cons_raw)
+
+    if args.json:
+        print(json.dumps(out, indent=2))
+    else:
+        print(f"# count_lp — branch {args.branch} — maximize {obj_var} over {len(cons_raw)} constraints"
+              f"{' (verified only)' if args.verified_only else ''}")
+        print(f"status: {res.status.upper()}")
+        if res.status == "bounded":
+            print(f"max {obj_var} = {out['max']}  ⇒ combined with a floor above this, the branch closes.")
+        elif res.status == "unbounded":
+            print("recession ray (every recorded constraint holds along base + s·ray for all s ≥ 0):")
+            print("  " + ", ".join(f"{k}={v}" for k, v in out["ray"].items()))
+            print("constraints parallel to the ray (a cut must tighten one of these or add a new one):")
+            for e in out["constraints_parallel_to_ray"]:
+                print(f"  - {e}")
+            print("G2 verdict: a candidate count inequality is progress only if adding it (via --add)"
+                  " changes this ray or makes the LP bounded.")
+        elif res.status == "infeasible":
+            print("constraints are jointly infeasible ⇒ if all are proven, the branch is CLOSED. Verify sources!")
+        for fr in fam_reports:
+            state = "SURVIVES all constraints" if fr["survives"] else "is cut"
+            print(f"family {fr['family']}: {state}")
+            for f in fr["first_failures"]:
+                print(f"  {f}")
+    return {"bounded": 0, "unbounded": 3, "infeasible": 2}[res.status]
+
+
+if __name__ == "__main__":
+    sys.exit(main())

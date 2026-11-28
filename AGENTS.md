@@ -1,28 +1,42 @@
 # Carbon–Neon Research Architecture (`odd_perfect_number`)
 
-This repository pursues the complete, unconditional formal resolution of `OddPerfect.existsOddPerfect` (`∃ n : ℕ, Odd n ∧ Nat.Perfect n`) on a pinned Lean `v4.36.0` and Mathlib (`fc4f59e577feb1a4956671bc04ac18aaaf8cd842`) checkout.
+This repository pursues an axiom-pure Lean proof of `¬ OddPerfect.existsOddPerfect` (`∃ n : ℕ, Odd n ∧ Nat.Perfect n`). It uses a pinned Lean `v4.36.0` and Mathlib (`fc4f59e577feb1a4956671bc04ac18aaaf8cd842`) checkout.
 
-## 0. Core Resolution Premise
+## 0. Research Premise (Calibrated Ambition)
 
-- **Solvability Mandate**: Operate with full conviction that `OddPerfect.existsOddPerfect` admits an unconditional, axiom-pure mathematical resolution formalizable on this pinned Lean + Mathlib checkout.
-- **Pipeline Focus**: Prioritize structural, algebraic, cyclotomic, reciprocity, and analytic obstructions that collapse infinite candidate classes (see `research/ROADMAP.md` and `research/WHITEBOARD.md`) over open-ended brute-force certificate tree expansion. Harvest solved and stepping-stone theorems first (Tier 0 & Tier 1), then converge on global candidate-set emptiness (Tier 2).
+- **Goal.** A complete, axiom-pure resolution. No route to it is known in the literature. Treat the work as a research program, not an engineering backlog.
+- **Unit of progress.** A node of [research/BRANCH_MAP.md](research/BRANCH_MAP.md) changes status: Lean derives `False` on it, or makes it conditional on a smaller named hypothesis. Floors, residue classes, count inequalities and helper lemmas are means, never progress by themselves.
+- **Closure rule.** No proof task is dispatched without a one-line **closure argument**: how its result could close a node. Acceptable arguments are:
+  - a floor meets a ceiling ([FLOOR_CEILING.md](research/FLOOR_CEILING.md));
+  - the count LP loses its recession ray (`research/tools/count_lp.py`);
+  - a direct contradiction.
 
-## 1. Two-Tier Agent Hierarchy
+  Methods shown to be unable to finish are recorded in [research/NO_GO.md](research/NO_GO.md) and must not be repeated.
+- **Ideas before Lean.** New arguments start as informal proofs in [research/IDEAS.md](research/IDEAS.md). They pass the four gates in [research/GATES.md](research/GATES.md) (spoof, count-LP, local solvability, floor/ceiling) and a Skeptic review before any Neon prover is used.
+- **Honesty rule.**
+  - Never write "breakthrough", "resolves", "open in the literature", "new", or "unconditional closure" unless [research/CLAIMS.md](research/CLAIMS.md) supports it with a literature check.
+  - The word *Obstruction* in a Lean name is reserved for conclusions that are `False` or that exclude a named BRANCH_MAP node.
+  - A round that refutes an idea, with evidence, is a successful round.
+- **Focus.** At most **3** BRANCH_MAP nodes are active at once. Everything else is frozen except the terminating deliverables in [research/ROADMAP.md](research/ROADMAP.md) §3.
 
-- **Carbon Coordinator (`pro` / Gemini 4 Carbon)**:
-  - Owns mathematical architecture, strategic prioritization, `OddPerfect.lean`, `research/ROADMAP.md`, `research/WHITEBOARD.md`, `research/LEDGER.md`, `research/CORPUS.md`, `research/PROGRESS_DASHBOARD.md`, and `OVERNIGHT.md`.
-  - Continually runs `python3 research/tools/evaluate_progress.py` and `python3 research/tools/mathlib_kb.py` to ensure Neon proof rounds advance stepping-stone theorems and global obstructions toward $\mathcal{O} = \emptyset$ rather than accumulating unintegrated certificate debt.
-  - Tests candidate global lemmas against the Counterexample Filter Bank (`research/WHITEBOARD.md`) before dispatching large proof rounds.
-  - Dispatches Neon subagents with `Model="flash"` via `invoke_subagent` or `run_workflow`.
-- **Neon Workers (`flash` / Gemini 4 Neon)**:
-  - `neon-mathlib-scout`: Read-only discovery across `.lake/packages/mathlib` and `OddPerfect/` before proving begins.
-  - `neon-prover`: Proves scoped lemmas/theorems in a single assigned `OddPerfect/<Module>.lean` file.
-  - `neon-harvester`: Compiles, diagnoses, and repairs unintegrated staged modules in `OddPerfect/`.
-  - `neon-auditor`: Adversarial reviewer checking hypothesis strength, branch exhaustiveness, counterexample survival, and standard-only axioms.
+## 1. Roles
+
+- **Carbon Strategist (`pro`)**:
+  - Owns `OddPerfect.lean`, `research/BRANCH_MAP.md`, `research/IDEAS.md`, `research/NO_GO.md`, `research/FLOOR_CEILING.md`, `research/ROADMAP.md`, `research/WHITEBOARD.md`, `research/LEDGER.md`, `research/claims_registry.json` and `research/count_constraints.json`.
+  - Chooses the active nodes and writes the informal sketches.
+  - Runs the loop in `.agents/skills/carbon-reevaluation-loop/SKILL.md`.
+- **Skeptic (`pro`, separate session; `.agents/agents/skeptic.md`)**:
+  - Attacks every sketch with spoofs, count-LP recession rays, local-solvability witnesses and missing ceilings.
+  - Returns `KILL` / `SURVIVES` / `UNCLEAR`.
+  - Never reviews its own sketches.
+- **Literature checker (`.agents/agents/literature-checker.md`)**: required before any claim is classed beyond `CANDIDATE-NEW`, or described as new or open.
+- **Neon workers (`flash`)**: `neon-mathlib-scout`, `neon-prover`, `neon-harvester`, `neon-auditor`. They only receive tasks that cleared the gates. The closure argument is copied verbatim into the prompt and into the module docstring.
 
 ## 2. Non-Negotiable Invariants
 
-1. **Pinned Environment**: Never alter `lean-toolchain`, `lakefile.toml`, or `lake-manifest.json`.
-2. **Foundational Axiom Purity**: Zero `sorry`, `admit`, custom `axiom`, `unsafe`, or `@[implemented_by]`. Every integrated theorem must pass `lake build && lake lean research/Audit.lean` using only `propext`, `Classical.choice`, and `Quot.sound`. Never claim a theorem is proved in Lean until `Audit.lean` verifies it.
-3. **Mathlib Lookup Before Reinvention**: Always query `python3 research/tools/mathlib_kb.py search "<keywords>"` (both `--scope mathlib` and `--scope project`) before proving general number-theoretic, algebraic, or analytic helpers.
-4. **File Isolation for Parallel Neon Tasks**: Parallel workers must never edit `OddPerfect.lean` or shared core modules simultaneously. Each `neon-prover` owns its assigned module and verifies it with `lake env lean <path>` or `lake build <Module>`.
+1. **Pinned Environment.** Never alter `lean-toolchain`, `lakefile.toml`, or `lake-manifest.json`.
+2. **Foundational Axiom Purity.** Zero `sorry`, `admit`, custom `axiom`, `unsafe`, `native_decide` or `@[implemented_by]`. Every integrated theorem must pass `lake build && lake lean research/Audit.lean` using only `propext`, `Classical.choice`, and `Quot.sound`. Never claim a theorem is proved in Lean until the audit verifies it.
+3. **Mathlib Lookup Before Reinvention.** Query `python3 research/tools/mathlib_kb.py search "<keywords>"` (both `--scope mathlib` and `--scope project`) before proving general number-theoretic, algebraic or analytic helpers.
+4. **File Isolation for Parallel Neon Tasks.** Parallel workers never edit `OddPerfect.lean` or shared core modules at the same time. Each `neon-prover` owns its assigned module and verifies it with `lake env lean <path>` or `lake build <Module>`.
+5. **Commit Discipline.** Every audited checkpoint is committed and tagged (`audit-YYYYMMDD`) before the next round starts. `OddPerfect.lean` may only import git-tracked files. `python3 research/tools/evaluate_progress.py --strict` must pass.
+6. **Single Source of Truth.** Headline results live in `research/CLAIMS.md`, generated by `python3 research/tools/claims.py`. The dashboard is generated by `research/tools/evaluate_progress.py`. Other documents link to these rather than copying theorem statements or numbers.
